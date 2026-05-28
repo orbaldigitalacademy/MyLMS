@@ -1,0 +1,66 @@
+⭐ 1. Add Rating to Testimonial Model
+
+Update your TestimonialCreate model:
+
+class TestimonialCreate(BaseModel):
+    content: Optional[str] = None
+    video_url: Optional[str] = None
+    rating: int = Field(..., ge=1, le=5)
+
+Update TestimonialResponse:
+
+class TestimonialResponse(BaseModel):
+    id: str
+    user_id: str
+    user_name: str
+    user_email: str
+    content: Optional[str]
+    video_url: Optional[str]
+    rating: int
+    status: str
+    admin_note: Optional[str]
+    created_at: str
+    updated_at: str
+Update Submission Route
+
+Modify testimonial creation:
+
+testimonial_doc = {
+    "id": testimonial_id,
+    "user_id": current_user["id"],
+    "user_name": current_user["full_name"],
+    "user_email": current_user["email"],
+    "content": testimonial_data.content,
+    "video_url": testimonial_data.video_url,
+    "rating": testimonial_data.rating,
+    "status": TestimonialStatus.PENDING,
+    "admin_note": None,
+    "created_at": now.isoformat(),
+    "updated_at": now.isoformat()
+}
+📄 2. Add Pagination to Public Testimonials
+
+Replace your public route with:
+
+@api_router.get("/testimonials")
+async def get_approved_testimonials(
+    page: int = 1,
+    limit: int = 6
+):
+    skip = (page - 1) * limit
+
+    total = await db.testimonials.count_documents(
+        {"status": TestimonialStatus.APPROVED}
+    )
+
+    testimonials = await db.testimonials.find(
+        {"status": TestimonialStatus.APPROVED},
+        {"_id": 0}
+    ).sort("created_at", -1).skip(skip).limit(limit).to_list(limit)
+
+    return {
+        "total": total,
+        "page": page,
+        "pages": (total + limit - 1) // limit,
+        "data": testimonials
+    }

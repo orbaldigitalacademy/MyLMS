@@ -1,0 +1,184 @@
+{
+  "design_system": {
+    "identity": {
+      "name": "Lagos Academic",
+      "archetype": "Organic & Earthy (Professional Variant)",
+      "core_values": ["Trust", "Accessibility", "Growth", "Heritage"],
+      "emotional_tone": "Warm, Grounded, Aspirational, Serious"
+    },
+    "typography": {
+      "font_family": {
+        "headings": "Merriweather, serif",
+        "body": "Manrope, sans-serif",
+        "mono": "JetBrains Mono, monospace"
+      },
+      "google_fonts_url": "https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Merriweather:wght@300;400;700;900&display=swap",
+      "rules": [
+        "Headings (H1-H3) must use Merriweather. Font weight: 700 or 900.",
+        "Body text must use Manrope. Font weight: 400 or 500.",
+        "Price tags (₦) must use Manrope Bold (700) for clear legibility.",
+        "Tracking: Tight (-0.02em) for Headings, Normal for Body.",
+        "Leading: Tight (1.1) for Headings, Relaxed (1.6) for Body."
+      ]
+    },
+    "colors": {
+      "palette": {
+        "primary": {
+          "name": "Nigerian Gold",
+          "hex": "#D4AF37",
+          "hsl": "46 65% 52%",
+          "usage": "Primary Buttons, Highlights, Active States"
+        },
+        "secondary": {
+          "name": "Deep Earth",
+          "hex": "#3E2723",
+          "hsl": "14 26% 19%",
+          "usage": "Headings, Sidebar Background, Footer"
+        },
+        "accent": {
+          "name": "Terracotta",
+          "hex": "#C05621",
+          "hsl": "20 71% 44%",
+          "usage": "Call to Actions (High Urgency), Alerts"
+        },
+        "background": {
+          "name": "Bone White",
+          "hex": "#F9F7F2",
+          "hsl": "40 20% 96%",
+          "usage": "Page Background (Light Mode)"
+        },
+        "surface": {
+          "name": "Warm Paper",
+          "hex": "#FFFFFF",
+          "hsl": "0 0% 100%",
+          "usage": "Cards, Modals, Inputs"
+        },
+        "success": {
+          "name": "Growth Green",
+          "hex": "#2F855A",
+          "hsl": "150 48% 35%",
+          "usage": "Payment Verified, Course Completed"
+        },
+        "muted": {
+          "name": "Sand Grey",
+          "hex": "#E2E8F0",
+          "hsl": "210 20% 92%",
+          "usage": "Borders, Disabled States"
+        }
+      },
+      "css_vars_override": {
+        "light": {
+          "--background": "40 20% 96%",
+          "--foreground": "14 26% 19%",
+          "--card": "0 0% 100%",
+          "--card-foreground": "14 26% 19%",
+          "--popover": "0 0% 100%",
+          "--popover-foreground": "14 26% 19%",
+          "--primary": "46 65% 52%",
+          "--primary-foreground": "14 26% 10%",
+          "--secondary": "14 26% 19%",
+          "--secondary-foreground": "40 20% 96%",
+          "--muted": "40 20% 90%",
+          "--muted-foreground": "14 10% 40%",
+          "--accent": "20 71% 44%",
+          "--accent-foreground": "0 0% 100%",
+          "--destructive": "0 84.2% 60.2%",
+          "--destructive-foreground": "0 0% 98%",
+          "--border": "14 10% 85%",
+          "--input": "14 10% 85%",
+          "--ring": "46 65% 52%"
+        }
+      }
+    },
+    "layout": {
+      "spacing_scale": "Generous (2x standard)",
+      "container_padding": "px-4 md:px-8 lg:px-12",
+      "border_radius": {
+        "default": "rounded-md",
+        "buttons": "rounded-full",
+        "cards": "rounded-lg"
+      },
+      "grids": {
+        "marketing": "Bento Grid (Mode A: Tetris)",
+        "dashboard": "High Density Grid (Mode B)"
+      }
+    },
+    "visual_enhancers": {
+      "textures": [
+        {
+          "name": "Raffia Noise",
+          "css": "background-image: url('https://images.unsplash.com/photo-1701964621055-291aac868749?crop=entropy&cs=srgb&fm=jpg&q=85'); opacity: 0.03; mix-blend-mode: multiply;"
+        }
+      ],
+      "shadows": {
+        "card": "shadow-[0_2px_8px_rgba(62,39,35,0.08)]",
+        "hover": "shadow-[0_8px_24px_rgba(62,39,35,0.12)]",
+        "dropdown": "shadow-[0_4px_20px_rgba(0,0,0,0.1)]"
+      },
+      "glassmorphism": {
+        "enabled": true,
+        "style": "backdrop-blur-md bg-white/80 border border-white/20"
+      }
+    }
+  },
+  "assets": {
+    "images": {
+      "hero_bg": "https://images.unsplash.com/photo-1588674845784-9d0c32777b3a?crop=entropy&cs=srgb&fm=jpg&q=85",
+      "about_section": "https://images.unsplash.com/photo-1665586510291-ae722d1d1f00?crop=entropy&cs=srgb&fm=jpg&q=85",
+      "student_dashboard_banner": "https://images.unsplash.com/photo-1634951401794-6c84f593db82?crop=entropy&cs=srgb&fm=jpg&q=85",
+      "instructor_avatar": "https://images.unsplash.com/photo-1636772523547-5577d04e8dc1?crop=entropy&cs=srgb&fm=jpg&q=85",
+      "pattern_texture": "https://images.unsplash.com/photo-1701964621055-291aac868749?crop=entropy&cs=srgb&fm=jpg&q=85",
+      "gold_texture": "https://images.unsplash.com/photo-1719059821311-f2bfafcdcba2?crop=entropy&cs=srgb&fm=jpg&q=85",
+      "professional_woman": "https://images.unsplash.com/photo-1612831198717-1e71a0d5e2ad?crop=entropy&cs=srgb&fm=jpg&q=85"
+    },
+    "icons": "Lucide React (Default)",
+    "logo_placeholder": "Text-based logo using Merriweather Black"
+  },
+  "components": {
+    "buttons": {
+      "primary": "bg-primary text-primary-foreground hover:bg-primary/90 rounded-full px-8 py-6 font-bold shadow-lg transition-transform hover:scale-105",
+      "secondary": "bg-secondary text-secondary-foreground hover:bg-secondary/90 rounded-full px-8 py-6 font-medium",
+      "outline": "border-2 border-primary text-primary hover:bg-primary/10 rounded-full px-8 py-6 font-bold"
+    },
+    "cards": {
+      "course_card": "bg-card text-card-foreground rounded-lg border border-border/60 overflow-hidden hover:shadow-xl transition-all duration-300 group",
+      "dashboard_stat": "bg-white p-6 rounded-lg border border-border/50 shadow-sm"
+    },
+    "inputs": {
+      "default": "h-12 rounded-md border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+    },
+    "sidebar": {
+      "container": "bg-secondary text-white h-screen w-64 fixed left-0 top-0 p-6 flex flex-col gap-4",
+      "link": "flex items-center gap-3 px-4 py-3 rounded-md text-white/70 hover:text-white hover:bg-white/10 transition-colors",
+      "link_active": "bg-primary text-primary-foreground font-bold shadow-md"
+    }
+  },
+  "page_specific_guidelines": {
+    "home": {
+      "hero": "Split layout. Left: Big Bold Typography (Merriweather). Right: Hero Image with 'Blob' mask or organic shape. Background: Bone White with subtle Raffia texture.",
+      "features": "Bento Grid layout. Use icons with Gold backgrounds.",
+      "cta": "Full width section. Background: Deep Earth (Secondary). Text: White. Button: Primary Gold."
+    },
+    "course_catalog": {
+      "layout": "Grid cols-1 md:cols-2 lg:cols-3 gap-8.",
+      "card_style": "Image height 200px. Title in Merriweather. Price in Gold/Primary. 'Enroll' button visible on hover."
+    },
+    "payment_flow": {
+      "manual_transfer": "Clean, trust-focused UI. Display Bank Details in a 'Credit Card' style container. File Upload area must be large and dashed (Drag & Drop).",
+      "status_badge": "Pending: Yellow/Orange. Approved: Green. Rejected: Red."
+    },
+    "dashboard": {
+      "layout": "Sidebar + Main Content Area. Top bar with User Profile and Notifications.",
+      "stats": "Simple cards with big numbers. Use 'Growth Green' for positive trends."
+    }
+  },
+  "universal_guidelines": [
+    "Do not use gradients for backgrounds unless it's a subtle noise overlay.",
+    "Avoid 'Inter' font. Use 'Manrope' for UI and 'Merriweather' for Headings.",
+    "Mobile-First: Ensure all grids collapse to 1 column on mobile.",
+    "Accessibility: Ensure text contrast on Gold buttons is sufficient (use dark text on gold).",
+    "Animation: Add 'motion-safe' transitions to all interactive elements.",
+    "Data-TestID: All buttons and inputs must have data-testid attributes."
+  ],
+  "instructions_to_main_agent": "1. Install 'Manrope' and 'Merriweather' fonts via Google Fonts in index.html or CSS. 2. Update tailwind.config.js to use the CSS variables provided. 3. Create the 'Sidebar' component first as it's shared across dashboards. 4. Use the provided image URLs for placeholders. 5. Implement the 'Manual Payment' flow with a dedicated 'Upload Proof' component."
+}
