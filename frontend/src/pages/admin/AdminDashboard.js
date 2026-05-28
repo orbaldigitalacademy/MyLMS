@@ -1,52 +1,19 @@
-import React, {
-  useState,
-  useEffect,
-  useCallback,
-} from 'react';
+import React, { useState, useEffect, useCallback,} from 'react';
 
 import AdminSidebar from '../../components/AdminSidebar';
 
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from '../../components/ui/card';
+import {Card, CardContent, CardHeader, CardTitle,} from '../../components/ui/card';
 
 import { Button } from '../../components/ui/button';
 
 import { Input } from '../../components/ui/input';
 
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '../../components/ui/select';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue,} from '../../components/ui/select';
 
 import { toast } from 'sonner';
+import { adminAPI, paymentsAPI, liveClassAPI, coursesAPI,} from '../../services/api';
 
-import {
-  adminAPI,
-  paymentsAPI,
-  liveClassAPI,
-  coursesAPI,
-} from '../../services/api';
-
-import {
-  Users,
-  BookOpen,
-  CreditCard,
-  TrendingUp,
-  Clock,
-  CheckCircle,
-  XCircle,
-  Star,
-  Loader2,
-  Video,
-  ExternalLink,
-} from 'lucide-react';
+import {Users, BookOpen, CreditCard, TrendingUp, Clock, CheckCircle, XCircle, Star, Loader2, Video, ExternalLink, } from 'lucide-react';
 
 const INITIAL_LIVE_FORM = {
   title: '',
@@ -84,10 +51,6 @@ const AdminDashboard = () => {
 
   const [creatingLiveClass, setCreatingLiveClass] =
     useState(false);
-
-  useEffect(() => {
-    fetchDashboardData();
-  }, []);
 
   const fetchDashboardData = useCallback(async () => {
     setLoading(true);
@@ -168,6 +131,10 @@ const AdminDashboard = () => {
       setLoading(false);
     }
   }, []);
+
+   useEffect(() => {
+        fetchDashboardData();
+      }, [fetchDashboardData]);
 
   const formatPrice = (price) => {
     return new Intl.NumberFormat('en-NG', {

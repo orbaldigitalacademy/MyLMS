@@ -59,10 +59,6 @@ const AdminCourses = () => {
   const [uploadingImage, setUploadingImage] = useState(false);
   const [uploadingVideo, setUploadingVideo] = useState(false);
 
-  useEffect(() => {
-    fetchCourses();
-  }, []);
-
   const fetchCourses = useCallback(async () => {
     setLoading(true);
 
@@ -76,7 +72,12 @@ const AdminCourses = () => {
     } finally {
       setLoading(false);
     }
+    
   }, []);
+
+ useEffect(() => {
+  fetchCourses();
+}, [fetchCourses]);
 
   const formatPrice = (price) => {
     return new Intl.NumberFormat('en-NG', {
