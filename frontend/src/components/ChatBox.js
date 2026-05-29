@@ -3,20 +3,40 @@ import React, { useEffect, useState, useRef } from "react";
 const ChatBox = ({ room }) => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
+
   const ws = useRef(null);
 
   useEffect(() => {
-    ws.current = new WebSocket(`ws://localhost:8000/ws/chat/${room}`);
+    const backendUrl = process.env.REACT_APP_BACKEND_URL;
+
+    if (!backendUrl) {
+      console.error("REACT_APP_BACKEND_URL not defined");
+      return;
+    }
+
+    const wsUrl = backendUrl
+      .replace(/^https/, "wss")
+      .replace(/^http/, "ws");
+
+    ws.current = new WebSocket(`${wsUrl}/ws/chat/${room}`);
 
     ws.current.onmessage = (event) => {
-      setMessages(prev => [...prev, event.data]);
+      setMessages((prev) => [...prev, event.data]);
     };
 
-    return () => ws.current.close();
+    ws.current.onerror = (err) => {
+      console.error("WebSocket error:", err);
+    };
+
+    return () => {
+      if (ws.current) {
+        ws.current.close();
+      }
+    };
   }, [room]);
 
   const sendMessage = () => {
-    if (!input.trim()) return;
+    if (!ws.current || ws.current.readyState !== 1) return;
 
     ws.current.send(input);
     setInput("");
@@ -24,10 +44,11 @@ const ChatBox = ({ room }) => {
 
   return (
     <div className="flex flex-col h-[500px]">
-
       <div className="flex-1 overflow-y-auto border p-2 mb-2">
         {messages.map((msg, i) => (
-          <p key={i} className="text-sm">{msg}</p>
+          <p key={i} className="text-sm">
+            {msg}
+          </p>
         ))}
       </div>
 
@@ -37,6 +58,7 @@ const ChatBox = ({ room }) => {
           value={input}
           onChange={(e) => setInput(e.target.value)}
         />
+
         <button
           onClick={sendMessage}
           className="bg-blue-600 text-white px-3 rounded"
@@ -44,7 +66,6 @@ const ChatBox = ({ room }) => {
           Send
         </button>
       </div>
-
     </div>
   );
 };

@@ -98,7 +98,7 @@ Build a fully functional MVP LMS for a Nigerian online school where payments are
 ## Environment Variables Required
 ```
 # Backend (.env)
-MONGO_URL=mongodb://localhost:27017
+MONGO_URL=mongodb+srv://moseskor_db:<db_password>@cluster0.6l3bnn2.mongodb.net/
 DB_NAME=naija_lms
 SECRET_KEY=your-secret-key
 CLOUDINARY_CLOUD_NAME=your-cloud-name

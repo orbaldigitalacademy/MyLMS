@@ -7,8 +7,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from routers import courses, lessons, payments, certificate, users, admin, live_classes
 from core import auth
 from seedAdmin import create_admin_if_not_exists
+from routers.live_classes import router as live_classes_router
+from utils.scheduler import start_scheduler
+import asyncio
 
 app = FastAPI(title="Orbal Digital Academy")
+app.include_router(live_classes_router, prefix="/api", tags=["Live Classes"])
 
 # CORS
 app.add_middleware(

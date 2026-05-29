@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../services/api";
 
-const API = "http://localhost:8000/api";
 
 export default function TestimonialPage() {
   const [testimonials, setTestimonials] = useState([]);
@@ -21,7 +20,7 @@ export default function TestimonialPage() {
 
   const fetchTestimonials = async (pageNum) => {
     try {
-      const res = await axios.get(`${API}/testimonials?page=${pageNum}&limit=6`);
+      const res = await api.get(`/testimonials?page=${pageNum}&limit=6`);
       setTestimonials(res.data?.data || []);
       setPages(res.data?.pages || 1);
     } catch (err) {
@@ -32,7 +31,7 @@ export default function TestimonialPage() {
 
   const fetchAverageRating = async () => {
     try {
-      const res = await axios.get(`${API}/testimonials/average-rating`);
+      const res = await api.get("/testimonials/average-rating");
       setAverageRating(res.data?.average_rating || 0);
     } catch (err) {
       console.error("Average rating API not found");
@@ -41,8 +40,7 @@ export default function TestimonialPage() {
 
   const submitTestimonial = async () => {
     try {
-      await axios.post(
-        `${API}/testimonials`,
+      await api.post("/testimonials", 
         { content, video_url: videoUrl, rating },
         { headers: { Authorization: `Bearer ${token}` } }
       );
