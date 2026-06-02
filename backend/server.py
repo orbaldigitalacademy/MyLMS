@@ -64,7 +64,6 @@ cloudinary.config(
 )
 # Create the main app
 app = FastAPI(title="Orbal Digital Academy", version="1.0.0")
-app.include_router(live_classes_router)
 
 # CORS configuration
 app.add_middleware(
@@ -72,13 +71,13 @@ app.add_middleware(
     allow_origins=[
         "http://localhost:3000",
         "http://127.0.0.1:3000",
-        "https://my-lms-tgpv.vercel.app/",
+        "https://my-lms-tgpv.vercel.app",
     ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
+app.include_router(live_classes_router)
 # Create routers
 api_router = APIRouter(prefix="/api")
 api_router.include_router(analytics_router)
