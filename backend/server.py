@@ -1407,11 +1407,19 @@ app.include_router(payment_router)
 
 @app.on_event("startup")
 async def startup():
-    await create_admin_if_not_exists(db)
+    try:
+        await create_admin_if_not_exists(db)
+        print("Admin check completed")
+    except Exception as e:
+        logging.error(f"Admin creation failed: {e}")
 
     async def loop():
         while True:
-            await update_live_class_status()
+            try:
+                await update_live_class_status()
+            except Exception as e:
+                logging.error(f"Live class update error: {e}")
+
             await asyncio.sleep(60)
 
     asyncio.create_task(loop())
