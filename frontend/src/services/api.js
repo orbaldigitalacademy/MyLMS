@@ -11,6 +11,9 @@ const api = axios.create({
   timeout: 15000,
 });
 
+console.log("BACKEND URL:", process.env.REACT_APP_BACKEND_URL);
+console.log("AXIOS BASE URL:", api.defaults.baseURL);
+
 // ==========================
 // REQUEST INTERCEPTOR
 // ==========================
