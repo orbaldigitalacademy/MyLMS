@@ -41,7 +41,7 @@ const RegisterPage = () => {
 
     try {
       const user = await register(formData.email, formData.password, formData.full_name);
-      toast.success(`Welcome to Orbal Digital Academy, ${user.full_name}!`);
+      toast.success(`Welcome to Orbal Digital Academy, ${user.name || 'Student'}!`);
       navigate('/dashboard');
     } catch (error) {
       const data = error.response?.data;
