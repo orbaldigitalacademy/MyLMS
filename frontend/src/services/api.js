@@ -143,7 +143,7 @@ export const paymentsAPI = {
     api.post("/payments/submit", data),
 
   getMy: () =>
-    api.get("/payments/my"),
+    api.get("/payments/me"),
 
   getAll: (status) =>
     api.get("/admin/payments", {
@@ -174,7 +174,7 @@ export const paymentsAPI = {
 // ==========================
 export const enrollmentsAPI = {
   getMy: () =>
-    api.get("/enrollments/my"),
+    api.get("/enrollments/me"),
 
   checkAccess: (courseId) =>
     api.get(`/enrollments/check/${courseId}`),
