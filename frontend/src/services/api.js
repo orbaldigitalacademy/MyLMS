@@ -123,7 +123,7 @@ export const coursesAPI = {
 // ==========================
 export const lessonsAPI = {
   getByCourse: (courseId) =>
-    api.get(`/courses/${courseId}/lessons`),
+  api.get(`/lessons/by-course/${courseId}`),
 
   create: (data) =>
     api.post("/admin/lessons", data),
