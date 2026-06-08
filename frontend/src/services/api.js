@@ -177,13 +177,10 @@ export const enrollmentsAPI = {
     api.get("/enrollments/my"),
 
   checkAccess: (courseId) =>
-    api.get(`/enrollments/${courseId}/access`),
+    api.get(`/enrollments/check/${courseId}`),
 
-  updateProgress: (courseId, data) =>
-    api.post(
-      `/enrollments/${courseId}/progress`,
-      data
-    ),
+  updateProgress: (data) =>
+  api.post("/enrollments/progress", data)
 };
 
 // ==========================
