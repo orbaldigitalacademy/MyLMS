@@ -205,7 +205,7 @@ export const settingsAPI = {
     api.get("/settings/bank"),
 
   updateBankDetails: (data) =>
-    api.put("/admin/settings/bank", data),
+  api.put("/settings/bank", data),
 };
 
 // ==========================
