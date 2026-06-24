@@ -131,8 +131,7 @@ const PaymentPage = () => {
     try {
       await paymentsAPI.submit({
         course_id: courseId,
-        proof_url: proofUrl,
-        proof_type: proofType
+        payment_proof_url: proofUrl,
       });
       toast.success('Payment submitted successfully! We will verify and notify you.');
       navigate('/dashboard/payments');
