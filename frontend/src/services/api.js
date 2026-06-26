@@ -150,23 +150,15 @@ export const paymentsAPI = {
       params: status ? { status } : {},
     }),
 
-  approve: (id, note) =>
-    api.put(
-      `/admin/payments/${id}/approve`,
-      null,
-      {
-        params: { admin_note: note },
-      }
-    ),
+  approve: (id, remarks) =>
+    api.put(`/admin/payments/${id}/approve`, {
+      remarks,
+    }),
 
-  reject: (id, note) =>
-    api.put(
-      `/admin/payments/${id}/reject`,
-      null,
-      {
-        params: { admin_note: note },
-      }
-    ),
+  reject: (id, remarks) =>
+    api.put(`/admin/payments/${id}/reject`, {
+      remarks,
+    }),
 };
 
 // ==========================
