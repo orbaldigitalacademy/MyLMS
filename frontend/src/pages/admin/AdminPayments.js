@@ -89,7 +89,7 @@ const AdminPayments = () => {
 
   const getStatusIcon = (status) => {
     switch (status) {
-      case 'approved':
+      case 'success':
         return <CheckCircle className="w-5 h-5 text-green-600" />;
       case 'rejected':
         return <XCircle className="w-5 h-5 text-red-600" />;
@@ -156,7 +156,7 @@ const AdminPayments = () => {
             <SelectContent>
               <SelectItem value="all">All Payments</SelectItem>
               <SelectItem value="pending">Pending</SelectItem>
-              <SelectItem value="approved">Approved</SelectItem>
+              <SelectItem value="success">Approved</SelectItem>
               <SelectItem value="rejected">Rejected</SelectItem>
             </SelectContent>
           </Select>
