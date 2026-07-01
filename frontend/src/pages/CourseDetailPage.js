@@ -441,7 +441,6 @@ const CourseDetailPage = () => {
     if (loading) return;
     const observer = new IntersectionObserver(
       (entries) => {
-        // Pick the entry whose top is closest to the viewport top (and visible)
         const visible = entries
           .filter((e) => e.isIntersecting)
           .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
@@ -450,7 +449,6 @@ const CourseDetailPage = () => {
         }
       },
       {
-        // Top offset so a section becomes "active" once it crosses ~30% from top
         rootMargin: '-30% 0px -60% 0px',
         threshold: 0,
       }
@@ -596,7 +594,20 @@ const CourseDetailPage = () => {
         'Willingness to commit ~5 hours per week',
         'No prior coding experience required — we start from fundamentals',
       ];
-  const whyItems = whyChoose || STATIC_WHY_CHOOSE;
+  const careers = course.careers?.length ? course.careers : CAREERS;
+
+  /* NEW: per-course fallback resolution for previously-static sections.
+     Priority: course.X → (settings for why_choose) → STATIC_X */
+  const problems = course.problems?.length ? course.problems : PROBLEMS;
+  const offerIncludes = course.offer_includes?.length
+    ? course.offer_includes
+    : OFFER_INCLUDES;
+  const compareRows = course.compare_rows?.length
+    ? course.compare_rows
+    : COMPARE_ROWS;
+  const whyItems =
+    (course.why_choose?.length ? course.why_choose : whyChoose) ||
+    STATIC_WHY_CHOOSE;
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -744,7 +755,7 @@ const CourseDetailPage = () => {
             align="center"
           />
           <div className="grid sm:grid-cols-2 gap-4 max-w-4xl mx-auto">
-            {PROBLEMS.map((item, index) => (
+            {problems.map((item, index) => (
               <Card key={index} className="border-border/60">
                 <CardContent className="p-5 flex items-start gap-3">
                   <span className="w-7 h-7 rounded-full bg-red-100 text-red-600 flex items-center justify-center flex-shrink-0">
@@ -886,7 +897,7 @@ const CourseDetailPage = () => {
             align="center"
           />
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {CAREERS.map((career, i) => (
+            {careers.map((career, i) => (
               <Card
                 key={i}
                 className="border-border/60 hover:border-primary/40 transition-colors group"
@@ -1127,7 +1138,7 @@ const CourseDetailPage = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {COMPARE_ROWS.map((row, i) => (
+                  {compareRows.map((row, i) => (
                     <tr
                       key={i}
                       className={`border-t border-border ${
@@ -1185,7 +1196,7 @@ const CourseDetailPage = () => {
                     )}
                   </div>
                   <ul className="space-y-3">
-                    {COMPARE_ROWS.map((row, i) => (
+                    {compareRows.map((row, i) => (
                       <li
                         key={i}
                         className="flex items-center justify-between gap-3"
@@ -1233,7 +1244,7 @@ const CourseDetailPage = () => {
                 <p className="font-semibold text-secondary">What&apos;s included:</p>
               </div>
               <ul className="space-y-3 mb-8">
-                {OFFER_INCLUDES.map((item, i) => (
+                {offerIncludes.map((item, i) => (
                   <li key={i} className="flex items-start gap-3">
                     <CheckCircle className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
                     <span className="text-secondary">{item}</span>
