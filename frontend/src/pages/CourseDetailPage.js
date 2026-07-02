@@ -589,7 +589,7 @@ const CourseDetailPage = () => {
           <div className="xl:flex gap-10">
   
             {/* Sidebar */}
-            <aside className="hidden xl:block w-60 shrink-0 self-start">
+            <aside className="hidden xl:block w-50 shrink-0 self-stretch">
                 <div className="sticky top-28">
                     <div className="bg-background rounded-2xl">
                         <TableOfContents
