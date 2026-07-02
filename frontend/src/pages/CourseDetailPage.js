@@ -209,8 +209,9 @@ const COMPARE_ROWS = [
 const TableOfContents = ({ activeId, onJump }) => (
   <aside
     aria-label="Page navigation"
-    className="hidden xl:block fixed left-6 top-1/2 -translate-y-1/2 z-30 w-52"
+    className="hidden xl:block sticky top-28 self-start w-52"
   >
+  
     <div className="bg-background/80 backdrop-blur-md border border-border rounded-2xl p-4 shadow-lg">
       <div className="flex items-center gap-2 mb-3 px-2">
         <ListChecks className="w-4 h-4 text-primary" />
