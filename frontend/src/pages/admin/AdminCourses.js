@@ -212,7 +212,7 @@ const AdminCourses = () => {
   const fetchCourses = useCallback(async () => {
     setLoading(true);
     try {
-      const response = await coursesAPI.getAll(false);
+      const response = await coursesAPI.getAll();
       setCourses(Array.isArray(response.data) ? response.data : []);
     } catch (error) {
       console.error('Failed to fetch courses:', error);
