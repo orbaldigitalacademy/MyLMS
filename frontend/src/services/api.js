@@ -109,13 +109,13 @@ export const coursesAPI = {
 
   getOne: (id) => api.get(`/courses/${id}`),
 
-  create: (data) => api.post("/admin/courses", data),
+  create: (data) => api.post("/courses", data),
 
   update: (id, data) =>
-    api.put(`/admin/courses/${id}`, data),
+    api.put(`/courses/${id}`, data),
 
   delete: (id) =>
-    api.delete(`/admin/courses/${id}`),
+    api.delete(`/courses/${id}`),
 };
 
 // ==========================
@@ -126,13 +126,13 @@ export const lessonsAPI = {
   api.get(`/lessons/by-course/${courseId}`),
 
   create: (data) =>
-    api.post("/admin/lessons", data),
+    api.post("/lessons", data),
 
   update: (id, data) =>
-    api.put(`/admin/lessons/${id}`, data),
+    api.put(`/lessons/${id}`, data),
 
   delete: (id) =>
-    api.delete(`/admin/lessons/${id}`),
+    api.delete(`/lessons/${id}`),
 };
 
 // ==========================
