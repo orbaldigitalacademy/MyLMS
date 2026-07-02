@@ -112,7 +112,7 @@ export const coursesAPI = {
   create: (data) => api.post("/courses", data),
 
   update: (id, data) =>
-    api.put(`/courses/${id}`, data),
+    api.patch(`/courses/${id}`, data),
 
   delete: (id) =>
     api.delete(`/courses/${id}`),
