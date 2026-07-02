@@ -587,11 +587,11 @@ const CourseDetailPage = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
   
           <div className="xl:flex gap-10">
-  
+    
             {/* Sidebar */}
-            <aside className="hidden xl:block w-25 shrink-0 self-stretch">
-                <div className="sticky top-28">
-                    <div className="bg-background rounded-2xl">
+            <aside className="hidden xl:block w-32 shrink-0">
+                <div className="fixed top-24 w-32">
+                    <div className="rounded-xl border border-border/50 bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60 p-2">
                         <TableOfContents
                             activeId={activeSection}
                             onJump={handleJump}
@@ -599,7 +599,7 @@ const CourseDetailPage = () => {
                     </div>
                 </div>
             </aside>
-              
+            
             {/* Main Content */}
             <main className="flex-1 min-w-0">
 
