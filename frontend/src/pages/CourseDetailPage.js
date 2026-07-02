@@ -5,42 +5,11 @@ import Footer from '../components/Footer';
 import { Button } from '../components/ui/button';
 import { Card, CardContent } from '../components/ui/card';
 import { Badge } from '../components/ui/badge';
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from '../components/ui/accordion';
-import { coursesAPI, lessonsAPI, enrollmentsAPI, settingsAPI } from '../services/api';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger,} from '../components/ui/accordion';
+import { coursesAPI, lessonsAPI, enrollmentsAPI, settingsAPI, } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { toast } from 'sonner';
-import {
-  Clock,
-  BookOpen,
-  CheckCircle,
-  Play,
-  ArrowLeft,
-  Lock,
-  CreditCard,
-  Users,
-  Star,
-  Award,
-  GraduationCap,
-  Briefcase,
-  Quote,
-  Sparkles,
-  Target,
-  ShieldCheck,
-  Rocket,
-  HeartHandshake,
-  Lightbulb,
-  MessageCircle,
-  X,
-  TrendingUp,
-  Gift,
-  ListChecks,
-  Minus,
-} from 'lucide-react';
+import {Clock, BookOpen, CheckCircle, Play, ArrowLeft, Lock, CreditCard, Users, Star, Award, GraduationCap, Briefcase, Quote, Sparkles,Target,ShieldCheck,Rocket,HeartHandshake,Lightbulb,MessageCircle,X,TrendingUp,Gift,ListChecks,Minus,} from 'lucide-react';
 
 /* ----------------------------- Static fallbacks ---------------------------- */
 
@@ -205,14 +174,13 @@ const COMPARE_ROWS = [
 ];
 
 /* ----------------------------- Table of Contents --------------------------- */
-
 const TableOfContents = ({ activeId, onJump }) => (
-  <aside
+  <nav
     aria-label="Page navigation"
-    className="hidden xl:block sticky top-28 self-start w-52"
+    className="w-full"
   >
   
-    <div className="bg-background/80 backdrop-blur-md border border-border rounded-2xl p-4 shadow-lg">
+    <div className="w-full bg-background/80 backdrop-blur-md border border-border rounded-2xl p-4 shadow-lg">
       <div className="flex items-center gap-2 mb-3 px-2">
         <ListChecks className="w-4 h-4 text-primary" />
         <p className="text-xs uppercase tracking-wider font-semibold text-secondary">
@@ -249,7 +217,7 @@ const TableOfContents = ({ activeId, onJump }) => (
         </ul>
       </nav>
     </div>
-  </aside>
+  </nav>
 );
 
 /* ----------------------------- Compare Cell -------------------------------- */
@@ -610,17 +578,35 @@ const CourseDetailPage = () => {
     (course.why_choose?.length ? course.why_choose : whyChoose) ||
     STATIC_WHY_CHOOSE;
 
+
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
-
-      {/* Scroll-spy Table of Contents (desktop only, xl+) */}
-      <TableOfContents activeId={activeSection} onJump={handleJump} />
+  
+      <div className="flex-1">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+  
+          <div className="xl:flex gap-10">
+  
+            {/* Sidebar */}
+            <aside className="hidden xl:block w-60 shrink-0 self-start">
+                <div className="sticky top-28">
+                    <div className="bg-background rounded-2xl">
+                        <TableOfContents
+                            activeId={activeSection}
+                            onJump={handleJump}
+                        />
+                    </div>
+                </div>
+            </aside>
+              
+            {/* Main Content */}
+            <main className="flex-1 min-w-0">
 
       {/* 1. HERO */}
       <section id="hero" className="bg-secondary py-12 md:py-20 relative overflow-hidden" data-testid="hero-section">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.06),transparent_60%)]" />
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+        <div className="relative">
           <Link
             to="/courses"
             className="inline-flex items-center text-white/70 hover:text-white mb-6 transition-colors"
@@ -720,7 +706,7 @@ const CourseDetailPage = () => {
 
       {/* 2. TRUST BAR */}
       <section className="bg-background border-y border-border" data-testid="trust-bar">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {TRUST_BAR.map((item, i) => {
               const Icon = item.icon;
@@ -748,7 +734,7 @@ const CourseDetailPage = () => {
 
       {/* 3. PROBLEM/AGITATE */}
       <section id="problems" className="py-16 md:py-20 bg-muted/30">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div>
           <SectionHeading
             eyebrow="Common Challenges"
             title="Are you facing any of these problems?"
@@ -773,7 +759,7 @@ const CourseDetailPage = () => {
       {/* 4. WHAT YOU'LL LEARN */}
       {course.learning_outcomes?.length > 0 && (
         <section id="outcomes" className="py-16 md:py-20 bg-background" data-testid="learning-outcomes-section">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div>
             <SectionHeading
               eyebrow="What you'll learn"
               title="Skills you'll walk away with"
@@ -805,7 +791,7 @@ const CourseDetailPage = () => {
 
       {/* 5. CURRICULUM */}
       <section id="curriculum" className="py-16 md:py-20 bg-muted/30" data-testid="curriculum-section">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div>
           <SectionHeading
             eyebrow="Curriculum"
             title="What's inside the course"
@@ -856,7 +842,7 @@ const CourseDetailPage = () => {
 
       {/* 6. PROJECTS YOU'LL BUILD */}
       <section id="projects" className="py-16 md:py-20 bg-background">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div>
           <SectionHeading
             eyebrow="Portfolio Projects"
             title="Projects you'll build"
@@ -890,7 +876,7 @@ const CourseDetailPage = () => {
 
       {/* 7. CAREER OPPORTUNITIES */}
       <section id="careers" className="py-16 md:py-20 bg-muted/30">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div>
           <SectionHeading
             eyebrow="Career Opportunities"
             title="Where this course can take you"
@@ -923,7 +909,7 @@ const CourseDetailPage = () => {
 
       {/* 8. MEET YOUR INSTRUCTOR */}
       <section id="instructor" className="py-16 md:py-20 bg-background" data-testid="instructor-section">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div>
           <SectionHeading
             eyebrow="Meet your instructor"
             title="Learn from someone who's done the work"
@@ -960,7 +946,7 @@ const CourseDetailPage = () => {
 
       {/* 9. TESTIMONIALS */}
       <section id="testimonials" className="py-16 md:py-20 bg-muted/30" data-testid="testimonials-section">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div>
           <SectionHeading
             eyebrow="Student stories"
             title="What our students say"
@@ -1014,7 +1000,7 @@ const CourseDetailPage = () => {
 
       {/* 10. WHO THIS COURSE IS FOR */}
       <section className="py-16 md:py-20 bg-background" data-testid="who-for-section">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div>
           <div className="grid md:grid-cols-2 gap-10 items-start max-w-5xl mx-auto">
             <div>
               <SectionHeading
@@ -1040,7 +1026,7 @@ const CourseDetailPage = () => {
 
       {/* 11. REQUIREMENTS */}
       <section className="py-16 md:py-20 bg-muted/30" data-testid="requirements-section">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div>
           <SectionHeading
             eyebrow="Requirements"
             title="What you need to get started"
@@ -1062,7 +1048,7 @@ const CourseDetailPage = () => {
 
       {/* 12. WHY CHOOSE ORBAL ACADEMY */}
       <section className="py-16 md:py-20 bg-secondary" data-testid="why-choose-section">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div>
           <SectionHeading
             eyebrow="Why choose us"
             title="Why choose Orbal Academy?"
@@ -1099,7 +1085,7 @@ const CourseDetailPage = () => {
 
       {/* 13. COMPARISON TABLE */}
       <section id="compare" className="py-16 md:py-20 bg-background">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div>
           <SectionHeading
             eyebrow="The Smart Choice"
             title="Orbal Academy vs. The Alternatives"
@@ -1231,7 +1217,7 @@ const CourseDetailPage = () => {
 
       {/* 14. OFFER STACK / INVESTMENT */}
       <section id="offer" className="py-16 md:py-24 bg-primary/5">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div>
           <SectionHeading
             eyebrow="Investment"
             title="Everything you need to succeed"
@@ -1276,9 +1262,9 @@ const CourseDetailPage = () => {
         </div>
       </section>
 
-      {/* 14. MONEY-BACK GUARANTEE */}
+      {/* 15. MONEY-BACK GUARANTEE */}
       <section id="guarantee" className="py-16 bg-background">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div>
           <Card className="border-primary/30 bg-primary/5">
             <CardContent className="p-8 md:p-10 text-center">
               <div className="w-20 h-20 rounded-full bg-primary/15 flex items-center justify-center mx-auto mb-5">
@@ -1296,9 +1282,9 @@ const CourseDetailPage = () => {
         </div>
       </section>
 
-      {/* 15. FAQ */}
+      {/* 16. FAQ */}
       <section id="faq" className="py-16 md:py-20 bg-muted/30" data-testid="faq-section">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div>
           <SectionHeading
             eyebrow="FAQ"
             title="Frequently asked questions"
@@ -1327,6 +1313,11 @@ const CourseDetailPage = () => {
           </div>
         </div>
       </section>
+          </main>
+
+        </div>
+      </div>
+    </div>
 
       <Footer />
 
