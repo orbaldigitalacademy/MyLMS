@@ -589,8 +589,8 @@ const CourseDetailPage = () => {
           <div className="xl:flex gap-10">
     
             {/* Sidebar */}
-            <aside className="hidden xl:block w-50 shrink-0">
-                <div className="fixed top-24 w-50">
+            <aside className="hidden xl:block w-40 shrink-0">
+                <div className="fixed top-24 w-40">
                     <div className="rounded-xl border border-border/50 bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60 p-2">
                         <TableOfContents
                             activeId={activeSection}
@@ -606,31 +606,29 @@ const CourseDetailPage = () => {
       {/* 1. HERO */}
       <section
         id="hero"
-        className="relative overflow-hidden bg-secondary py-16 md:py-24 lg:py-28"
+        className="relative isolate overflow-hidden rounded-3xl bg-secondary py-16 md:py-24 lg:py-28 min-h-[600px]"
         data-testid="hero-section"
       >
         {/* Background image */}
-        <div className="absolute inset-0">
-          <img
-            src={
-              course.image_url ||
-              "https://images.unsplash.com/photo-1665586510291-ae722d1d1f00?crop=entropy&cs=srgb&fm=jpg&q=85"
-            }
-            alt=""
-            aria-hidden="true"
-            className="h-full w-full object-cover"
-            data-testid="hero-course-image"
-          />
-          {/* Dark overlays for text legibility */}
-          <div className="absolute inset-0 bg-secondary/85" />
-          <div className="absolute inset-0 bg-gradient-to-r from-secondary via-secondary/85 to-secondary/60" />
-          {/* Ambient accents */}
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.08),transparent_45%)]" />
-          <div className="absolute -left-20 bottom-0 h-72 w-72 rounded-full bg-primary/15 blur-[120px]" />
-          <div className="absolute -right-24 top-0 h-96 w-96 rounded-full bg-primary/10 blur-[160px]" />
-        </div>
-      
-        <div className="container relative">
+        <img
+          src={
+            course.image_url ||
+            "https://images.unsplash.com/photo-1665586510291-ae722d1d1f00?crop=entropy&cs=srgb&fm=jpg&q=85"
+          }
+          alt=""
+          aria-hidden="true"
+          className="absolute inset-0 -z-10 h-full w-full object-cover"
+          data-testid="hero-course-image"
+        />
+
+        {/* Overlay for text legibility — lighter so the image shows through */}
+        <div className="absolute inset-0 -z-10 bg-gradient-to-r from-secondary via-secondary/80 to-secondary/30" />
+        <div className="absolute inset-0 -z-10 bg-secondary/40" />
+        <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.08),transparent_45%)]" />
+        <div className="absolute -left-20 bottom-0 -z-10 h-72 w-72 rounded-full bg-primary/15 blur-[120px]" />
+        <div className="absolute -right-24 top-0 -z-10 h-96 w-96 rounded-full bg-primary/10 blur-[160px]" />
+
+        <div className="relative px-6 md:px-10">
           {/* Back Button */}
           <Link
             to="/courses"
