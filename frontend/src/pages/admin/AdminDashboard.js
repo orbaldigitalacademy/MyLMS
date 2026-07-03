@@ -66,7 +66,7 @@ const AdminDashboard = () => {
         adminAPI.getStats(),
         paymentsAPI.getAll(),
         adminAPI.getTestimonials(),
-        coursesAPI.getAll(false),
+        coursesAPI.getAll(),
         liveClassAPI.getAll(),
       ]);
 
