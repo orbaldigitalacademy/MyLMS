@@ -105,7 +105,7 @@ export const authAPI = {
 // ==========================
 export const coursesAPI = {
   getAll: (publishedOnly = null) =>{
-    if (puplishedOnly === null) {
+    if (publishedOnly === null) {
       return api.get("/courses");
     }
     return api.get(`/courses?is_published=${publishedOnly}`);
