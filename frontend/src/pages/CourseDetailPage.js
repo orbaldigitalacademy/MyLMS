@@ -589,8 +589,8 @@ const CourseDetailPage = () => {
           <div className="xl:flex gap-10">
     
             {/* Sidebar */}
-            <aside className="hidden xl:block w-32 shrink-0">
-                <div className="fixed top-24 w-32">
+            <aside className="hidden xl:block w-40 shrink-0">
+                <div className="fixed top-24 w-40">
                     <div className="rounded-xl border border-border/50 bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60 p-2">
                         <TableOfContents
                             activeId={activeSection}
