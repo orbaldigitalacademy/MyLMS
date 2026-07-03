@@ -609,8 +609,22 @@ const CourseDetailPage = () => {
         className="relative overflow-hidden bg-secondary py-16 md:py-24 lg:py-28"
         data-testid="hero-section"
       >
-        {/* Background */}
+        {/* Background image */}
         <div className="absolute inset-0">
+          <img
+            src={
+              course.image_url ||
+              "https://images.unsplash.com/photo-1665586510291-ae722d1d1f00?crop=entropy&cs=srgb&fm=jpg&q=85"
+            }
+            alt=""
+            aria-hidden="true"
+            className="h-full w-full object-cover"
+            data-testid="hero-course-image"
+          />
+          {/* Dark overlays for text legibility */}
+          <div className="absolute inset-0 bg-secondary/85" />
+          <div className="absolute inset-0 bg-gradient-to-r from-secondary via-secondary/85 to-secondary/60" />
+          {/* Ambient accents */}
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.08),transparent_45%)]" />
           <div className="absolute -left-20 bottom-0 h-72 w-72 rounded-full bg-primary/15 blur-[120px]" />
           <div className="absolute -right-24 top-0 h-96 w-96 rounded-full bg-primary/10 blur-[160px]" />
@@ -626,125 +640,89 @@ const CourseDetailPage = () => {
             Back to Courses
           </Link>
       
-          <div className="grid items-center gap-16 lg:grid-cols-[1.15fr_0.85fr] xl:gap-24">
-            {/* LEFT */}
-            <div>
-              <p className="mb-4 text-sm font-semibold uppercase tracking-[0.25em] text-primary">
-                Professional Training Program
-              </p>
+          <div className="max-w-3xl">
+            <p className="mb-4 text-sm font-semibold uppercase tracking-[0.25em] text-primary">
+              Professional Training Program
+            </p>
       
-              <div className="mb-6 flex flex-wrap gap-3">
-                <Badge className="border border-primary/30 bg-primary/15 text-primary backdrop-blur-sm">
-                  Practical-Oriented
-                </Badge>
+            <div className="mb-6 flex flex-wrap gap-3">
+              <Badge className="border border-primary/30 bg-primary/15 text-primary backdrop-blur-sm">
+                Practical-Oriented
+              </Badge>
       
-                <Badge className="border border-white/10 bg-white/10 text-white">
-                  Career-Focused
-                </Badge>
+              <Badge className="border border-white/10 bg-white/10 text-white">
+                Career-Focused
+              </Badge>
       
-                <Badge className="border border-white/10 bg-white/10 text-white">
-                  Professional Certificate
-                </Badge>
+              <Badge className="border border-white/10 bg-white/10 text-white">
+                Professional Certificate
+              </Badge>
+            </div>
+      
+            <h1 className="font-serif text-5xl font-bold leading-[1.05] tracking-tight text-white md:text-6xl xl:text-7xl">
+              {course.title}
+            </h1>
+      
+            <p className="mt-6 max-w-2xl text-lg leading-8 text-white/75">
+              {course.short_description}
+            </p>
+      
+            {/* Course Stats */}
+            <div className="mt-10 flex flex-wrap gap-4">
+              <div className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 backdrop-blur">
+                <Clock className="h-4 w-4 text-primary" />
+                <span className="text-sm text-white/80">{course.duration}</span>
               </div>
       
-              <h1 className="font-serif text-5xl font-bold leading-[1.05] tracking-tight text-white md:text-6xl xl:text-7xl">
-                {course.title}
-              </h1>
-      
-              <p className="mt-6 max-w-2xl text-lg leading-8 text-white/75">
-                {course.short_description}
-              </p>
-      
-              {/* Course Stats */}
-              <div className="mt-10 flex flex-wrap gap-4">
-                <div className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 backdrop-blur">
-                  <Clock className="h-4 w-4 text-primary" />
-                  <span className="text-sm text-white/80">{course.duration}</span>
-                </div>
-      
-                <div className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 backdrop-blur">
-                  <BookOpen className="h-4 w-4 text-primary" />
-                  <span className="text-sm text-white/80">
-                    {lessons.length} Lessons
-                  </span>
-                </div>
-      
-                <div className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 backdrop-blur">
-                  <Star className="h-4 w-4 fill-primary text-primary" />
-                  <span className="text-sm text-white/80">
-                    4.9 (5,200+ Students)
-                  </span>
-                </div>
+              <div className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 backdrop-blur">
+                <BookOpen className="h-4 w-4 text-primary" />
+                <span className="text-sm text-white/80">
+                  {lessons.length} Lessons
+                </span>
               </div>
       
-              {/* Pricing Card */}
-              <div className="mt-12 rounded-3xl border border-white/10 bg-white/5 p-8 shadow-2xl backdrop-blur-xl transition-all hover:border-primary/30">
-                <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
-                  <div>
-                    <p className="text-xs font-medium uppercase tracking-[0.2em] text-white/50">
-                      Course Price
-                    </p>
-      
-                    <p className="mt-2 text-4xl font-bold leading-none text-primary md:text-5xl">
-                      {formatPrice(course.price)}
-                    </p>
-                  </div>
-      
-                  <EnrollCTA
-                    hasAccess={hasAccess}
-                    enrollment={enrollment}
-                    course={course}
-                    onEnroll={handleEnrollClick}
-                    variant="hero"
-                  />
-                </div>
-      
-                <div className="mt-8 grid gap-4 border-t border-white/10 pt-6 sm:grid-cols-2">
-                  {[
-                    "Beginner friendly",
-                    "Hands-on projects",
-                    "Professional certificate",
-                    "Lifetime access",
-                  ].map((item) => (
-                    <div key={item} className="flex items-start gap-3">
-                      <CheckCircle className="mt-0.5 h-5 w-5 text-primary" />
-                      <span className="text-sm text-white/80">{item}</span>
-                    </div>
-                  ))}
-                </div>
+              <div className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 backdrop-blur">
+                <Star className="h-4 w-4 fill-primary text-primary" />
+                <span className="text-sm text-white/80">
+                  4.9 (5,200+ Students)
+                </span>
               </div>
             </div>
       
-            {/* RIGHT */}
-            <div className="relative">
-              {/* Glow */}
-              <div className="absolute -inset-8 rounded-[40px] bg-primary/20 blur-3xl" />
+            {/* Pricing Card */}
+            <div className="mt-12 rounded-3xl border border-white/10 bg-white/5 p-8 shadow-2xl backdrop-blur-xl transition-all hover:border-primary/30">
+              <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+                <div>
+                  <p className="text-xs font-medium uppercase tracking-[0.2em] text-white/50">
+                    Course Price
+                  </p>
       
-              {/* Floating Card */}
-              <div className="absolute -left-8 top-10 z-20 rounded-2xl border border-white/10 bg-background/90 p-5 shadow-xl backdrop-blur">
-                <p className="text-xs text-muted-foreground">Students</p>
-                <p className="text-2xl font-bold">5,200+</p>
-              </div>
+                  <p className="mt-2 text-4xl font-bold leading-none text-primary md:text-5xl">
+                    {formatPrice(course.price)}
+                  </p>
+                </div>
       
-              {/* Floating Card */}
-              <div className="absolute -right-6 bottom-10 z-20 rounded-2xl border border-white/10 bg-background/90 p-5 shadow-xl backdrop-blur">
-                <p className="text-xs text-muted-foreground">Completion Rate</p>
-                <p className="text-2xl font-bold">94%</p>
-              </div>
-      
-              {/* Image */}
-              <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 shadow-2xl backdrop-blur">
-                <img
-                  src={
-                    course.image_url ||
-                    "https://images.unsplash.com/photo-1665586510291-ae722d1d1f00?crop=entropy&cs=srgb&fm=jpg&q=85"
-                  }
-                  alt={course.title}
-                  className="aspect-[4/3] w-full object-cover transition-transform duration-700 hover:scale-105"
-                  data-testid="hero-course-image"
+                <EnrollCTA
+                  hasAccess={hasAccess}
+                  enrollment={enrollment}
+                  course={course}
+                  onEnroll={handleEnrollClick}
+                  variant="hero"
                 />
+              </div>
       
-                <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent" />
+              <div className="mt-8 grid gap-4 border-t border-white/10 pt-6 sm:grid-cols-2">
+                {[
+                  "Beginner friendly",
+                  "Hands-on projects",
+                  "Professional certificate",
+                  "Lifetime access",
+                ].map((item) => (
+                  <div key={item} className="flex items-start gap-3">
+                    <CheckCircle className="mt-0.5 h-5 w-5 text-primary" />
+                    <span className="text-sm text-white/80">{item}</span>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
