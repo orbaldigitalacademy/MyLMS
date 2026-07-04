@@ -44,6 +44,8 @@ import {
   Loader2,
   Image as ImageIcon,
   FileVideo,
+  FileText,
+  Download,
   X,
 } from 'lucide-react';
 
@@ -68,6 +70,10 @@ const INITIAL_FORM_STATE = {
   price: '',
   video_url: '',
   image_url: '',
+
+  // Curriculum document (PDF / Word)
+  curriculum_url: '',
+  curriculum_filename: '',
 
   // String-list sections (stored as newline-separated in the form)
   learning_outcomes: '',
@@ -103,6 +109,22 @@ const ICON_OPTIONS = [
 ];
 
 /* -------------------------------------------------------------------------- */
+/*                           Curriculum file config                           */
+/* -------------------------------------------------------------------------- */
+
+// Accepted MIME types for the curriculum document
+const CURRICULUM_ACCEPT =
+  '.pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+
+const CURRICULUM_MIME_TYPES = [
+  'application/pdf',
+  'application/msword',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+];
+
+const CURRICULUM_MAX_BYTES = 10 * 1024 * 1024; // 10 MB
+
+/* -------------------------------------------------------------------------- */
 /*                                  Helpers                                   */
 /* -------------------------------------------------------------------------- */
 
@@ -127,6 +149,18 @@ const selectToCompareValue = (sel, textValue) => {
   if (sel === 'no') return false;
   if (sel === 'partial') return 'partial';
   return textValue || '';
+};
+
+// Curriculum filename fallback (derives from URL if server didn't return one)
+const filenameFromUrl = (url) => {
+  if (!url) return '';
+  try {
+    const clean = url.split('?')[0].split('#')[0];
+    const last = clean.substring(clean.lastIndexOf('/') + 1);
+    return decodeURIComponent(last);
+  } catch {
+    return '';
+  }
 };
 
 /* -------------------------------------------------------------------------- */
@@ -204,6 +238,7 @@ const AdminCourses = () => {
   const [uploadingImage, setUploadingImage] = useState(false);
   const [uploadingVideo, setUploadingVideo] = useState(false);
   const [uploadingInstructor, setUploadingInstructor] = useState(false);
+  const [uploadingCurriculum, setUploadingCurriculum] = useState(false);
   // For per-item image uploads (projects, testimonials): keyed as "section-index"
   const [itemUploading, setItemUploading] = useState({});
 
@@ -256,6 +291,10 @@ const AdminCourses = () => {
       price: course.price?.toString() || '',
       video_url: course.video_url || '',
       image_url: course.image_url || '',
+
+      curriculum_url: course.curriculum_url || '',
+      curriculum_filename:
+        course.curriculum_filename || filenameFromUrl(course.curriculum_url),
 
       learning_outcomes: arrToLines(course.learning_outcomes),
       problems: arrToLines(course.problems),
@@ -332,6 +371,24 @@ const AdminCourses = () => {
     return true;
   };
 
+  const validateCurriculum = (file) => {
+    const name = (file.name || '').toLowerCase();
+    const okType =
+      CURRICULUM_MIME_TYPES.includes(file.type) ||
+      name.endsWith('.pdf') ||
+      name.endsWith('.doc') ||
+      name.endsWith('.docx');
+    if (!okType) {
+      toast.error('Please upload a PDF or Word document (.pdf, .doc, .docx)');
+      return false;
+    }
+    if (file.size > CURRICULUM_MAX_BYTES) {
+      toast.error('Curriculum file must be less than 10MB');
+      return false;
+    }
+    return true;
+  };
+
   /* --------------------------------- Uploads ------------------------------ */
 
   const handleImageUpload = async (e) => {
@@ -382,6 +439,41 @@ const AdminCourses = () => {
     }
   };
 
+  const handleCurriculumUpload = async (e) => {
+    const file = e.target.files?.[0];
+    // Reset the input so re-selecting the same file still triggers change
+    e.target.value = '';
+    if (!file || !validateCurriculum(file)) return;
+
+    setUploadingCurriculum(true);
+    try {
+      const response = await uploadAPI.document(file);
+      setFormData((prev) => ({
+        ...prev,
+        curriculum_url: response.data.url,
+        curriculum_filename:
+          response.data.filename || file.name || filenameFromUrl(response.data.url),
+      }));
+      toast.success('Curriculum uploaded successfully');
+    } catch (error) {
+      console.error('Curriculum upload failed:', error);
+      toast.error(
+        error?.response?.data?.detail || 'Failed to upload curriculum'
+      );
+    } finally {
+      setUploadingCurriculum(false);
+    }
+  };
+
+  const handleRemoveCurriculum = () => {
+    setFormData((prev) => ({
+      ...prev,
+      curriculum_url: '',
+      curriculum_filename: '',
+    }));
+    toast.success('Curriculum removed');
+  };
+
   const handleItemImageUpload = async (section, index, field, file) => {
     if (!file || !validateImage(file)) return;
     const key = `${section}-${index}`;
@@ -420,6 +512,10 @@ const AdminCourses = () => {
       price: Number(formData.price),
       video_url: formData.video_url || null,
       image_url: formData.image_url || null,
+
+      // Curriculum document
+      curriculum_url: formData.curriculum_url || null,
+      curriculum_filename: formData.curriculum_filename || null,
 
       // String lists
       learning_outcomes: linesToArr(formData.learning_outcomes),
@@ -684,6 +780,99 @@ const AdminCourses = () => {
 
                   {/* ============================ LEARNING ============================ */}
                   <TabsContent value="learning" className="space-y-6 mt-6">
+                    {/* Curriculum document upload (PDF / Word) */}
+                    <SectionCard
+                      title="Curriculum Document"
+                      description="Upload the full course curriculum as a PDF or Word document (max 10 MB). Students will be able to download this from the course detail page."
+                    >
+                      {formData.curriculum_url ? (
+                        <div
+                          className="flex items-center gap-3 p-3 border border-border rounded-lg bg-muted/30"
+                          data-testid="curriculum-file-preview"
+                        >
+                          <div className="w-10 h-10 rounded bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                            <FileText className="w-5 h-5" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p
+                              className="text-sm font-medium text-secondary truncate"
+                              data-testid="curriculum-filename"
+                            >
+                              {formData.curriculum_filename ||
+                                filenameFromUrl(formData.curriculum_url) ||
+                                'Curriculum document'}
+                            </p>
+                            <a
+                              href={formData.curriculum_url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-xs text-primary hover:underline inline-flex items-center gap-1 mt-0.5"
+                              data-testid="curriculum-download-link"
+                            >
+                              <Download className="w-3 h-3" />
+                              View / Download
+                            </a>
+                          </div>
+                          <label className="flex items-center gap-2 px-3 py-1.5 border rounded-md cursor-pointer hover:bg-muted transition-colors text-sm shrink-0">
+                            {uploadingCurriculum ? (
+                              <Loader2 className="w-4 h-4 animate-spin" />
+                            ) : (
+                              <FileText className="w-4 h-4" />
+                            )}
+                            {uploadingCurriculum ? 'Uploading...' : 'Replace'}
+                            <input
+                              type="file"
+                              accept={CURRICULUM_ACCEPT}
+                              className="hidden"
+                              onChange={handleCurriculumUpload}
+                              disabled={uploadingCurriculum}
+                              data-testid="curriculum-replace-input"
+                            />
+                          </label>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            onClick={handleRemoveCurriculum}
+                            aria-label="Remove curriculum"
+                            className="text-destructive hover:text-destructive shrink-0"
+                            data-testid="curriculum-remove-btn"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      ) : (
+                        <label
+                          className="flex items-center gap-3 px-4 py-6 border border-dashed border-border rounded-lg cursor-pointer hover:bg-muted/40 transition-colors"
+                          data-testid="curriculum-upload-dropzone"
+                        >
+                          {uploadingCurriculum ? (
+                            <Loader2 className="w-5 h-5 animate-spin text-primary" />
+                          ) : (
+                            <FileText className="w-5 h-5 text-primary" />
+                          )}
+                          <div className="flex-1">
+                            <p className="text-sm font-medium text-secondary">
+                              {uploadingCurriculum
+                                ? 'Uploading curriculum...'
+                                : 'Click to upload curriculum'}
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              PDF, DOC or DOCX · up to 10 MB
+                            </p>
+                          </div>
+                          <input
+                            type="file"
+                            accept={CURRICULUM_ACCEPT}
+                            className="hidden"
+                            onChange={handleCurriculumUpload}
+                            disabled={uploadingCurriculum}
+                            data-testid="curriculum-upload-input"
+                          />
+                        </label>
+                      )}
+                    </SectionCard>
+
                     <SectionCard
                       title="Problems (Agitate section)"
                       description="One problem per line — shown in the 'Are you facing any of these problems?' section."
@@ -737,9 +926,9 @@ const AdminCourses = () => {
                     </SectionCard>
 
                     <div className="text-sm text-muted-foreground bg-muted/40 rounded-lg p-4 border border-border">
-                      <strong>Curriculum:</strong> Lessons are managed on the
-                      dedicated lessons page for each course (click the video
-                      icon in the courses list).
+                      <strong>Lessons:</strong> Individual video lessons are
+                      managed on the dedicated lessons page for each course
+                      (click the video icon in the courses list).
                     </div>
                   </TabsContent>
 
@@ -1402,6 +1591,16 @@ const AdminCourses = () => {
                         >
                           {course.is_published ? 'Published' : 'Draft'}
                         </Badge>
+                        {course.curriculum_url && (
+                          <Badge
+                            variant="outline"
+                            className="gap-1"
+                            data-testid="course-has-curriculum-badge"
+                          >
+                            <FileText className="w-3 h-3" />
+                            Curriculum
+                          </Badge>
+                        )}
                       </div>
                       <p className="text-sm text-muted-foreground truncate">
                         {course.short_description}
