@@ -895,7 +895,7 @@ const AdminCourses = () => {
                             onChange={(e) =>
                               setInstructorField('name', e.target.value)
                             }
-                            placeholder="Dr. Adaeze Okafor"
+                            placeholder="Mr. Moses Kor"
                           />
                         </div>
                         <div className="space-y-2">
@@ -908,7 +908,7 @@ const AdminCourses = () => {
                                 e.target.value
                               )
                             }
-                            placeholder="PhD in Computer Science…"
+                            placeholder="PhD in Statistics…"
                           />
                         </div>
                       </div>
