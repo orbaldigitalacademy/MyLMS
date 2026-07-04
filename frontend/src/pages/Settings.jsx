@@ -130,8 +130,8 @@ export default function SettingsPage() {
     setBankSaving(true);
     try {
       const res = bankEditing
-        ? await api.put(`/settings/banks/${bankEditing.id}`, form)
-        : await api.post("/settings/banks", form);
+        ? await api.put(`/settings/bank/${bankEditing.id}`, form)
+        : await api.post("/settings/bank", form);
       setData(res.data);
       setBankOpen(false);
       toast.success(bankEditing ? "Bank updated" : "Bank added");
@@ -176,23 +176,23 @@ export default function SettingsPage() {
     setDraggingId(null);
     if (!srcId || !overId || srcId === overId) return;
 
-    const banks = [...data.banks];
-    const from = banks.findIndex((b) => b.id === srcId);
-    const to = banks.findIndex((b) => b.id === overId);
+    const bank = [...data.bank];
+    const from = bank.findIndex((b) => b.id === srcId);
+    const to = bank.findIndex((b) => b.id === overId);
     if (from < 0 || to < 0) return;
-    const [moved] = banks.splice(from, 1);
+    const [moved] = bank.splice(from, 1);
     banks.splice(to, 0, moved);
 
-    const prev = data.banks;
-    setData({ ...data, banks }); // optimistic
+    const prev = data.bank;
+    setData({ ...data, bank }); // optimistic
 
     try {
       const res = await api.put("/settings/banks/reorder", {
-        ordered_ids: banks.map((b) => b.id),
+        ordered_ids: bank.map((b) => b.id),
       });
       setData(res.data);
     } catch {
-      setData({ ...data, banks: prev });
+      setData({ ...data, bank: prev });
       toast.error("Could not reorder banks");
     }
   };
@@ -240,7 +240,7 @@ export default function SettingsPage() {
   const signOut = () => {
     clearAdminToken();
     setAuthState("locked");
-    setData({ banks: [], payment_links: [], admin_email: "" });
+    setData({ bank: [], payment_links: [], admin_email: "" });
   };
 
   if (authState === "checking") {
@@ -254,7 +254,7 @@ export default function SettingsPage() {
     return <AdminGate onAuthenticated={() => setAuthState("unlocked")} />;
   }
 
-  const banks = data.banks || [];
+  const bank = data.bank || [];
   const links = data.payment_links || [];
 
   return (
