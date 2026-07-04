@@ -9,10 +9,8 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger,} from '..
 import { coursesAPI, lessonsAPI, enrollmentsAPI, settingsAPI, } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { toast } from 'sonner';
-import {Clock, BookOpen, CheckCircle, Play, ArrowLeft, Lock, CreditCard, Users, Star, Award, GraduationCap, Briefcase, Quote, Sparkles,Target,ShieldCheck,Rocket,HeartHandshake,Lightbulb,MessageCircle,X,TrendingUp,Gift,ListChecks,Minus,} from 'lucide-react';
-
+import {Clock, BookOpen, CheckCircle, Play, ArrowLeft, Lock, CreditCard, Users, Star, Award, GraduationCap, Briefcase, Quote, Sparkles,Target,ShieldCheck,Rocket,HeartHandshake,Lightbulb,MessageCircle,X,TrendingUp,Gift,ListChecks,Minus,FileText,Download,} from 'lucide-react';
 /* ----------------------------- Static fallbacks ---------------------------- */
-
 const STATIC_INSTRUCTOR = {
   name: 'Dr. Adaeze Okafor',
   photo:
@@ -21,7 +19,6 @@ const STATIC_INSTRUCTOR = {
   experience: '12+ years of industry & teaching experience',
   bio: 'Adaeze has led engineering teams at multinational tech firms and trained over 5,000 students across Africa. She combines real-world product experience with a passion for mentorship to help learners ship work that gets them hired.',
 };
-
 // Map allowed string icon names (from settings) to lucide-react components.
 const ICON_MAP = {
   Rocket,
@@ -38,7 +35,6 @@ const resolveIcon = (icon, fallback) => {
   if (typeof icon === 'string') return ICON_MAP[icon] || fallback;
   return icon;
 };
-
 const STATIC_WHY_CHOOSE = [
   {
     icon: Rocket,
@@ -61,28 +57,24 @@ const STATIC_WHY_CHOOSE = [
     description: 'Curriculum stays current — you get every future update at no extra cost.',
   },
 ];
-
 const TRUST_BAR = [
   { icon: Users, value: '5,200+', label: 'Students enrolled' },
   { icon: Star, value: '4.9 / 5', label: 'Average rating' },
   { icon: CheckCircle, value: '94%', label: 'Completion rate' },
   { icon: Award, value: 'Verified', label: 'Certificate of completion' },
 ];
-
 const CAREERS = [
   { role: 'Data Analyst', salary: '₦300,000 – ₦1.2M/month' },
   { role: 'Business Analyst', salary: '₦400,000 – ₦1.5M/month' },
   { role: 'Power BI Developer', salary: '₦500,000 – ₦2M/month' },
   { role: 'Data Scientist', salary: '₦700,000 – ₦3M/month' },
 ];
-
 const PROBLEMS = [
   'Struggling to get a tech job despite applying everywhere',
   'Watching endless tutorials without any practical results',
   'Learning randomly without a clear, structured roadmap',
   'Unsure which skills employers actually want to see',
 ];
-
 const OFFER_INCLUDES = [
   'Full lifetime course access',
   'Verifiable certificate of completion',
@@ -92,7 +84,6 @@ const OFFER_INCLUDES = [
   'Private student community access',
   'Bonus resources & cheatsheets',
 ];
-
 /* ToC sections — id must match the <section id="..."> attribute below */
 const SECTIONS = [
   { id: 'hero', label: 'Overview' },
@@ -108,14 +99,12 @@ const SECTIONS = [
   { id: 'guarantee', label: 'Guarantee' },
   { id: 'faq', label: 'FAQ' },
 ];
-
 /* Comparison table — Orbal Academy vs. Self-Taught vs. Traditional Bootcamp */
 const COMPARE_COLUMNS = [
   { key: 'orbal', label: 'Orbal Academy', highlight: true },
   { key: 'self', label: 'Self-Taught' },
   { key: 'bootcamp', label: 'Traditional Bootcamp' },
 ];
-
 const COMPARE_ROWS = [
   {
     feature: 'Structured, job-focused roadmap',
@@ -173,6 +162,22 @@ const COMPARE_ROWS = [
   },
 ];
 
+/* ----------------------- Curriculum download helpers ---------------------- */
+const filenameFromUrl = (url) => {
+  if (!url) return '';
+  try {
+    const clean = url.split('?')[0].split('#')[0];
+    return decodeURIComponent(clean.substring(clean.lastIndexOf('/') + 1));
+  } catch {
+    return '';
+  }
+};
+const extFromName = (name) => {
+  if (!name) return '';
+  const dot = name.lastIndexOf('.');
+  return dot === -1 ? '' : name.slice(dot + 1).toUpperCase();
+};
+
 /* ----------------------------- Table of Contents --------------------------- */
 const TableOfContents = ({ activeId, onJump }) => (
   <nav
@@ -219,9 +224,7 @@ const TableOfContents = ({ activeId, onJump }) => (
     </div>
   </nav>
 );
-
 /* ----------------------------- Compare Cell -------------------------------- */
-
 const CompareCell = ({ value, highlight }) => {
   if (value === true) {
     return (
@@ -265,9 +268,7 @@ const CompareCell = ({ value, highlight }) => {
     </span>
   );
 };
-
 /* ----------------------------- Section heading ----------------------------- */
-
 const SectionHeading = ({ eyebrow, title, subtitle, align = 'left', light = false }) => (
   <div className={`mb-10 ${align === 'center' ? 'text-center max-w-2xl mx-auto' : ''}`}>
     {eyebrow && (
@@ -293,9 +294,7 @@ const SectionHeading = ({ eyebrow, title, subtitle, align = 'left', light = fals
     )}
   </div>
 );
-
 /* ----------------------------- Reusable CTA -------------------------------- */
-
 const EnrollCTA = ({ hasAccess, enrollment, course, onEnroll, variant = 'inline' }) => {
   if (hasAccess) {
     return (
@@ -338,9 +337,7 @@ const EnrollCTA = ({ hasAccess, enrollment, course, onEnroll, variant = 'inline'
     </Button>
   );
 };
-
 /* ============================== Main Component ============================ */
-
 const CourseDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -353,7 +350,6 @@ const CourseDetailPage = () => {
   const [whyChoose, setWhyChoose] = useState(null);
   const [showStickyBar, setShowStickyBar] = useState(false);
   const [activeSection, setActiveSection] = useState('hero');
-
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -363,7 +359,6 @@ const CourseDetailPage = () => {
         ]);
         setCourse(courseRes.data);
         setLessons(lessonsRes.data);
-
         if (settingsAPI?.get) {
           try {
             const settingsRes = await settingsAPI.get();
@@ -374,12 +369,10 @@ const CourseDetailPage = () => {
             // silently fall back
           }
         }
-
         if (isAuthenticated) {
           try {
             const accessRes = await enrollmentsAPI.checkAccess(id);
             setHasAccess(accessRes.data.has_access);
-
             const enrollmentsRes = await enrollmentsAPI.getMy();
             const myEnrollment = enrollmentsRes.data.find((e) => e.course_id === id);
             setEnrollment(myEnrollment);
@@ -397,14 +390,12 @@ const CourseDetailPage = () => {
     };
     fetchData();
   }, [id, isAuthenticated, navigate]);
-
   // Show sticky CTA bar after user scrolls past the hero
   useEffect(() => {
     const onScroll = () => setShowStickyBar(window.scrollY > 600);
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
-
   // Scroll-spy: track which section is currently in view
   useEffect(() => {
     if (loading) return;
@@ -428,21 +419,18 @@ const CourseDetailPage = () => {
     });
     return () => observer.disconnect();
   }, [loading]);
-
   const handleJump = (id) => {
     const el = document.getElementById(id);
     if (el) {
       el.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   };
-
   const formatPrice = (price) =>
     new Intl.NumberFormat('en-NG', {
       style: 'currency',
       currency: 'NGN',
       minimumFractionDigits: 0,
     }).format(price);
-
   const handleEnrollClick = () => {
     if (!isAuthenticated) {
       toast.info('Please login or register to enroll');
@@ -451,7 +439,6 @@ const CourseDetailPage = () => {
     }
     navigate(`/payment/${id}`);
   };
-
   if (loading) {
     return (
       <div className="min-h-screen flex flex-col">
@@ -463,9 +450,7 @@ const CourseDetailPage = () => {
       </div>
     );
   }
-
   if (!course) return null;
-
   /* Per-course content with safe fallbacks */
   const instructor = course.instructor || STATIC_INSTRUCTOR;
   const testimonials = course.testimonials?.length
@@ -564,7 +549,6 @@ const CourseDetailPage = () => {
         'No prior coding experience required — we start from fundamentals',
       ];
   const careers = course.careers?.length ? course.careers : CAREERS;
-
   /* NEW: per-course fallback resolution for previously-static sections.
      Priority: course.X → (settings for why_choose) → STATIC_X */
   const problems = course.problems?.length ? course.problems : PROBLEMS;
@@ -578,6 +562,13 @@ const CourseDetailPage = () => {
     (course.why_choose?.length ? course.why_choose : whyChoose) ||
     STATIC_WHY_CHOOSE;
 
+  /* Curriculum document (uploaded by admin) */
+  const curriculumUrl = course.curriculum_url || '';
+  const curriculumFilename =
+    course.curriculum_filename ||
+    filenameFromUrl(curriculumUrl) ||
+    (curriculumUrl ? 'Course Curriculum' : '');
+  const curriculumExt = extFromName(curriculumFilename) || 'PDF';
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -602,7 +593,6 @@ const CourseDetailPage = () => {
             
             {/* Main Content */}
             <main className="flex-1 min-w-0">
-
       {/* 1. HERO */}
       <section
         id="hero"
@@ -620,14 +610,12 @@ const CourseDetailPage = () => {
           className="absolute inset-0 -z-10 h-full w-full object-cover"
           data-testid="hero-course-image"
         />
-
         {/* Overlay for text legibility — lighter so the image shows through */}
         <div className="absolute inset-0 -z-10 bg-gradient-to-r from-secondary via-secondary/80 to-secondary/30" />
         <div className="absolute inset-0 -z-10 bg-secondary/40" />
         <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.08),transparent_45%)]" />
         <div className="absolute -left-20 bottom-0 -z-10 h-72 w-72 rounded-full bg-primary/15 blur-[120px]" />
         <div className="absolute -right-24 top-0 -z-10 h-96 w-96 rounded-full bg-primary/10 blur-[160px]" />
-
         <div className="relative px-6 md:px-10">
           {/* Back Button */}
           <Link
@@ -754,7 +742,6 @@ const CourseDetailPage = () => {
           </div>
         </div>
       </section>
-
       {/* 3. PROBLEM/AGITATE */}
       <section id="problems" className="py-16 md:py-20 bg-muted/30">
         <div>
@@ -778,7 +765,6 @@ const CourseDetailPage = () => {
           </div>
         </div>
       </section>
-
       {/* 4. WHAT YOU'LL LEARN */}
       {course.learning_outcomes?.length > 0 && (
         <section id="outcomes" className="py-16 md:py-20 bg-background" data-testid="learning-outcomes-section">
@@ -811,7 +797,6 @@ const CourseDetailPage = () => {
           </div>
         </section>
       )}
-
       {/* 5. CURRICULUM */}
       <section id="curriculum" className="py-16 md:py-20 bg-muted/30" data-testid="curriculum-section">
         <div>
@@ -820,6 +805,66 @@ const CourseDetailPage = () => {
             title="What's inside the course"
             subtitle={`${lessons.length} hands-on lessons designed to build skills progressively.`}
           />
+
+          {/* Downloadable curriculum document (PDF / Word) — only when uploaded */}
+          {curriculumUrl && (
+            <Card
+              className="max-w-3xl mx-auto mb-8 border-primary/30 bg-primary/5 shadow-sm"
+              data-testid="curriculum-document-card"
+            >
+              <CardContent className="p-5 md:p-6 flex flex-col md:flex-row items-start md:items-center gap-5">
+                <div className="w-14 h-14 rounded-xl bg-primary/15 text-primary flex items-center justify-center shrink-0">
+                  <FileText className="w-7 h-7" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs uppercase tracking-wider text-primary font-semibold mb-1">
+                    Full Curriculum Document
+                  </p>
+                  <p
+                    className="font-serif text-lg font-bold text-secondary truncate"
+                    data-testid="curriculum-document-name"
+                  >
+                    {curriculumFilename}
+                  </p>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    {curriculumExt} · Download the complete module breakdown to review offline.
+                  </p>
+                </div>
+                <div className="flex gap-2 shrink-0 w-full md:w-auto">
+                  <Button
+                    asChild
+                    variant="outline"
+                    className="rounded-full flex-1 md:flex-none"
+                  >
+                    <a
+                      href={curriculumUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      data-testid="curriculum-document-view"
+                    >
+                      View
+                    </a>
+                  </Button>
+                  <Button
+                    asChild
+                    className="rounded-full flex-1 md:flex-none"
+                  >
+                    <a
+                      href={curriculumUrl}
+                      download={curriculumFilename}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      data-testid="curriculum-document-download"
+                    >
+                      <Download className="w-4 h-4 mr-2" />
+                      Download
+                    </a>
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
           {lessons.length > 0 ? (
             <div className="space-y-3 mb-10 max-w-3xl mx-auto">
               {lessons.map((lesson, index) => (
@@ -847,9 +892,11 @@ const CourseDetailPage = () => {
               ))}
             </div>
           ) : (
-            <p className="text-muted-foreground text-center py-8">
-              Curriculum coming soon
-            </p>
+            !curriculumUrl && (
+              <p className="text-muted-foreground text-center py-8">
+                Curriculum coming soon
+              </p>
+            )
           )}
           <div className="flex justify-center">
             <EnrollCTA
@@ -862,7 +909,6 @@ const CourseDetailPage = () => {
           </div>
         </div>
       </section>
-
       {/* 6. PROJECTS YOU'LL BUILD */}
       <section id="projects" className="py-16 md:py-20 bg-background">
         <div>
@@ -896,7 +942,6 @@ const CourseDetailPage = () => {
           </div>
         </div>
       </section>
-
       {/* 7. CAREER OPPORTUNITIES */}
       <section id="careers" className="py-16 md:py-20 bg-muted/30">
         <div>
@@ -929,7 +974,6 @@ const CourseDetailPage = () => {
           </div>
         </div>
       </section>
-
       {/* 8. MEET YOUR INSTRUCTOR */}
       <section id="instructor" className="py-16 md:py-20 bg-background" data-testid="instructor-section">
         <div>
@@ -966,7 +1010,6 @@ const CourseDetailPage = () => {
           </Card>
         </div>
       </section>
-
       {/* 9. TESTIMONIALS */}
       <section id="testimonials" className="py-16 md:py-20 bg-muted/30" data-testid="testimonials-section">
         <div>
@@ -1020,7 +1063,6 @@ const CourseDetailPage = () => {
           </div>
         </div>
       </section>
-
       {/* 10. WHO THIS COURSE IS FOR */}
       <section className="py-16 md:py-20 bg-background" data-testid="who-for-section">
         <div>
@@ -1046,7 +1088,6 @@ const CourseDetailPage = () => {
           </div>
         </div>
       </section>
-
       {/* 11. REQUIREMENTS */}
       <section className="py-16 md:py-20 bg-muted/30" data-testid="requirements-section">
         <div>
@@ -1068,7 +1109,6 @@ const CourseDetailPage = () => {
           </ul>
         </div>
       </section>
-
       {/* 12. WHY CHOOSE ORBAL ACADEMY */}
       <section className="py-16 md:py-20 bg-secondary" data-testid="why-choose-section">
         <div>
@@ -1105,7 +1145,6 @@ const CourseDetailPage = () => {
           </div>
         </div>
       </section>
-
       {/* 13. COMPARISON TABLE */}
       <section id="compare" className="py-16 md:py-20 bg-background">
         <div>
@@ -1115,7 +1154,6 @@ const CourseDetailPage = () => {
             subtitle="See exactly how we compare to learning alone or paying for a traditional bootcamp."
             align="center"
           />
-
           {/* Desktop table */}
           <div className="hidden md:block">
             <div className="overflow-hidden rounded-2xl border border-border shadow-sm">
@@ -1177,7 +1215,6 @@ const CourseDetailPage = () => {
               </table>
             </div>
           </div>
-
           {/* Mobile card-stack view */}
           <div className="md:hidden space-y-6">
             {COMPARE_COLUMNS.map((col) => (
@@ -1225,7 +1262,6 @@ const CourseDetailPage = () => {
               </Card>
             ))}
           </div>
-
           <div className="flex justify-center mt-10">
             <EnrollCTA
               hasAccess={hasAccess}
@@ -1237,7 +1273,6 @@ const CourseDetailPage = () => {
           </div>
         </div>
       </section>
-
       {/* 14. OFFER STACK / INVESTMENT */}
       <section id="offer" className="py-16 md:py-24 bg-primary/5">
         <div>
@@ -1261,7 +1296,6 @@ const CourseDetailPage = () => {
                   </li>
                 ))}
               </ul>
-
               <div className="border-t border-border pt-6 text-center">
                 <p className="text-muted-foreground line-through text-sm mb-1">
                   Total value: ₦450,000
@@ -1284,7 +1318,6 @@ const CourseDetailPage = () => {
           </Card>
         </div>
       </section>
-
       {/* 15. MONEY-BACK GUARANTEE */}
       <section id="guarantee" className="py-16 bg-background">
         <div>
@@ -1304,7 +1337,6 @@ const CourseDetailPage = () => {
           </Card>
         </div>
       </section>
-
       {/* 16. FAQ */}
       <section id="faq" className="py-16 md:py-20 bg-muted/30" data-testid="faq-section">
         <div>
@@ -1337,13 +1369,10 @@ const CourseDetailPage = () => {
         </div>
       </section>
           </main>
-
         </div>
       </div>
     </div>
-
       <Footer />
-
       {/* MOBILE STICKY CTA BAR */}
       {!hasAccess && !enrollment && showStickyBar && (
         <div className="fixed bottom-0 left-0 right-0 z-40 bg-background border-t border-border md:hidden shadow-[0_-4px_20px_rgba(0,0,0,0.08)]">
@@ -1367,7 +1396,6 @@ const CourseDetailPage = () => {
           </div>
         </div>
       )}
-
       {/* WHATSAPP FLOATING BUTTON */}
       <a
         href="https://wa.me/2348127319882"
@@ -1382,5 +1410,4 @@ const CourseDetailPage = () => {
     </div>
   );
 };
-
 export default CourseDetailPage;
