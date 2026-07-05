@@ -198,10 +198,16 @@ export const contactAPI = {
 // ==========================
 export const settingsAPI = {
   getBankDetails: () =>
-    api.get("/settings/bank"),
+    api.get("/settings"),
 
-  updateBankDetails: (data) =>
-  api.put("/settings/bank", data),
+  addBank: (data) =>
+    api.post("/settings/banks", data),
+
+  updateBank: (bankId, data) =>
+    api.put(`/settings/banks/${bankId}`, data),
+
+  deleteBank: (bankId) =>
+    api.delete(`/settings/banks/${bankId}`),
 };
 
 // ==========================
