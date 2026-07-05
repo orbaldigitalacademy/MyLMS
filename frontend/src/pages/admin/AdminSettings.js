@@ -9,10 +9,10 @@ import {
   LogOut,
 } from "lucide-react";
 
-import { Button } from "../components/ui/button";
-import { Input } from "../components/ui/input";
-import { Label } from "../components/ui/label";
-import { Separator } from "../components/ui/separator";
+import { Button } from "../../components/ui/button";
+import { Input } from "../../components/ui/input";
+import { Label } from "../../components/ui/label";
+import { Separator } from "../../components/ui/separator";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -22,14 +22,14 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "../components/ui/alert-dialog";
+} from "../../components/ui/alert-dialog";
 
 import { api, getAdminToken, verifyAdminToken, clearAdminToken } from "../lib/api";
-import { AdminGate } from "../components/settings/AdminGate";
-import { BankCard } from "../components/settings/BankCard";
-import { BankDialog } from "../components/settings/BankDialog";
-import { LinkCard } from "../components/settings/LinkCard";
-import { LinkDialog } from "../components/settings/LinkDialog";
+import { AdminGate } from "../../components/settings/AdminGate";
+import { BankCard } from "../../components/settings/BankCard";
+import { BankDialog } from "../../components/settings/BankDialog";
+import { LinkCard } from "../../components/settings/LinkCard";
+import { LinkDialog } from "../../components/settings/LinkDialog";
 
 export default function SettingsPage() {
   const [authState, setAuthState] = useState("checking"); // checking | locked | unlocked
