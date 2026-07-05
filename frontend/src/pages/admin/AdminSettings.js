@@ -24,7 +24,6 @@ import {
   AlertDialogTitle,
 } from "../components/ui/alert-dialog";
 
-import { SETTINGS } from "../constants/testIds";
 import { api, getAdminToken, verifyAdminToken, clearAdminToken } from "../lib/api";
 import { AdminGate } from "../components/settings/AdminGate";
 import { BankCard } from "../components/settings/BankCard";
