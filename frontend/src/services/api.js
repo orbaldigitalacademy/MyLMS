@@ -33,23 +33,26 @@ api.interceptors.request.use(
 // ==========================
 // RESPONSE INTERCEPTOR
 // ==========================
-api.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    if (!error.response) {
-      console.error("Network error or server unavailable");
+api.interceptors.request.use(
+  (config) => {
+    config.headers = config.headers || {};
+
+    const token = localStorage.getItem("token");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
     }
 
-    if (
-      error.response?.status === 401 &&
-      window.location.pathname !== "/login"
-    ) {
-      localStorage.removeItem("token");
-      window.location.href = "/login";
+    // Only attach admin token to admin endpoints
+    if (config.url?.startsWith("/admin")) {
+      const adminToken = localStorage.getItem("admin_token");
+      if (adminToken) {
+        config.headers["X-Admin-Token"] = adminToken;
+      }
     }
 
-    return Promise.reject(error);
-  }
+    return config;
+  },
+  (error) => Promise.reject(error)
 );
 
 // ==========================
