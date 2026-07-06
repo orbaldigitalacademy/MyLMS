@@ -320,7 +320,7 @@ const PaymentPage = () => {
                   </Button>
 
                   <p className="text-xs text-muted-foreground text-center">
-                    Your payment will be verified within 24-48 hours. You'll receive an email once approved.
+                    Your payment will be verified within one hour. You'll receive an email once approved.
                   </p>
                 </CardContent>
               </Card>
