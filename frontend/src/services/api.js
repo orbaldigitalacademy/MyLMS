@@ -31,23 +31,22 @@ api.interceptors.request.use(
 );
 
 // ==========================
-// RESPONSE INTERCEPTOR
+// REQUEST INTERCEPTOR
 // ==========================
 api.interceptors.request.use(
   (config) => {
     config.headers = config.headers || {};
 
+    // User JWT
     const token = localStorage.getItem("token");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
 
-    // Only attach admin token to admin endpoints
-    if (config.url?.startsWith("/admin")) {
-      const adminToken = localStorage.getItem("admin_token");
-      if (adminToken) {
-        config.headers["X-Admin-Token"] = adminToken;
-      }
+    // Admin token
+    const adminToken = localStorage.getItem("admin_token");
+    if (adminToken) {
+      config.headers["X-Admin-Token"] = adminToken;
     }
 
     return config;
