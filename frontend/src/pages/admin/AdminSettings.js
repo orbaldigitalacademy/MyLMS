@@ -4,9 +4,14 @@ import {
   Check,
   CreditCard,
   Edit3,
+  Eye,
+  EyeOff,
+  KeyRound,
   Landmark,
   Link2,
   Loader2,
+  LogOut,
+  Lock,
   Mail,
   Plus,
   Save,
@@ -1121,10 +1126,166 @@ const PaymentLinksCard = ({ links, loading, onAdd, onUpdate, onDelete }) => {
 };
 
 /* -------------------------------------------------------------------------- */
+/* Admin token gate                                                           */
+/* -------------------------------------------------------------------------- */
+
+const ADMIN_TOKEN_KEY = "admin_token";
+
+const readAdminToken = () => {
+  try {
+    return localStorage.getItem(ADMIN_TOKEN_KEY) || "";
+  } catch {
+    return "";
+  }
+};
+
+const writeAdminToken = (value) => {
+  try {
+    if (value) localStorage.setItem(ADMIN_TOKEN_KEY, value);
+    else localStorage.removeItem(ADMIN_TOKEN_KEY);
+  } catch {
+    /* ignore */
+  }
+};
+
+const AdminTokenGate = ({ onUnlock }) => {
+  const [value, setValue] = useState("");
+  const [show, setShow] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
+
+  const handleSubmit = async (e) => {
+    e?.preventDefault?.();
+    const token = value.trim();
+    if (!token) {
+      setErrorMsg("Please enter your admin token.");
+      return;
+    }
+    setSubmitting(true);
+    setErrorMsg("");
+    try {
+      await api.post(
+        "/settings/auth/verify",
+        {},
+        { headers: { "X-Admin-Token": token } }
+      );
+      writeAdminToken(token);
+      toast.success("Admin access granted");
+      onUnlock();
+    } catch (err) {
+      const status = err?.response?.status;
+      if (status === 401) {
+        setErrorMsg("Invalid admin token. Double-check the value in backend/.env.");
+      } else if (status === 500) {
+        setErrorMsg("ADMIN_TOKEN is not configured on the server.");
+      } else {
+        setErrorMsg(errorMessage(err, "Failed to verify token"));
+      }
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <div
+      data-testid="admin-token-gate"
+      className="flex min-h-screen items-center justify-center bg-gradient-to-b from-background to-muted/40 px-4 py-10"
+    >
+      <Card className="w-full max-w-md shadow-lg">
+        <CardHeader className="items-center text-center">
+          <div className="mx-auto mb-3 rounded-2xl bg-primary/10 p-3 text-primary">
+            <Lock className="h-6 w-6" />
+          </div>
+          <CardTitle className="text-xl">Admin access required</CardTitle>
+          <CardDescription className="mt-1">
+            Enter your admin token to manage settings. It&apos;s stored locally
+            in your browser and sent with each request.
+          </CardDescription>
+        </CardHeader>
+        <form onSubmit={handleSubmit} noValidate>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="admin-token-input">Admin token</Label>
+              <div className="relative">
+                <KeyRound className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  id="admin-token-input"
+                  data-testid="admin-token-input"
+                  type={show ? "text" : "password"}
+                  autoFocus
+                  autoComplete="off"
+                  spellCheck={false}
+                  className="pl-9 pr-10"
+                  value={value}
+                  onChange={(e) => {
+                    setValue(e.target.value);
+                    if (errorMsg) setErrorMsg("");
+                  }}
+                  placeholder="Paste your ADMIN_TOKEN value"
+                  aria-invalid={!!errorMsg || undefined}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShow((v) => !v)}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 rounded-md p-1.5 text-muted-foreground hover:bg-muted"
+                  aria-label={show ? "Hide token" : "Show token"}
+                  data-testid="admin-token-toggle-visibility"
+                  tabIndex={-1}
+                >
+                  {show ? (
+                    <EyeOff className="h-4 w-4" />
+                  ) : (
+                    <Eye className="h-4 w-4" />
+                  )}
+                </button>
+              </div>
+              {errorMsg ? (
+                <p
+                  data-testid="admin-token-error"
+                  className="text-xs text-destructive"
+                >
+                  {errorMsg}
+                </p>
+              ) : (
+                <p className="text-xs text-muted-foreground">
+                  Must match the <code className="rounded bg-muted px-1">ADMIN_TOKEN</code>{" "}
+                  set in <code className="rounded bg-muted px-1">backend/.env</code>.
+                </p>
+              )}
+            </div>
+          </CardContent>
+          <CardFooter>
+            <Button
+              type="submit"
+              disabled={submitting || !value.trim()}
+              className="w-full"
+              data-testid="admin-token-submit"
+            >
+              {submitting ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Verifying
+                </>
+              ) : (
+                <>
+                  <ShieldCheck className="mr-2 h-4 w-4" />
+                  Unlock settings
+                </>
+              )}
+            </Button>
+          </CardFooter>
+        </form>
+      </Card>
+    </div>
+  );
+};
+
+/* -------------------------------------------------------------------------- */
 /* Page                                                                       */
 /* -------------------------------------------------------------------------- */
 
 export default function AdminSettings() {
+  const [authed, setAuthed] = useState(() => !!readAdminToken());
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [settings, setSettings] = useState({
@@ -1141,21 +1302,47 @@ export default function AdminSettings() {
     });
   }, []);
 
+  const handleUnauthorized = useCallback(() => {
+    writeAdminToken("");
+    setAuthed(false);
+    toast.error("Admin session expired. Please unlock again.");
+  }, []);
+
   const load = useCallback(async () => {
     try {
       setError(null);
       const { data } = await settingsAPI.getBankDetails();
       applySettings(data);
     } catch (err) {
+      if (err?.response?.status === 401) {
+        handleUnauthorized();
+        return;
+      }
       setError(errorMessage(err, "Failed to load settings"));
     } finally {
       setLoading(false);
     }
-  }, [applySettings]);
+  }, [applySettings, handleUnauthorized]);
 
   useEffect(() => {
+    if (!authed) {
+      setLoading(false);
+      return;
+    }
+    setLoading(true);
     load();
-  }, [load]);
+  }, [authed, load]);
+
+  const handleSignOut = () => {
+    writeAdminToken("");
+    setAuthed(false);
+    setSettings({ banks: [], payment_links: [], admin_email: "" });
+    toast.success("Signed out of admin");
+  };
+
+  if (!authed) {
+    return <AdminTokenGate onUnlock={() => setAuthed(true)} />;
+  }
 
   /* ----- Admin email ----- */
   const saveAdminEmail = async (email) => {
@@ -1283,13 +1470,24 @@ export default function AdminSettings() {
               </p>
             </div>
           </div>
-          <Badge
-            variant="outline"
-            className="w-fit gap-1.5 border-primary/30 bg-primary/5 text-primary"
-          >
-            <ShieldCheck className="h-3.5 w-3.5" />
-            Admin only
-          </Badge>
+          <div className="flex flex-wrap items-center gap-2">
+            <Badge
+              variant="outline"
+              className="w-fit gap-1.5 border-primary/30 bg-primary/5 text-primary"
+            >
+              <ShieldCheck className="h-3.5 w-3.5" />
+              Admin only
+            </Badge>
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={handleSignOut}
+              data-testid="admin-signout-btn"
+            >
+              <LogOut className="mr-1.5 h-4 w-4" />
+              Sign out
+            </Button>
+          </div>
         </header>
 
         {error ? (
