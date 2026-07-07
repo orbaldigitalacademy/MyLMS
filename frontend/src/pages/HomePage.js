@@ -138,7 +138,7 @@ const HomePage = () => {
             </div>
 
             <img
-              src="/images/hero-desktop.jpg"
+              src="/images/hero.jpg"
               alt="Students learning"
               className="rounded-2xl shadow-xl"
             />
