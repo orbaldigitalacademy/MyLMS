@@ -139,7 +139,7 @@ const HomePage = () => {
 
             <img
               src="/images/hero.png"
-              alt="Students learning"
+              alt="The Head of Training"
               className="rounded-2xl shadow-xl"
             />
           </div>
@@ -170,7 +170,7 @@ const HomePage = () => {
               {courses.map((course) => (
                 <Card key={course.id}>
                   <img
-                    src={course.image_url || "/images/hero-desktop.jpg"}
+                    src={course.image_url || "/images/hero.png"}
                     alt={course.title}
                     className="h-48 w-full object-cover"
                   />
