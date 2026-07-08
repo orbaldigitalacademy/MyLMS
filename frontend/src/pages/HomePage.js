@@ -149,7 +149,7 @@ const HomePage = () => {
             {/* Sliding hero image */}
             <div className="relative w-full h-[420px] rounded-2xl overflow-hidden shadow-xl">
               {[
-                "/images/hero.png",
+                "/images/heroo.png",
                 "/images/hero-desktop.jpg",
                 "/images/hero.png",
               ].map((image, index) => (
