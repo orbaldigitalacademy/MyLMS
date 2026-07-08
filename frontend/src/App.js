@@ -14,6 +14,7 @@ import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import PaymentPage from './pages/PaymentPage';
 import TestimonialPage from "./pages/TestimonialPage";
+import ProfilePage from "./pages/ProfilePage";
 
 // Student Pages
 import StudentDashboard from './pages/student/StudentDashboard';
@@ -95,8 +96,7 @@ function AppRoutes() {
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/admin/create-user" element={<CreateUser />} />
-      
-      
+      <Route path="/profile" element={<ProfilePage />} />
 
       {/* Payment Route - requires auth */}
       <Route path="/payment/:courseId" element={<ProtectedRoute><PaymentPage /></ProtectedRoute> } />
