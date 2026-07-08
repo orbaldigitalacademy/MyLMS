@@ -108,40 +108,52 @@ const HomePage = () => {
       <Navbar />
 
       {/* HERO SECTION */}
-      <section className="relative bg-background overflow-hidden">
-        <div className="relative max-w-7xl mx-auto px-4 py-16 md:py-24 z-10">
-          <div className="grid md:grid-cols-2 gap-12 items-center">
-
-            <div>
-              <h1 className="text-4xl md:text-6xl font-bold mb-6">
-                <span className="text-forest-green">Unlock Your </span>
-                <span className="text-gold-gradient">Potential</span>
-              </h1>
-
-              <p className="text-lg text-muted-foreground mb-8">
-                Join thousands of students advancing their careers with expert-led courses.
-              </p>
-
-              <div className="flex gap-4 flex-col sm:flex-row">
-                <Link to="/courses">
-                  <Button size="lg">
-                    Browse Courses <ArrowRight className="ml-2 w-5 h-5" />
-                  </Button>
-                </Link>
-
-                <Link to="/register">
-                  <Button size="lg" variant="outline">
-                    Get Started Free
-                  </Button>
-                </Link>
-              </div>
-            </div>
-
-            <img
-              src="/images/hero.png"
-              alt="The Head of Training"
-              className="rounded-2xl shadow-xl"
+      <section className="relative min-h-[620px] overflow-hidden">
+        {/* Background image slider */}
+        <div className="absolute inset-0">
+          {[
+            "/images/hero.png",
+            "/images/hero-2.png",
+            "/images/hero-3.png",
+          ].map((image, index) => (
+            <div
+              key={index}
+              className="absolute inset-0 bg-cover bg-center transition-opacity duration-1000"
+              style={{
+                backgroundImage: `url(${image})`,
+                opacity: index === activeHeroImage ? 1 : 0,
+              }}
             />
+          ))}
+      
+          {/* Dark overlay */}
+          <div className="absolute inset-0 bg-black/60" />
+        </div>
+      
+        <div className="relative z-10 max-w-7xl mx-auto px-4 py-24 md:py-32">
+          <div className="max-w-2xl text-white">
+            <h1 className="text-4xl md:text-6xl font-bold mb-6">
+              <span>Unlock Your </span>
+              <span className="text-gold-gradient">Potential</span>
+            </h1>
+      
+            <p className="text-lg md:text-xl text-white/85 mb-8">
+              Join thousands of students advancing their careers with expert-led courses.
+            </p>
+      
+            <div className="flex gap-4 flex-col sm:flex-row">
+              <Link to="/courses">
+                <Button size="lg">
+                  Browse Courses <ArrowRight className="ml-2 w-5 h-5" />
+                </Button>
+              </Link>
+      
+              <Link to="/register">
+                <Button size="lg" variant="outline" className="bg-white/10 text-white border-white hover:bg-white hover:text-black">
+                  Get Started Free
+                </Button>
+              </Link>
+            </div>
           </div>
         </div>
       </section>
