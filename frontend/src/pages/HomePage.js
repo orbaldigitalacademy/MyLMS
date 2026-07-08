@@ -108,7 +108,7 @@ const HomePage = () => {
 
               <div className="flex gap-4 flex-col sm:flex-row">
                 <Link to="/register">
-                  <Button size="lg" variant="outline">
+                  <Button size="lg">
                     Get Started Now!
                   </Button>
                 </Link>
