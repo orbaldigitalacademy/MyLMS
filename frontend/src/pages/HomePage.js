@@ -123,8 +123,8 @@ const HomePage = () => {
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div>
               <h1 className="text-4xl md:text-6xl font-bold mb-6">
-                <span className="text-forest-green">Unlock Your </span>
-                <span className="text-gold-gradient">Potential</span>
+                <span className="text-forest-green">Unlock Your Potentials </span>
+                <span className="text-gold-gradient">with Our Practical Oriented Courses</span>
               </h1>
       
               <p className="text-lg text-muted-foreground mb-8">
