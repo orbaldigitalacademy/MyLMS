@@ -26,7 +26,16 @@ const HomePage = () => {
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [testimonials, setTestimonials] = useState([]);
-
+  const [activeHeroImage, setActiveHeroImage] = useState(0);
+``
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setActiveHeroImage((prev) => (prev + 1) % 3);
+    }, 4000);
+  
+    return () => clearInterval(interval);
+  }, []);
+  
   // Fetch courses
   useEffect(() => {
     const fetchCourses = async () => {
@@ -107,28 +116,28 @@ const HomePage = () => {
 
       <Navbar />
 
+            
       {/* HERO SECTION */}
       <section className="relative bg-background overflow-hidden">
         <div className="relative max-w-7xl mx-auto px-4 py-16 md:py-24 z-10">
           <div className="grid md:grid-cols-2 gap-12 items-center">
-
             <div>
               <h1 className="text-4xl md:text-6xl font-bold mb-6">
                 <span className="text-forest-green">Unlock Your </span>
                 <span className="text-gold-gradient">Potential</span>
               </h1>
-
+      
               <p className="text-lg text-muted-foreground mb-8">
                 Join thousands of students advancing their careers with expert-led courses.
               </p>
-
+      
               <div className="flex gap-4 flex-col sm:flex-row">
                 <Link to="/courses">
                   <Button size="lg">
                     Browse Courses <ArrowRight className="ml-2 w-5 h-5" />
                   </Button>
                 </Link>
-
+      
                 <Link to="/register">
                   <Button size="lg" variant="outline">
                     Get Started Free
@@ -136,12 +145,24 @@ const HomePage = () => {
                 </Link>
               </div>
             </div>
-
-            <img
-              src="/images/hero.png"
-              alt="The Head of Training"
-              className="rounded-2xl shadow-xl"
-            />
+      
+            {/* Sliding hero image */}
+            <div className="relative w-full h-[420px] rounded-2xl overflow-hidden shadow-xl">
+              {[
+                "/images/hero.png",
+                "/images/hero-desktop.jpg",
+                "/images/hero.png",
+              ].map((image, index) => (
+                <img
+                  key={index}
+                  src={image}
+                  alt={`Orbal Digital Academy hero ${index + 1}`}
+                  className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${
+                    index === activeHeroImage ? "opacity-100" : "opacity-0"
+                  }`}
+                />
+              ))}
+            </div>
           </div>
         </div>
       </section>
