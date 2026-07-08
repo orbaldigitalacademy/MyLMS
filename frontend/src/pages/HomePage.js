@@ -188,7 +188,7 @@ const HomePage = () => {
               <div className="flex justify-center mt-10">
                 <Link to="/courses">
                   <Button size="lg">
-                    Browse Courses <ArrowRight className="ml-2 w-5 h-5" />
+                    Browse More Courses <ArrowRight className="ml-2 w-5 h-5" />
                   </Button>
                 </Link>
               </div>
