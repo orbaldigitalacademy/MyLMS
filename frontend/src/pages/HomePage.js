@@ -130,6 +130,9 @@ const HomePage = () => {
               className="absolute inset-0 bg-cover bg-center transition-opacity duration-1000"
               style={{
                 backgroundImage: `url(${image})`,
+                backgroundSize: "cover",
+                backgroundRepeat: "no-repeat",
+                backgroundPosition: "center 25%", // Adjust this value as needed
                 opacity: index === activeHeroImage ? 1 : 0,
               }}
             />
