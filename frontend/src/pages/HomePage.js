@@ -13,12 +13,10 @@ import { coursesAPI } from "../services/api";
 import api from "../services/api";
 
 import {
-  GraduationCap,
   BookOpen,
   TrendingUp,
   Shield,
   Zap,
-  Clock,
   ArrowRight,
 } from "lucide-react";
 
@@ -28,14 +26,21 @@ const HomePage = () => {
   const [testimonials, setTestimonials] = useState([]);
   const [activeHeroImage, setActiveHeroImage] = useState(0);
 
+  const heroImages = [
+    "/images/hero.png",
+    "/images/hero-2.png",
+    "/images/hero-3.png",
+  ];
+
+  // Hero image slider
   useEffect(() => {
     const interval = setInterval(() => {
-      setActiveHeroImage((prev) => (prev + 1) % 3);
+      setActiveHeroImage((prev) => (prev + 1) % heroImages.length);
     }, 4000);
-  
+
     return () => clearInterval(interval);
-  }, []);
-    
+  }, [heroImages.length]);
+
   // Fetch courses
   useEffect(() => {
     const fetchCourses = async () => {
@@ -116,7 +121,7 @@ const HomePage = () => {
 
       <Navbar />
 
-     {/* HERO SECTION */}
+      {/* HERO SECTION */}
       <section className="relative bg-background overflow-hidden">
         <div className="relative max-w-7xl mx-auto px-4 py-16 md:py-24 z-10">
           <div className="grid md:grid-cols-2 gap-12 items-center">
@@ -163,7 +168,6 @@ const HomePage = () => {
         </div>
       </section>
 
-
       {/* STATS */}
       <section className="bg-secondary py-12">
         <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
@@ -204,9 +208,7 @@ const HomePage = () => {
                     </p>
 
                     <Link to={`/courses/${course.id}`}>
-                      <Button className="w-full mt-3">
-                        View Details
-                      </Button>
+                      <Button className="w-full mt-3">View Details</Button>
                     </Link>
                   </CardContent>
                 </Card>
@@ -230,13 +232,9 @@ const HomePage = () => {
                   {"⭐".repeat(t.rating)}
                 </p>
 
-                <p className="text-gray-600 mb-3">
-                  {t.content}
-                </p>
+                <p className="text-gray-600 mb-3">{t.content}</p>
 
-                <p className="font-semibold">
-                  {t.user_name}
-                </p>
+                <p className="font-semibold">{t.user_name}</p>
               </div>
             ))}
           </div>
@@ -245,14 +243,10 @@ const HomePage = () => {
 
       {/* CTA */}
       <section className="bg-secondary py-16 text-center text-white">
-        <h2 className="text-3xl font-bold mb-4">
-          Ready to Start Learning?
-        </h2>
+        <h2 className="text-3xl font-bold mb-4">Ready to Start Learning?</h2>
 
         <Link to="/register">
-          <Button size="lg">
-            Create Free Account
-          </Button>
+          <Button size="lg">Create Free Account</Button>
         </Link>
       </section>
 
@@ -262,4 +256,3 @@ const HomePage = () => {
 };
 
 export default HomePage;
-
