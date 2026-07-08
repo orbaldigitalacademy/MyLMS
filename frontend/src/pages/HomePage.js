@@ -13,10 +13,12 @@ import { coursesAPI } from "../services/api";
 import api from "../services/api";
 
 import {
+  GraduationCap,
   BookOpen,
   TrendingUp,
   Shield,
   Zap,
+  Clock,
   ArrowRight,
 } from "lucide-react";
 
@@ -24,22 +26,6 @@ const HomePage = () => {
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [testimonials, setTestimonials] = useState([]);
-  const [activeHeroImage, setActiveHeroImage] = useState(0);
-
-  const heroImages = [
-    "/images/hero.png",
-    "/images/hero-2.png",
-    "/images/hero-3.png",
-  ];
-
-  // Hero image slider
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setActiveHeroImage((prev) => (prev + 1) % heroImages.length);
-    }, 4000);
-
-    return () => clearInterval(interval);
-  }, [heroImages.length]);
 
   // Fetch courses
   useEffect(() => {
@@ -125,6 +111,7 @@ const HomePage = () => {
       <section className="relative bg-background overflow-hidden">
         <div className="relative max-w-7xl mx-auto px-4 py-16 md:py-24 z-10">
           <div className="grid md:grid-cols-2 gap-12 items-center">
+
             <div>
               <h1 className="text-4xl md:text-6xl font-bold mb-6">
                 <span className="text-forest-green">Unlock Your </span>
@@ -132,8 +119,7 @@ const HomePage = () => {
               </h1>
 
               <p className="text-lg text-muted-foreground mb-8">
-                Join thousands of students advancing their careers with
-                expert-led courses.
+                Join thousands of students advancing their careers with expert-led courses.
               </p>
 
               <div className="flex gap-4 flex-col sm:flex-row">
@@ -151,19 +137,11 @@ const HomePage = () => {
               </div>
             </div>
 
-            {/* Sliding hero image */}
-            <div className="relative w-full h-[420px] rounded-2xl overflow-hidden shadow-xl bg-gray-100">
-              {heroImages.map((image, index) => (
-                <img
-                  key={index}
-                  src={image}
-                  alt={`Orbal Digital Academy hero ${index + 1}`}
-                  className={`absolute inset-0 w-full h-full object-contain transition-opacity duration-1000 ${
-                    index === activeHeroImage ? "opacity-100" : "opacity-0"
-                  }`}
-                />
-              ))}
-            </div>
+            <img
+              src="/images/hero.png"
+              alt="The Head of Training"
+              className="rounded-2xl shadow-xl"
+            />
           </div>
         </div>
       </section>
@@ -208,7 +186,9 @@ const HomePage = () => {
                     </p>
 
                     <Link to={`/courses/${course.id}`}>
-                      <Button className="w-full mt-3">View Details</Button>
+                      <Button className="w-full mt-3">
+                        View Details
+                      </Button>
                     </Link>
                   </CardContent>
                 </Card>
@@ -232,9 +212,13 @@ const HomePage = () => {
                   {"⭐".repeat(t.rating)}
                 </p>
 
-                <p className="text-gray-600 mb-3">{t.content}</p>
+                <p className="text-gray-600 mb-3">
+                  {t.content}
+                </p>
 
-                <p className="font-semibold">{t.user_name}</p>
+                <p className="font-semibold">
+                  {t.user_name}
+                </p>
               </div>
             ))}
           </div>
@@ -243,10 +227,14 @@ const HomePage = () => {
 
       {/* CTA */}
       <section className="bg-secondary py-16 text-center text-white">
-        <h2 className="text-3xl font-bold mb-4">Ready to Start Learning?</h2>
+        <h2 className="text-3xl font-bold mb-4">
+          Ready to Start Learning?
+        </h2>
 
         <Link to="/register">
-          <Button size="lg">Create Free Account</Button>
+          <Button size="lg">
+            Create Free Account
+          </Button>
         </Link>
       </section>
 
