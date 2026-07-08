@@ -26,7 +26,16 @@ const HomePage = () => {
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [testimonials, setTestimonials] = useState([]);
+  const [activeHeroImage, setActiveHeroImage] = useState(0);
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setActiveHeroImage((prev) => (prev + 1) % 3);
+    }, 4000);
+  
+    return () => clearInterval(interval);
+  }, []);
+    
   // Fetch courses
   useEffect(() => {
     const fetchCourses = async () => {
@@ -113,8 +122,8 @@ const HomePage = () => {
         <div className="absolute inset-0">
           {[
             "/images/hero.png",
-            "/images/hero-2.png",
-            "/images/hero-3.png",
+            "/images/hero-desktop.jpg",
+            "/images/hero-desktop.jpg",
           ].map((image, index) => (
             <div
               key={index}
