@@ -131,21 +131,15 @@ const HomePage = () => {
                 Join thousands of students advancing their careers with expert-led courses.
               </p>
       
-              <div className="flex gap-4 flex-col sm:flex-row">
-                <Link to="/courses">
-                  <Button size="lg">
-                    Browse Courses <ArrowRight className="ml-2 w-5 h-5" />
-                  </Button>
-                </Link>
-      
-                <Link to="/register">
-                  <Button size="lg" variant="outline">
-                    Get Started Free
-                  </Button>
-                </Link>
-              </div>
+             {/* HERO BUTTONS */}
+            <div className="flex gap-4 flex-col sm:flex-row">
+              <Link to="/register">
+                <Button size="lg" variant="outline">
+                  Get Started Now!
+                </Button>
+              </Link>
             </div>
-      
+                  
             {/* Sliding hero image */}
             <div className="relative w-full h-[420px] rounded-2xl overflow-hidden shadow-xl">
               {[
@@ -183,38 +177,48 @@ const HomePage = () => {
       <section className="py-16">
         <div className="max-w-7xl mx-auto px-4">
           <h2 className="text-3xl font-bold mb-8">Featured Courses</h2>
-
+      
           {loading ? (
             <p>Loading courses...</p>
           ) : (
-            <div className="grid md:grid-cols-3 gap-6">
-              {courses.map((course) => (
-                <Card key={course.id}>
-                  <img
-                    src={course.image_url || "/images/hero.png"}
-                    alt={course.title}
-                    className="h-48 w-full object-cover"
-                  />
-
-                  <CardContent className="p-4">
-                    <h3 className="font-bold">{course.title}</h3>
-                    <p className="text-sm text-gray-500">
-                      {course.short_description}
-                    </p>
-
-                    <p className="mt-2 font-semibold">
-                      {formatPrice(course.price)}
-                    </p>
-
-                    <Link to={`/courses/${course.id}`}>
-                      <Button className="w-full mt-3">
-                        View Details
-                      </Button>
-                    </Link>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+            <>
+              <div className="grid md:grid-cols-3 gap-6">
+                {courses.map((course) => (
+                  <Card key={course.id}>
+                    <img
+                      src={course.image_url || "/images/hero.png"}
+                      alt={course.title}
+                      className="h-48 w-full object-cover"
+                    />
+      
+                    <CardContent className="p-4">
+                      <h3 className="font-bold">{course.title}</h3>
+                      <p className="text-sm text-gray-500">
+                        {course.short_description}
+                      </p>
+      
+                      <p className="mt-2 font-semibold">
+                        {formatPrice(course.price)}
+                      </p>
+      
+                      <Link to={`/courses/${course.id}`}>
+                        <Button className="w-full mt-3">
+                          View Details
+                        </Button>
+                      </Link>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+      
+              <div className="flex justify-center mt-10">
+                <Link to="/courses">
+                  <Button size="lg">
+                    Browse Courses <ArrowRight className="ml-2 w-5 h-5" />
+                  </Button>
+                </Link>
+              </div>
+            </>
           )}
         </div>
       </section>
