@@ -203,17 +203,37 @@ const HomePage = () => {
           <h2 className="text-3xl font-bold text-center mb-10">
             What Our Students Say
           </h2>
-
+      
           <div className="grid md:grid-cols-3 gap-6">
             {testimonials.slice(0, 3).map((t) => (
-              <div key={t.id} className="bg-white p-6 rounded shadow">
-                <p className="text-yellow-500 mb-2">
-                  {"⭐".repeat(t.rating)}
+              <div
+                key={t.id}
+                className="bg-white p-6 rounded-xl shadow hover:shadow-lg transition duration-300"
+              >
+                {/* Student Info */}
+                <div className="flex items-center gap-4 mb-4">
+                  <img
+                    src={t.avatar_url || "/default-avatar.png"}
+                    alt={t.user_name || "Student"}
+                    className="w-14 h-14 rounded-full object-cover border-2 border-emerald-500"
+                    loading="lazy"
+                  />
+      
+                  <div>
+                    <h4 className="font-semibold text-lg">
+                      {t.user_name || "Anonymous Student"}
+                    </h4>
+      
+                    <div className="text-yellow-500 text-sm">
+                      {"⭐".repeat(t.rating || 0)}
+                    </div>
+                  </div>
+                </div>
+      
+                {/* Testimonial */}
+                <p className="text-gray-600 leading-relaxed">
+                  "{t.content}"
                 </p>
-
-                <p className="text-gray-600 mb-3">{t.content}</p>
-
-                <p className="font-semibold">{t.user_name}</p>
               </div>
             ))}
           </div>
