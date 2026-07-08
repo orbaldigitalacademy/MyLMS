@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet";
 
-import TrustSection from "../components/TrustSection";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 
@@ -13,12 +12,10 @@ import { coursesAPI } from "../services/api";
 import api from "../services/api";
 
 import {
-  GraduationCap,
   BookOpen,
   TrendingUp,
   Shield,
   Zap,
-  Clock,
   ArrowRight,
 } from "lucide-react";
 
@@ -27,16 +24,15 @@ const HomePage = () => {
   const [loading, setLoading] = useState(true);
   const [testimonials, setTestimonials] = useState([]);
   const [activeHeroImage, setActiveHeroImage] = useState(0);
-``
+
   useEffect(() => {
     const interval = setInterval(() => {
       setActiveHeroImage((prev) => (prev + 1) % 3);
     }, 4000);
-  
+
     return () => clearInterval(interval);
   }, []);
-  
-  // Fetch courses
+
   useEffect(() => {
     const fetchCourses = async () => {
       try {
@@ -52,7 +48,6 @@ const HomePage = () => {
     fetchCourses();
   }, []);
 
-  // Fetch testimonials
   useEffect(() => {
     const fetchTestimonials = async () => {
       try {
@@ -66,30 +61,6 @@ const HomePage = () => {
     fetchTestimonials();
   }, []);
 
-  const benefits = [
-    {
-      icon: BookOpen,
-      title: "Quality Content",
-      description:
-        "Expert-crafted courses designed for both beginners, professionals and students.",
-    },
-    {
-      icon: TrendingUp,
-      title: "Career Growth",
-      description: "Gain practical skills that employers are actively seeking.",
-    },
-    {
-      icon: Shield,
-      title: "Secure Payments",
-      description: "Seamless payment methods.",
-    },
-    {
-      icon: Zap,
-      title: "Learn at Your Pace",
-      description: "Access course materials anytime, anywhere on any device.",
-    },
-  ];
-
   const stats = [
     { value: "1000+", label: "Students Enrolled" },
     { value: "50+", label: "Quality Courses" },
@@ -102,7 +73,7 @@ const HomePage = () => {
       style: "currency",
       currency: "NGN",
       minimumFractionDigits: 0,
-    }).format(price);
+    }).format(price || 0);
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -116,30 +87,34 @@ const HomePage = () => {
 
       <Navbar />
 
-            
       {/* HERO SECTION */}
       <section className="relative bg-background overflow-hidden">
         <div className="relative max-w-7xl mx-auto px-4 py-16 md:py-24 z-10">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div>
               <h1 className="text-4xl md:text-6xl font-bold mb-6">
-                <span className="text-forest-green">Unlock Your Potentials </span>
-                <span className="text-gold-gradient">with Our Practical Oriented Courses</span>
+                <span className="text-forest-green">
+                  Unlock Your Potentials{" "}
+                </span>
+                <span className="text-gold-gradient">
+                  with Our Practical Oriented Courses
+                </span>
               </h1>
-      
+
               <p className="text-lg text-muted-foreground mb-8">
-                Join thousands of students advancing their careers with expert-led courses.
+                Join thousands of students advancing their careers with
+                expert-led courses.
               </p>
-      
-             {/* HERO BUTTONS */}
-            <div className="flex gap-4 flex-col sm:flex-row">
-              <Link to="/register">
-                <Button size="lg" variant="outline">
-                  Get Started Now!
-                </Button>
-              </Link>
+
+              <div className="flex gap-4 flex-col sm:flex-row">
+                <Link to="/register">
+                  <Button size="lg" variant="outline">
+                    Get Started Now!
+                  </Button>
+                </Link>
+              </div>
             </div>
-                  
+
             {/* Sliding hero image */}
             <div className="relative w-full h-[420px] rounded-2xl overflow-hidden shadow-xl">
               {[
@@ -177,7 +152,7 @@ const HomePage = () => {
       <section className="py-16">
         <div className="max-w-7xl mx-auto px-4">
           <h2 className="text-3xl font-bold mb-8">Featured Courses</h2>
-      
+
           {loading ? (
             <p>Loading courses...</p>
           ) : (
@@ -190,27 +165,26 @@ const HomePage = () => {
                       alt={course.title}
                       className="h-48 w-full object-cover"
                     />
-      
+
                     <CardContent className="p-4">
                       <h3 className="font-bold">{course.title}</h3>
+
                       <p className="text-sm text-gray-500">
                         {course.short_description}
                       </p>
-      
+
                       <p className="mt-2 font-semibold">
                         {formatPrice(course.price)}
                       </p>
-      
+
                       <Link to={`/courses/${course.id}`}>
-                        <Button className="w-full mt-3">
-                          View Details
-                        </Button>
+                        <Button className="w-full mt-3">View Details</Button>
                       </Link>
                     </CardContent>
                   </Card>
                 ))}
               </div>
-      
+
               <div className="flex justify-center mt-10">
                 <Link to="/courses">
                   <Button size="lg">
@@ -237,13 +211,9 @@ const HomePage = () => {
                   {"⭐".repeat(t.rating)}
                 </p>
 
-                <p className="text-gray-600 mb-3">
-                  {t.content}
-                </p>
+                <p className="text-gray-600 mb-3">{t.content}</p>
 
-                <p className="font-semibold">
-                  {t.user_name}
-                </p>
+                <p className="font-semibold">{t.user_name}</p>
               </div>
             ))}
           </div>
@@ -252,14 +222,10 @@ const HomePage = () => {
 
       {/* CTA */}
       <section className="bg-secondary py-16 text-center text-white">
-        <h2 className="text-3xl font-bold mb-4">
-          Ready to Start Learning?
-        </h2>
+        <h2 className="text-3xl font-bold mb-4">Ready to Start Learning?</h2>
 
         <Link to="/register">
-          <Button size="lg">
-            Create Free Account
-          </Button>
+          <Button size="lg">Create Free Account</Button>
         </Link>
       </section>
 
