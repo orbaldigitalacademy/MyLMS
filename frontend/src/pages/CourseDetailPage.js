@@ -12,12 +12,12 @@ import { toast } from 'sonner';
 import {Clock, BookOpen, CheckCircle, Play, ArrowLeft, Lock, CreditCard, Users, Star, Award, GraduationCap, Briefcase, Quote, Sparkles,Target,ShieldCheck,Rocket,HeartHandshake,Lightbulb,MessageCircle,X,TrendingUp,Gift,ListChecks,Minus,FileText,Download,} from 'lucide-react';
 /* ----------------------------- Static fallbacks ---------------------------- */
 const STATIC_INSTRUCTOR = {
-  name: 'Dr. Adaeze Okafor',
+  name: 'Mr. Moses Kor',
   photo:
     'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=600&q=80&auto=format&fit=crop',
-  qualifications: 'PhD in Computer Science, M.Sc. Software Engineering',
+  qualifications: 'PhD in Statistics, M.Sc. Statistics, B.Sc. Mathematics',
   experience: '12+ years of industry & teaching experience',
-  bio: 'Adaeze has led engineering teams at multinational tech firms and trained over 5,000 students across Africa. She combines real-world product experience with a passion for mentorship to help learners ship work that gets them hired.',
+  bio: 'Moses has trained over 1,000 students across Africa. His teaching philosophy is centered simplicity, clarity and real-world application-breking down complex concepts into easy-to-understand lessons that deliver immediateand long lasting values.',
 };
 // Map allowed string icon names (from settings) to lucide-react components.
 const ICON_MAP = {
