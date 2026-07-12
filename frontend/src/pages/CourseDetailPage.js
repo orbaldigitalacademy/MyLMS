@@ -270,7 +270,7 @@ const CompareCell = ({ value, highlight }) => {
 };
 /* ----------------------------- Section heading ----------------------------- */
 const SectionHeading = ({ eyebrow, title, subtitle, align = 'center', light = false }) => (
-  <div className={`mb-10 ${align === 'center' ? 'text-center max-w-2xl mx-auto' : ''}`}>
+  <div className={`mb-8 ${align === 'center' ? 'text-center max-w-2xl mx-auto' : ''}`}>
     {eyebrow && (
       <p className="text-primary font-bold uppercase tracking-wider text-base mb-3">
         {eyebrow}
@@ -596,7 +596,7 @@ const CourseDetailPage = () => {
       {/* 1. HERO */}
       <section
         id="hero"
-        className="relative isolate overflow-hidden rounded-3xl bg-secondary py-16 md:py-24 lg:py-28 min-h-[600px]"
+        className="relative isolate overflow-hidden rounded-3xl bg-secondary py-10 md:py-12 lg:py-28 min-h-[600px]"
         data-testid="hero-section"
       >
         {/* Background image */}
@@ -743,7 +743,7 @@ const CourseDetailPage = () => {
         </div>
       </section>
       {/* 3. PROBLEM/AGITATE */}
-      <section id="problems" className="py-16 md:py-20 bg-muted/30">
+      <section id="problems" className="py-10 md:py-12 bg-muted/30">
         <div>
           <SectionHeading
             eyebrow="Common Challenges"
@@ -767,7 +767,7 @@ const CourseDetailPage = () => {
       </section>
       {/* 4. WHAT YOU'LL LEARN */}
       {course.learning_outcomes?.length > 0 && (
-        <section id="outcomes" className="py-16 md:py-20 bg-background" data-testid="learning-outcomes-section">
+        <section id="outcomes" className="py-10 md:py-12 bg-background" data-testid="learning-outcomes-section">
           <div>
             <SectionHeading
               eyebrow="What you'll learn"
@@ -798,7 +798,7 @@ const CourseDetailPage = () => {
         </section>
       )}
       {/* 5. CURRICULUM */}
-      <section id="curriculum" className="py-16 md:py-20 bg-muted/30" data-testid="curriculum-section">
+      <section id="curriculum" className="py-10 md:py-12 bg-muted/30" data-testid="curriculum-section">
         <div>
           <SectionHeading
             eyebrow="Curriculum"
@@ -910,7 +910,7 @@ const CourseDetailPage = () => {
         </div>
       </section>
       {/* 6. PROJECTS YOU'LL BUILD */}
-      <section id="projects" className="py-16 md:py-20 bg-background">
+      <section id="projects" className="py-10 md:py-12 bg-background">
         <div>
           <SectionHeading
             eyebrow="Portfolio Projects"
@@ -943,7 +943,7 @@ const CourseDetailPage = () => {
         </div>
       </section>
       {/* 7. CAREER OPPORTUNITIES */}
-      <section id="careers" className="py-16 md:py-20 bg-muted/30">
+      <section id="careers" className="py-10 md:py-12 bg-muted/30">
         <div>
           <SectionHeading
             eyebrow="Career Opportunities"
@@ -975,7 +975,7 @@ const CourseDetailPage = () => {
         </div>
       </section>
       {/* 8. MEET YOUR INSTRUCTOR */}
-      <section id="instructor" className="py-16 md:py-20 bg-background" data-testid="instructor-section">
+      <section id="instructor" className="py-10 md:py-12 bg-background" data-testid="instructor-section">
         <div>
           <SectionHeading
             eyebrow="Meet your instructor"
@@ -1011,7 +1011,7 @@ const CourseDetailPage = () => {
         </div>
       </section>
       {/* 9. TESTIMONIALS */}
-      <section id="testimonials" className="py-16 md:py-20 bg-muted/30" data-testid="testimonials-section">
+      <section id="testimonials" className="py-10 md:py-12 bg-muted/30" data-testid="testimonials-section">
         <div>
           <SectionHeading
             eyebrow="Student stories"
@@ -1064,7 +1064,7 @@ const CourseDetailPage = () => {
         </div>
       </section>
       {/* 10. WHO THIS COURSE IS FOR */}
-      <section className="py-16 md:py-20 bg-background" data-testid="who-for-section">
+      <section className="py-10 md:py-12 bg-background" data-testid="who-for-section">
         <div>
           <div className="grid md:grid-cols-2 gap-10 items-start max-w-5xl mx-auto">
             <div>
@@ -1089,7 +1089,7 @@ const CourseDetailPage = () => {
         </div>
       </section>
       {/* 11. REQUIREMENTS */}
-      <section className="py-16 md:py-20 bg-muted/30" data-testid="requirements-section">
+      <section className="py-10 md:py-12 bg-muted/30" data-testid="requirements-section">
         <div>
           <SectionHeading
             eyebrow="Requirements"
@@ -1110,7 +1110,7 @@ const CourseDetailPage = () => {
         </div>
       </section>
       {/* 12. WHY CHOOSE ORBAL ACADEMY */}
-      <section className="py-16 md:py-20 bg-secondary" data-testid="why-choose-section">
+      <section className="py-10 md:py-12 bg-secondary" data-testid="why-choose-section">
         <div>
           <SectionHeading
             eyebrow="Why choose us"
@@ -1146,7 +1146,7 @@ const CourseDetailPage = () => {
         </div>
       </section>
       {/* 13. COMPARISON TABLE */}
-      <section id="compare" className="py-16 md:py-20 bg-background">
+      <section id="compare" className="py-10 md:py-12 bg-background">
         <div>
           <SectionHeading
             eyebrow="The Smart Choice"
@@ -1274,7 +1274,7 @@ const CourseDetailPage = () => {
         </div>
       </section>
       {/* 14. OFFER STACK / INVESTMENT */}
-      <section id="offer" className="py-16 md:py-24 bg-primary/5">
+      <section id="offer" className="py-10 md:py-12 bg-primary/5">
         <div>
           <SectionHeading
             eyebrow="Investment"
@@ -1298,7 +1298,7 @@ const CourseDetailPage = () => {
               </ul>
               <div className="border-t border-border pt-6 text-center">
                 <p className="text-muted-foreground line-through text-sm mb-1">
-                  Total value: ₦450,000
+                  Total value: ₦200,000
                 </p>
                 <p className="text-xs uppercase tracking-wider text-primary font-medium mb-1">
                   Your price today
@@ -1318,25 +1318,7 @@ const CourseDetailPage = () => {
           </Card>
         </div>
       </section>
-      {/* 15. MONEY-BACK GUARANTEE */}
-      <section id="guarantee" className="py-16 bg-background">
-        <div>
-          <Card className="border-primary/30 bg-primary/5">
-            <CardContent className="p-8 md:p-10 text-center">
-              <div className="w-20 h-20 rounded-full bg-primary/15 flex items-center justify-center mx-auto mb-5">
-                <ShieldCheck className="w-10 h-10 text-primary" />
-              </div>
-              <h2 className="font-serif text-2xl md:text-3xl font-bold text-secondary mb-3">
-                7-Day Money-Back Guarantee
-              </h2>
-              <p className="text-muted-foreground leading-relaxed max-w-xl mx-auto">
-                Try the course risk-free. If you&apos;re not satisfied within the first
-                7 days, we&apos;ll refund your payment — no questions asked.
-              </p>
-            </CardContent>
-          </Card>
-        </div>
-      </section>
+      
       {/* 16. FAQ */}
       <section id="faq" className="py-16 md:py-20 bg-muted/30" data-testid="faq-section">
         <div>
