@@ -272,7 +272,7 @@ const CompareCell = ({ value, highlight }) => {
 const SectionHeading = ({ eyebrow, title, subtitle, align = 'left', light = false }) => (
   <div className={`mb-10 ${align === 'center' ? 'text-center max-w-2xl mx-auto' : ''}`}>
     {eyebrow && (
-      <p className="text-primary font-semibold uppercase tracking-wider text-xs mb-3">
+      <p className="text-primary font-bold uppercase tracking-wider text-2xl mb-3">
         {eyebrow}
       </p>
     )}
