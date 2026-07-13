@@ -611,11 +611,19 @@ const CourseDetailPage = () => {
           data-testid="hero-course-image"
         />
         {/* Overlay for text legibility — lighter so the image shows through */}
-        <div className="absolute inset-0 -z-10 bg-gradient-to-r from-secondary via-secondary/80 to-secondary/30" />
-        <div className="absolute inset-0 -z-10 bg-secondary/40" />
-        <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.08),transparent_45%)]" />
-        <div className="absolute -left-20 bottom-0 -z-10 h-72 w-72 rounded-full bg-primary/15 blur-[120px]" />
-        <div className="absolute -right-24 top-0 -z-10 h-96 w-96 rounded-full bg-primary/10 blur-[160px]" />
+        {/* Dark cinematic overlay */}
+        <div className="absolute inset-0 -z-10 bg-gradient-to-r from-black/85 via-slate-950/65 to-slate-900/35" />
+        
+        {/* Bottom fade */}
+        <div className="absolute inset-0 -z-10 bg-gradient-to-t from-black/55 via-transparent to-transparent" />
+        
+        {/* Soft highlight */}
+        <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_85%_20%,rgba(59,130,246,0.18),transparent_40%)]" />
+        
+        <div className="absolute -left-20 bottom-0 -z-10 h-72 w-72 rounded-full bg-blue-500/15 blur-[120px]" />
+        
+        <div className="absolute -right-24 top-0 -z-10 h-96 w-96 rounded-full bg-cyan-400/15 blur-[150px]" />
+                
         <div className="relative px-6 md:px-10">
           {/* Back Button */}
           <Link
@@ -670,7 +678,7 @@ const CourseDetailPage = () => {
               <div className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 backdrop-blur">
                 <Star className="h-4 w-4 fill-primary text-primary" />
                 <span className="text-sm text-white/80">
-                  4.9 (5,200+ Students)
+                  4.5 (1,200+ Students)
                 </span>
               </div>
             </div>
