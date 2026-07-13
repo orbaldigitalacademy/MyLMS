@@ -49,7 +49,7 @@ const STATIC_WHY_CHOOSE = [
   {
     icon: ShieldCheck,
     title: 'Job-ready certificate',
-    description: 'Earn a verifiable certificate recognised by hiring partners across Africa.',
+    description: 'Earn a verifiable certificate recognised by hiring partners across the globe.',
   },
   {
     icon: Lightbulb,
