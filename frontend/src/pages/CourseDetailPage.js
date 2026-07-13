@@ -58,10 +58,10 @@ const STATIC_WHY_CHOOSE = [
   },
 ];
 const TRUST_BAR = [
-  { icon: Users, value: '5,200+', label: 'Students enrolled' },
-  { icon: Star, value: '4.9 / 5', label: 'Average rating' },
+  { icon: Users, value: '1,200+', label: 'Students enrolled' },
+  { icon: Star, value: '4.5 / 5', label: 'Average rating' },
   { icon: CheckCircle, value: '94%', label: 'Completion rate' },
-  { icon: Award, value: 'Verified', label: 'Certificate of completion' },
+  { icon: Award, value: 'Verified', label: 'Pofessional Certificate' },
 ];
 const CAREERS = [
   { role: 'Data Analyst', salary: '₦300,000 – ₦1.2M/month' },
@@ -77,7 +77,7 @@ const PROBLEMS = [
 ];
 const OFFER_INCLUDES = [
   'Full lifetime course access',
-  'Verifiable certificate of completion',
+  'Verifiable profesional certificate',
   'Hands-on portfolio projects',
   '1:1 mentor support & code reviews',
   'All future curriculum updates',
