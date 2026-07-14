@@ -337,6 +337,24 @@ const EnrollCTA = ({ hasAccess, enrollment, course, onEnroll, variant = 'inline'
     </Button>
   );
 };
+const WhatsAppCTA = () => (
+  <a
+    href="https://chat.whatsapp.com/G4bMIvEm74fFlZK7XqpAO5"
+    target="_blank"
+    rel="noopener noreferrer"
+    className="inline-flex"
+  >
+    <Button
+      size="lg"
+      variant="outline"
+      className="rounded-full px-8 w-full border-green-600 text-green-600 hover:bg-green-600 hover:text-white transition-all"
+    >
+      <MessageCircle className="w-5 h-5 mr-2" />
+      Join WhatsApp Community
+    </Button>
+  </a>
+);
+
 /* ============================== Main Component ============================ */
 const CourseDetailPage = () => {
   const { id } = useParams();
@@ -695,14 +713,19 @@ const CourseDetailPage = () => {
                     {formatPrice(course.price)}
                   </p>
                 </div>
-      
-                <EnrollCTA
-                  hasAccess={hasAccess}
-                  enrollment={enrollment}
-                  course={course}
-                  onEnroll={handleEnrollClick}
-                  variant="hero"
+               
                 />
+                <div className="flex flex-col gap-3">
+                  <EnrollCTA
+                    hasAccess={hasAccess}
+                    enrollment={enrollment}
+                    course={course}
+                    onEnroll={handleEnrollClick}
+                    variant="hero"
+                  />
+                
+                  {!hasAccess && !enrollment && <WhatsAppCTA />}
+                </div>    
               </div>
       
               <div className="mt-8 grid gap-4 border-t border-white/10 pt-6 sm:grid-cols-2">
@@ -794,13 +817,17 @@ const CourseDetailPage = () => {
               ))}
             </ul>
             <div className="flex justify-center">
-              <EnrollCTA
-                hasAccess={hasAccess}
-                enrollment={enrollment}
-                course={course}
-                onEnroll={handleEnrollClick}
-                variant="outcomes"
-              />
+              <div className="flex flex-col gap-3">
+                <EnrollCTA
+                  hasAccess={hasAccess}
+                  enrollment={enrollment}
+                  course={course}
+                  onEnroll={handleEnrollClick}
+                  variant="hero"
+                />
+              
+                {!hasAccess && !enrollment && <WhatsAppCTA />}
+              </div>
             </div>
           </div>
         </section>
@@ -907,13 +934,17 @@ const CourseDetailPage = () => {
             )
           )}
           <div className="flex justify-center">
-            <EnrollCTA
-              hasAccess={hasAccess}
-              enrollment={enrollment}
-              course={course}
-              onEnroll={handleEnrollClick}
-              variant="curriculum"
-            />
+            <div className="flex flex-col gap-3">
+              <EnrollCTA
+                hasAccess={hasAccess}
+                enrollment={enrollment}
+                course={course}
+                onEnroll={handleEnrollClick}
+                variant="hero"
+              />
+            
+              {!hasAccess && !enrollment && <WhatsAppCTA />}
+            </div>
           </div>
         </div>
       </section>
@@ -1061,13 +1092,17 @@ const CourseDetailPage = () => {
             ))}
           </div>
           <div className="flex justify-center">
-            <EnrollCTA
-              hasAccess={hasAccess}
-              enrollment={enrollment}
-              course={course}
-              onEnroll={handleEnrollClick}
-              variant="testimonials"
-            />
+            <div className="flex flex-col gap-3">
+              <EnrollCTA
+                hasAccess={hasAccess}
+                enrollment={enrollment}
+                course={course}
+                onEnroll={handleEnrollClick}
+                variant="hero"
+              />
+            
+              {!hasAccess && !enrollment && <WhatsAppCTA />}
+            </div>
           </div>
         </div>
       </section>
@@ -1271,13 +1306,17 @@ const CourseDetailPage = () => {
             ))}
           </div>
           <div className="flex justify-center mt-10">
-            <EnrollCTA
-              hasAccess={hasAccess}
-              enrollment={enrollment}
-              course={course}
-              onEnroll={handleEnrollClick}
-              variant="compare"
-            />
+           <div className="flex flex-col gap-3">
+              <EnrollCTA
+                hasAccess={hasAccess}
+                enrollment={enrollment}
+                course={course}
+                onEnroll={handleEnrollClick}
+                variant="hero"
+              />
+            
+              {!hasAccess && !enrollment && <WhatsAppCTA />}
+            </div>
           </div>
         </div>
       </section>
@@ -1348,13 +1387,17 @@ const CourseDetailPage = () => {
             ))}
           </Accordion>
           <div className="flex justify-center">
-            <EnrollCTA
-              hasAccess={hasAccess}
-              enrollment={enrollment}
-              course={course}
-              onEnroll={handleEnrollClick}
-              variant="faq"
-            />
+            <div className="flex flex-col gap-3">
+              <EnrollCTA
+                hasAccess={hasAccess}
+                enrollment={enrollment}
+                course={course}
+                onEnroll={handleEnrollClick}
+                variant="hero"
+              />
+            
+              {!hasAccess && !enrollment && <WhatsAppCTA />}
+            </div>
           </div>
         </div>
       </section>
@@ -1391,11 +1434,13 @@ const CourseDetailPage = () => {
         href="https://wa.me/2348127319882"
         target="_blank"
         rel="noopener noreferrer"
-        aria-label="Chat with us on WhatsApp"
-        className="fixed bottom-24 right-5 md:bottom-6 z-50 bg-green-500 hover:bg-green-600 text-white p-3.5 rounded-full shadow-lg hover:shadow-xl transition-all hover:scale-105 flex items-center justify-center"
+        aria-label="Chat with Admin on WhatsApp"
+        className="fixed bottom-24 right-5 md:bottom-6 z-50 flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white px-4 py-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
       >
-        <MessageCircle className="w-6 h-6" />
-        <span className="sr-only">WhatsApp</span>
+        <MessageCircle className="w-6 h-6 flex-shrink-0" />
+        <span className="font-medium whitespace-nowrap">
+          Chat With Admin
+        </span>
       </a>
     </div>
   );
