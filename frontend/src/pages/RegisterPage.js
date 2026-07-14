@@ -68,7 +68,7 @@ const RegisterPage = () => {
           <div className="w-12 h-12 rounded-full bg-primary flex items-center justify-center">
             <GraduationCap className="w-7 h-7 text-primary-foreground" />
           </div>
-          <span className="font-serif font-bold text-2xl text-secondary">Naija LMS</span>
+          <span className="font-serif font-bold text-2xl text-secondary">Orbal LMS</span>
         </Link>
 
         <Card className="shadow-lg">
