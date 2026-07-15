@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import {
   AlertCircle,
@@ -6,7 +6,6 @@ import {
   ArrowUpRight,
   Banknote,
   CheckCircle2,
-  ChevronsUpDown,
   Copy,
   CreditCard,
   FileImage,
@@ -40,19 +39,15 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 
 import Navbar from "../components/Navbar";
+import CurrencySelector from "../components/CurrencySelector";
 import { coursesAPI, settingsAPI, paymentsAPI, uploadAPI } from "../services/api";
 import { useAuth } from "../context/AuthContext";
+import { useLocalCurrency } from "../context/CurrencyContext";
+import { BASE_CURRENCY, formatLocalPrice } from "../lib/currency";
 
 /* -------------------------------------------------------------------------- */
 /* Helpers                                                                    */
@@ -65,194 +60,6 @@ const errorMessage = (err, fallback = "Something went wrong") => {
   return err?.message || fallback;
 };
 
-/* -------------------------------------------------------------------------- */
-/* Currency / FX                                                              */
-/* -------------------------------------------------------------------------- */
-
-const BASE_CURRENCY = "NGN";
-const FX_CACHE_KEY = "payment_fx_cache_v2";
-const FX_MANUAL_KEY = "payment_fx_manual_currency";
-const FX_CACHE_TTL_MS = 60 * 60 * 1000; // 1 hour
-
-// Backend base URL (same one the rest of the app uses via services/api)
-const API_BASE = process.env.REACT_APP_BACKEND_URL || "";
-
-// Currencies where fractional units are typically not shown
-const ZERO_DECIMAL_CURRENCIES = new Set([
-  "NGN", "JPY", "KRW", "VND", "IDR", "CLP", "ISK", "HUF", "TWD", "UGX", "PYG",
-]);
-
-const cacheKeyFor = (currency) => `${FX_CACHE_KEY}:${currency || "auto"}`;
-
-const readFxCache = (currency) => {
-  try {
-    const raw = localStorage.getItem(cacheKeyFor(currency));
-    if (!raw) return null;
-    const parsed = JSON.parse(raw);
-    if (
-      parsed &&
-      parsed.baseCurrency === BASE_CURRENCY &&
-      Date.now() - (parsed.timestamp || 0) < FX_CACHE_TTL_MS
-    ) {
-      return parsed;
-    }
-  } catch {
-    /* ignore */
-  }
-  return null;
-};
-
-const writeFxCache = (data, currency) => {
-  try {
-    localStorage.setItem(cacheKeyFor(currency), JSON.stringify(data));
-  } catch {
-    /* ignore quota errors */
-  }
-};
-
-const readManualCurrency = () => {
-  try {
-    return localStorage.getItem(FX_MANUAL_KEY) || null;
-  } catch {
-    return null;
-  }
-};
-
-const writeManualCurrency = (code) => {
-  try {
-    if (code) localStorage.setItem(FX_MANUAL_KEY, code);
-    else localStorage.removeItem(FX_MANUAL_KEY);
-  } catch {
-    /* ignore */
-  }
-};
-
-const DEFAULT_FX = {
-  baseCurrency: BASE_CURRENCY,
-  userCurrency: BASE_CURRENCY,
-  rate: 1,
-  countryCode: null,
-  locale: "en-NG",
-  source: "default",
-};
-
-/**
- * Auto-detect the user's currency via the backend /api/fx/localize endpoint,
- * which combines IP geolocation + live FX rates. Cached in localStorage 1h.
- */
-const autoDetectFx = async () => {
-  const cached = readFxCache("auto");
-  if (cached) return cached;
-
-  const result = { ...DEFAULT_FX, source: "fallback" };
-  try {
-    const res = await fetch(
-      `${API_BASE}/api/fx/localize?base=${BASE_CURRENCY}`,
-      { credentials: "omit" },
-    );
-    if (res.ok) {
-      const data = await res.json();
-      if (data?.detected_currency) {
-        result.userCurrency = data.detected_currency;
-        result.rate = Number(data.rate) || 1;
-        result.countryCode = data.country_code || null;
-        result.locale = data.locale || result.locale;
-        result.source = data.source || "geo";
-      }
-    }
-  } catch {
-    /* keep defaults */
-  }
-
-  result.timestamp = Date.now();
-  writeFxCache(result, "auto");
-  return result;
-};
-
-/**
- * Fetch the FX rate for an explicitly chosen currency (user manual override).
- */
-const fetchFxForCurrency = async (currency) => {
-  if (!currency || currency === BASE_CURRENCY) {
-    return {
-      ...DEFAULT_FX,
-      userCurrency: BASE_CURRENCY,
-      rate: 1,
-      source: "manual",
-      timestamp: Date.now(),
-    };
-  }
-
-  const cached = readFxCache(currency);
-  if (cached) return cached;
-
-  const result = {
-    ...DEFAULT_FX,
-    userCurrency: currency,
-    rate: 1,
-    source: "manual",
-  };
-  try {
-    const res = await fetch(
-      `${API_BASE}/api/fx/rate?base=${BASE_CURRENCY}&to=${encodeURIComponent(currency)}`,
-      { credentials: "omit" },
-    );
-    if (res.ok) {
-      const data = await res.json();
-      if (data?.rate && Number.isFinite(data.rate) && data.rate > 0) {
-        result.rate = Number(data.rate);
-      } else {
-        result.userCurrency = BASE_CURRENCY;
-      }
-    } else {
-      result.userCurrency = BASE_CURRENCY;
-    }
-  } catch {
-    result.userCurrency = BASE_CURRENCY;
-  }
-
-  result.timestamp = Date.now();
-  writeFxCache(result, currency);
-  return result;
-};
-
-/**
- * Fetch the curated currency list from the backend. Cached in-memory
- * for the lifetime of the module (rarely changes).
- */
-let _currencyListPromise = null;
-const fetchCurrencyList = () => {
-  if (_currencyListPromise) return _currencyListPromise;
-  _currencyListPromise = fetch(`${API_BASE}/api/fx/currencies`, {
-    credentials: "omit",
-  })
-    .then((r) => (r.ok ? r.json() : { currencies: [] }))
-    .then((d) => (Array.isArray(d?.currencies) ? d.currencies : []))
-    .catch(() => []);
-  return _currencyListPromise;
-};
-
-const formatLocalPrice = (price, fx) => {
-  const amount = Number(price || 0) * (fx?.rate || 1);
-  const currency = fx?.userCurrency || BASE_CURRENCY;
-  const locale = fx?.locale || "en-NG";
-  const zeroDecimal = ZERO_DECIMAL_CURRENCIES.has(currency);
-
-  try {
-    return new Intl.NumberFormat(locale, {
-      style: "currency",
-      currency,
-      minimumFractionDigits: zeroDecimal ? 0 : 2,
-      maximumFractionDigits: zeroDecimal ? 0 : 2,
-    }).format(amount);
-  } catch {
-    return `${currency} ${amount.toLocaleString(undefined, {
-      minimumFractionDigits: zeroDecimal ? 0 : 2,
-      maximumFractionDigits: zeroDecimal ? 0 : 2,
-    })}`;
-  }
-};
-
 const groupBanks = (banks = []) => {
   const list = Array.isArray(banks) ? [...banks] : [];
   list.sort((a, b) => Number(!!b.is_default) - Number(!!a.is_default));
@@ -263,7 +70,7 @@ const ACCEPTED_TYPES = ["image/jpeg", "image/png", "image/gif", "application/pdf
 const MAX_SIZE_BYTES = 10 * 1024 * 1024;
 
 /* -------------------------------------------------------------------------- */
-/* Shared UI atoms (mirrors AdminSettings)                                    */
+/* Shared UI atoms                                                            */
 /* -------------------------------------------------------------------------- */
 
 const SectionHeading = ({ icon: Icon, title, description, actions }) => (
@@ -505,65 +312,14 @@ const PaymentLinkRow = ({ link }) => (
 /* Cards                                                                      */
 /* -------------------------------------------------------------------------- */
 
-const CurrencySelector = ({ currencies, value, onChange, disabled }) => {
-  if (!currencies || currencies.length === 0) return null;
-  return (
-    <Select value={value || "auto"} onValueChange={onChange} disabled={disabled}>
-      <SelectTrigger
-        data-testid="payment-currency-selector"
-        className="h-8 w-[150px] gap-1 border-primary/30 bg-background/60 text-xs font-medium"
-      >
-        <SelectValue placeholder="Currency" />
-        <ChevronsUpDown className="ml-1 h-3 w-3 opacity-60" />
-      </SelectTrigger>
-      <SelectContent align="end" className="max-h-[300px]">
-        <SelectItem value="auto" data-testid="payment-currency-option-auto">
-          <span className="flex items-center gap-2">
-            <span className="text-muted-foreground">Auto-detect</span>
-          </span>
-        </SelectItem>
-        {currencies.map((c) => (
-          <SelectItem
-            key={c.code}
-            value={c.code}
-            data-testid={`payment-currency-option-${c.code}`}
-          >
-            <span className="flex items-center gap-2">
-              <span className="font-mono text-xs font-semibold">{c.code}</span>
-              <span className="truncate text-muted-foreground">
-                &middot; {c.name}
-              </span>
-            </span>
-          </SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
-  );
-};
-
-const AmountCard = ({
-  course,
-  loading,
-  fx,
-  fxLoading,
-  currencies,
-  manualCurrency,
-  onCurrencyChange,
-}) => (
+const AmountCard = ({ course, loading, fx, fxLoading }) => (
   <Card data-testid="payment-amount-card" className="overflow-hidden">
     <CardHeader className="pb-3">
       <SectionHeading
         icon={ReceiptText}
         title="Order Summary"
         description="Review the amount before making a transfer."
-        actions={
-          <CurrencySelector
-            currencies={currencies}
-            value={manualCurrency}
-            onChange={onCurrencyChange}
-            disabled={loading}
-          />
-        }
+        actions={<CurrencySelector variant="compact" testId="payment-currency-selector" disabled={loading} />}
       />
     </CardHeader>
     <CardContent className="space-y-4">
@@ -629,7 +385,7 @@ const BankAccountsCard = ({ banks, loading }) => {
         setCopiedField((prev) => (prev === key ? null : prev));
       }, 1500);
     } catch {
-      toast.error("Copy failed — select and copy manually");
+      toast.error("Copy failed \u2014 select and copy manually");
     }
   }, []);
 
@@ -854,6 +610,7 @@ export default function PaymentPage() {
   const { courseId } = useParams();
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
+  const { fx, fxLoading } = useLocalCurrency();
 
   const [course, setCourse] = useState(null);
   const [settings, setSettings] = useState({ banks: [], payment_links: [] });
@@ -870,13 +627,6 @@ export default function PaymentPage() {
   const [proofType, setProofType] = useState("");
   const [dragActive, setDragActive] = useState(false);
 
-  // Detected user currency + FX rate (falls back to NGN 1:1)
-  const [fx, setFx] = useState(DEFAULT_FX);
-  const [fxLoading, setFxLoading] = useState(true);
-  const [currencies, setCurrencies] = useState([]);
-  const [manualCurrency, setManualCurrency] = useState(() => readManualCurrency());
-  const fxReqRef = useRef(0);
-
   /* ---------- Auth gate ---------- */
   useEffect(() => {
     if (!isAuthenticated) {
@@ -884,42 +634,6 @@ export default function PaymentPage() {
       navigate("/login", { state: { from: `/payment/${courseId}` } });
     }
   }, [isAuthenticated, courseId, navigate]);
-
-  /* ---------- Load curated currency list once ---------- */
-  useEffect(() => {
-    let cancelled = false;
-    fetchCurrencyList().then((list) => {
-      if (!cancelled) setCurrencies(list);
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  /* ---------- Detect user currency + FX rate (auto or manual) ---------- */
-  useEffect(() => {
-    const reqId = ++fxReqRef.current;
-    let cancelled = false;
-    (async () => {
-      setFxLoading(true);
-      const result = manualCurrency
-        ? await fetchFxForCurrency(manualCurrency)
-        : await autoDetectFx();
-      // Ignore stale responses if user quickly switched currencies
-      if (cancelled || reqId !== fxReqRef.current) return;
-      setFx(result);
-      setFxLoading(false);
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, [manualCurrency]);
-
-  const handleCurrencyChange = useCallback((value) => {
-    const next = value === "auto" ? null : value;
-    setManualCurrency(next);
-    writeManualCurrency(next);
-  }, []);
 
   /* ---------- Data load ---------- */
   const load = useCallback(async () => {
@@ -933,7 +647,6 @@ export default function PaymentPage() {
       setCourse(courseRes.data);
 
       const data = bankRes.data || {};
-      // Support both new schema ({ banks, payment_links }) and legacy single-bank schema
       const banks = Array.isArray(data.banks)
         ? data.banks
         : data.bank_name
@@ -1060,7 +773,6 @@ export default function PaymentPage() {
       <Navbar />
 
       <div className="mx-auto w-full max-w-5xl px-4 py-8 sm:px-6 sm:py-10 lg:py-14">
-        {/* Back link */}
         <Link
           to={`/courses/${courseId}`}
           data-testid="payment-back-link"
@@ -1070,7 +782,6 @@ export default function PaymentPage() {
           Back to course
         </Link>
 
-        {/* Header */}
         <header className="mb-8 flex flex-col gap-3 sm:mb-10 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-3">
             <div className="rounded-2xl bg-primary/10 p-3 text-primary">
@@ -1095,7 +806,6 @@ export default function PaymentPage() {
           </Badge>
         </header>
 
-        {/* Errors */}
         {error ? (
           <div
             data-testid="payment-error"
@@ -1116,7 +826,6 @@ export default function PaymentPage() {
           </div>
         ) : null}
 
-        {/* Empty-config warning */}
         {noPaymentMethods ? (
           <div
             data-testid="payment-no-methods"
@@ -1133,7 +842,6 @@ export default function PaymentPage() {
           </div>
         ) : null}
 
-        {/* Body grid */}
         <div className="grid gap-6 lg:grid-cols-5">
           <div className="space-y-6 lg:col-span-3">
             <AmountCard
@@ -1141,9 +849,6 @@ export default function PaymentPage() {
               loading={loading}
               fx={fx}
               fxLoading={fxLoading}
-              currencies={currencies}
-              manualCurrency={manualCurrency}
-              onCurrencyChange={handleCurrencyChange}
             />
             <BankAccountsCard banks={settings.banks} loading={loading} />
             <PaymentLinksCard
@@ -1179,7 +884,6 @@ export default function PaymentPage() {
         </footer>
       </div>
 
-      {/* Confirm submit */}
       <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
         <AlertDialogContent data-testid="payment-confirm-dialog">
           <AlertDialogHeader>
