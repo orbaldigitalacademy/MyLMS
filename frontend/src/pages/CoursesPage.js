@@ -2,16 +2,21 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import CurrencySelector from '../components/CurrencySelector';
 import { Button } from '../components/ui/button';
 import { Card, CardContent } from '../components/ui/card';
 import { Input } from '../components/ui/input';
+import { Skeleton } from '../components/ui/skeleton';
 import { coursesAPI } from '../services/api';
-import { Clock, BookOpen, Search, Filter } from 'lucide-react';
+import { useLocalCurrency } from '../context/CurrencyContext';
+import { formatLocalPrice } from '../lib/currency';
+import { Clock, BookOpen, Search } from 'lucide-react';
 
 const CoursesPage = () => {
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const { fx, fxLoading } = useLocalCurrency();
 
   useEffect(() => {
     const fetchCourses = async () => {
@@ -27,14 +32,6 @@ const CoursesPage = () => {
     fetchCourses();
   }, []);
 
-  const formatPrice = (price) => {
-    return new Intl.NumberFormat('en-NG', {
-      style: 'currency',
-      currency: 'NGN',
-      minimumFractionDigits: 0
-    }).format(price);
-  };
-
   const filteredCourses = courses.filter(course =>
     course.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
     course.short_description.toLowerCase().includes(searchTerm.toLowerCase())
@@ -43,7 +40,6 @@ const CoursesPage = () => {
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
-
       {/* Header */}
       <section className="bg-secondary py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -73,9 +69,15 @@ const CoursesPage = () => {
                 data-testid="course-search-input"
               />
             </div>
-            <p className="text-muted-foreground text-sm">
-              {filteredCourses.length} course{filteredCourses.length !== 1 ? 's' : ''} available
-            </p>
+            <div className="flex items-center gap-4 w-full md:w-auto justify-between md:justify-end">
+              <p className="text-muted-foreground text-sm">
+                {filteredCourses.length} course{filteredCourses.length !== 1 ? 's' : ''} available
+              </p>
+              <CurrencySelector
+                variant="compact"
+                testId="courses-currency-selector"
+              />
+            </div>
           </div>
         </div>
       </section>
@@ -100,13 +102,20 @@ const CoursesPage = () => {
               {filteredCourses.map((course) => (
                 <Card key={course.id} className="overflow-hidden card-hover group" data-testid={`course-card-${course.id}`}>
                   <div className="relative h-48 overflow-hidden">
-                    <img 
+                    <img
                       src={course.image_url || 'https://images.unsplash.com/photo-1665586510291-ae722d1d1f00?crop=entropy&cs=srgb&fm=jpg&q=85'}
                       alt={course.title}
                       className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                     />
-                    <div className="absolute top-4 right-4 bg-primary text-primary-foreground px-3 py-1 rounded-full text-sm font-bold price-tag">
-                      {formatPrice(course.price)}
+                    <div
+                      className="absolute top-4 right-4 bg-primary text-primary-foreground px-3 py-1 rounded-full text-sm font-bold price-tag min-w-[70px] text-center"
+                      data-testid={`course-price-${course.id}`}
+                    >
+                      {fxLoading ? (
+                        <Skeleton className="h-4 w-16 bg-white/30" />
+                      ) : (
+                        formatLocalPrice(course.price, fx)
+                      )}
                     </div>
                   </div>
                   <CardContent className="p-6">
@@ -146,7 +155,6 @@ const CoursesPage = () => {
           )}
         </div>
       </section>
-
       <Footer />
     </div>
   );
