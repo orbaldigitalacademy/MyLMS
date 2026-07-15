@@ -25,7 +25,7 @@ const LoginPage = () => {
 
     try {
       const user = await login(email, password);
-      toast.success(`Welcome back, ${user.full_name}!`);
+      toast.success(`Welcome back, ${user.name}!`);
       
       // Redirect based on role
       if (user.role === 'admin') {
