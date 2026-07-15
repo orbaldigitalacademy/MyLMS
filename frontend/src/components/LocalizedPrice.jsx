@@ -21,10 +21,7 @@ const formatMoney = (amount, currency, locale) => {
       maximumFractionDigits: fractionDigits,
     }).format(amount);
   } catch {
-    return `${currency} ${Number(amount).toLocaleString(undefined, {
-      minimumFractionDigits: fractionDigits,
-      maximumFractionDigits: fractionDigits,
-    })}`;
+    return `${currency} ${Number(amount).toLocaleString()}`;
   }
 };
 
@@ -48,33 +45,25 @@ const LocalizedPrice = ({
     return <span className={className}>Price unavailable</span>;
   }
 
-  if (loading) {
-    return (
-      <span className={className}>
-        {formatMoney(numericAmount, "NGN", "en-NG")}
-      </span>
-    );
-  }
-
-  const convertedAmount = numericAmount * rate;
-  const isConverted = currency !== base;
+  const displayedCurrency = loading ? base : currency;
+  const displayedRate = loading ? 1 : rate;
+  const displayedAmount = numericAmount * displayedRate;
+  const isConverted = displayedCurrency !== base;
 
   return (
     <div>
       <span className={className}>
+        {isConverted ? "≈ " : ""}
         {formatMoney(
-          isConverted ? convertedAmount : numericAmount,
-          currency,
+          displayedAmount,
+          displayedCurrency,
           locale
         )}
       </span>
 
       {isConverted && showBasePrice && (
         <p className={baseClassName}>
-          Approximately{" "}
-          {formatMoney(convertedAmount, currency, locale)}
-          {" · "}
-          Base price{" "}
+          Charged as{" "}
           {formatMoney(numericAmount, base, "en-NG")}
         </p>
       )}
