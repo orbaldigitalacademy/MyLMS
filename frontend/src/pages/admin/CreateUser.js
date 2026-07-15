@@ -3,7 +3,7 @@ import { adminAPI } from "../../services/api";
 
 export default function CreateUser() {
   const [formData, setFormData] = useState({
-    full_name: "",
+    name: "",
     email: "",
     password: "",
     role: "student",
@@ -13,15 +13,32 @@ export default function CreateUser() {
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
 
-  // Handle input change
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+    const { name, value } = e.target;
+
+    setFormData((previous) => ({
+      ...previous,
+      [name]: value,
+    }));
   };
 
-  // Handle form submit
+  const formatValidationError = (detail) => {
+    if (Array.isArray(detail)) {
+      return detail
+        .map((item) => {
+          const field = item.loc?.[item.loc.length - 1] || "field";
+          return `${field}: ${item.msg}`;
+        })
+        .join(", ");
+    }
+
+    if (typeof detail === "string") {
+      return detail;
+    }
+
+    return "Failed to create user.";
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -29,22 +46,32 @@ export default function CreateUser() {
     setError("");
     setMessage("");
 
+    const payload = {
+      name: formData.name.trim(),
+      email: formData.email.trim().toLowerCase(),
+      password: formData.password,
+      role: formData.role,
+    };
+
     try {
-      const res = await adminAPI.createUser(formData);
+      await adminAPI.createUser(payload);
 
-      setMessage("User created successfully ✅");
+      setMessage("User created successfully.");
 
-      // Reset form
       setFormData({
-        full_name: "",
+        name: "",
         email: "",
         password: "",
         role: "student",
       });
-
     } catch (err) {
+      console.error(
+        "Create user error:",
+        JSON.stringify(err.response?.data, null, 2)
+      );
+
       setError(
-        err.response?.data?.detail || "Failed to create user"
+        formatValidationError(err.response?.data?.detail)
       );
     } finally {
       setLoading(false);
@@ -52,80 +79,125 @@ export default function CreateUser() {
   };
 
   return (
-    <div className="p-6 max-w-xl mx-auto">
-      <h2 className="text-2xl font-bold mb-6">Create User</h2>
+    <div className="mx-auto max-w-xl p-6">
+      <h2 className="mb-6 text-2xl font-bold">
+        Create User
+      </h2>
 
-      {/* SUCCESS MESSAGE */}
       {message && (
-        <div className="bg-green-100 text-green-700 p-3 rounded mb-4">
+        <div
+          role="alert"
+          className="mb-4 rounded bg-green-100 p-3 text-green-700"
+        >
           {message}
         </div>
       )}
 
-      {/* ERROR MESSAGE */}
       {error && (
-        <div className="bg-red-100 text-red-700 p-3 rounded mb-4">
+        <div
+          role="alert"
+          className="mb-4 rounded bg-red-100 p-3 text-red-700"
+        >
           {error}
         </div>
       )}
 
       <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <label
+            htmlFor="name"
+            className="mb-1 block text-sm font-medium"
+          >
+            Full Name
+          </label>
 
-        {/* FULL NAME */}
-        <input
-          type="text"
-          name="full_name"
-          placeholder="Full Name"
-          value={formData.full_name}
-          onChange={handleChange}
-          required
-          className="w-full border p-3 rounded"
-        />
+          <input
+            id="name"
+            type="text"
+            name="name"
+            placeholder="Full Name"
+            value={formData.name}
+            onChange={handleChange}
+            minLength={2}
+            required
+            disabled={loading}
+            className="w-full rounded border p-3 disabled:opacity-60"
+          />
+        </div>
 
-        {/* EMAIL */}
-        <input
-          type="email"
-          name="email"
-          placeholder="Email"
-          value={formData.email}
-          onChange={handleChange}
-          required
-          className="w-full border p-3 rounded"
-        />
+        <div>
+          <label
+            htmlFor="email"
+            className="mb-1 block text-sm font-medium"
+          >
+            Email
+          </label>
 
-        {/* PASSWORD */}
-        <input
-          type="password"
-          name="password"
-          placeholder="Password"
-          value={formData.password}
-          onChange={handleChange}
-          required
-          className="w-full border p-3 rounded"
-        />
+          <input
+            id="email"
+            type="email"
+            name="email"
+            placeholder="Email address"
+            value={formData.email}
+            onChange={handleChange}
+            required
+            disabled={loading}
+            autoComplete="email"
+            className="w-full rounded border p-3 disabled:opacity-60"
+          />
+        </div>
 
-        {/* ROLE */}
-        <select
-          name="role"
-          value={formData.role}
-          onChange={handleChange}
-          className="w-full border p-3 rounded"
-        >
-          <option value="student">Student</option>
-          <option value="instructor">Instructor</option>
-          <option value="moderator">Moderator</option>
-          <option value="admin">Admin</option>
-        </select>
+        <div>
+          <label
+            htmlFor="password"
+            className="mb-1 block text-sm font-medium"
+          >
+            Password
+          </label>
 
-        {/* SUBMIT BUTTON */}
+          <input
+            id="password"
+            type="password"
+            name="password"
+            placeholder="Minimum 8 characters"
+            value={formData.password}
+            onChange={handleChange}
+            minLength={8}
+            required
+            disabled={loading}
+            autoComplete="new-password"
+            className="w-full rounded border p-3 disabled:opacity-60"
+          />
+        </div>
+
+        <div>
+          <label
+            htmlFor="role"
+            className="mb-1 block text-sm font-medium"
+          >
+            Role
+          </label>
+
+          <select
+            id="role"
+            name="role"
+            value={formData.role}
+            onChange={handleChange}
+            disabled={loading}
+            className="w-full rounded border p-3 disabled:opacity-60"
+          >
+            <option value="student">Student</option>
+            <option value="admin">Admin</option>
+          </select>
+        </div>
+
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-black text-white p-3 rounded hover:opacity-90 disabled:opacity-50"
+          className="w-full rounded bg-black p-3 text-white hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
         >
           {loading ? "Creating..." : "Create User"}
         </button>
-
       </form>
     </div>
   );
