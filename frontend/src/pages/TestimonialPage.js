@@ -23,7 +23,7 @@ export default function TestimonialPage() {
       setLoading(true);
 
       const res = await api.get(
-        `/testimonials?page=${pageNum}&limit=6`
+        `/testimonials?page=${pageNum}&limit=100`
       );
 
       setTestimonials(res.data?.data || []);
