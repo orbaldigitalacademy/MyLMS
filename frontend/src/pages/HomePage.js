@@ -81,7 +81,7 @@ const HomePage = () => {
         <title>Orbal Digital Academy</title>
         <meta
           name="description"
-          content="Orbal Digital Academy - Unlock your potential with quality online courses"
+          content="Orbal Digital Academy - Unlock your potentials with quality digital courses"
         />
       </Helmet>
 
@@ -204,42 +204,53 @@ const HomePage = () => {
             What Our Students Say
           </h2>
       
-          <div className="grid md:grid-cols-3 gap-6">
-            {testimonials.slice(0, 3).map((t) => (
-              <div
-                key={t.id}
-                className="bg-white p-6 rounded-xl shadow hover:shadow-lg transition duration-300"
-              >
-                {/* Student Info */}
-                <div className="flex items-center gap-4 mb-4">
-                  <img
-                    src={t.avatar_url || "/default-avatar.png"}
-                    alt={t.user_name || "Student"}
-                    className="w-14 h-14 rounded-full object-cover border-2 border-emerald-500"
-                    loading="lazy"
-                  />
+          {testimonials.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {testimonials.map((t) => (
+                <div
+                  key={t.id}
+                  className="bg-white p-6 rounded-xl shadow hover:shadow-lg transition duration-300"
+                >
+                  {/* Student Info */}
+                  <div className="flex items-center gap-4 mb-4">
+                    <img
+                      src={t.avatar_url || "/default-avatar.png"}
+                      alt={t.user_name || "Student"}
+                      className="w-14 h-14 rounded-full object-cover border-2 border-emerald-500"
+                      loading="lazy"
+                      onError={(e) => {
+                        e.currentTarget.src = "/default-avatar.png";
+                      }}
+                    />
       
-                  <div>
-                    <h4 className="font-semibold text-lg">
-                      {t.user_name || "Anonymous Student"}
-                    </h4>
+                    <div>
+                      <h4 className="font-semibold text-lg">
+                        {t.user_name || "Anonymous Student"}
+                      </h4>
       
-                    <div className="text-yellow-500 text-sm">
-                      {"⭐".repeat(t.rating || 0)}
+                      <div
+                        className="text-yellow-500 text-sm"
+                        aria-label={`${t.rating || 0} out of 5 stars`}
+                      >
+                        {"⭐".repeat(t.rating || 0)}
+                      </div>
                     </div>
                   </div>
-                </div>
       
-                {/* Testimonial */}
-                <p className="text-gray-600 leading-relaxed">
-                  "{t.content}"
-                </p>
-              </div>
-            ))}
-          </div>
+                  {/* Testimonial */}
+                  <p className="text-gray-600 leading-relaxed">
+                    “{t.content}”
+                  </p>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-center text-gray-500">
+              No testimonials are available yet.
+            </p>
+          )}
         </div>
       </section>
-
       {/* CTA */}
       <section className="bg-secondary py-16 text-center text-white">
         <h2 className="text-3xl font-bold mb-4">Ready to Start Learning?</h2>
