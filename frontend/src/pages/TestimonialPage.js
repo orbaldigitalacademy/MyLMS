@@ -25,6 +25,8 @@ export default function TestimonialPage() {
       const res = await api.get(
         `/testimonials?page=${pageNum}&limit=100`
       );
+      console.log("Homepage testimonials response:", res.data);
+      console.log("Testimonials returned:", res.data?.data?.length);
 
       setTestimonials(res.data?.data || []);
       setPages(res.data?.pages || 1);
