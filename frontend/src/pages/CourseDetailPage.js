@@ -19,6 +19,9 @@ import { formatLocalPrice } from '../lib/currency';
 import { toast } from 'sonner';
 import {
   Clock,
+  CalendarDays,
+  MapPin,
+  Timer,
   BookOpen,
   CheckCircle,
   Play,
@@ -179,6 +182,66 @@ const extFromName = (name) => {
   if (!name) return '';
   const dot = name.lastIndexOf('.');
   return dot === -1 ? '' : name.slice(dot + 1).toUpperCase();
+};
+
+
+/* --------------------------- Schedule helpers ----------------------------- */
+const formatStartDate = (dateValue) => {
+  if (!dateValue) return '';
+
+  try {
+    const [year, month, day] = String(dateValue).split('-').map(Number);
+
+    if (!year || !month || !day) {
+      return String(dateValue);
+    }
+
+    const date = new Date(year, month - 1, day);
+
+    return new Intl.DateTimeFormat('en-NG', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+    }).format(date);
+  } catch {
+    return String(dateValue);
+  }
+};
+
+const formatClassTime = (timeValue) => {
+  if (!timeValue) return '';
+
+  try {
+    const [hours, minutes] = String(timeValue).split(':').map(Number);
+
+    if (
+      Number.isNaN(hours) ||
+      Number.isNaN(minutes) ||
+      hours < 0 ||
+      hours > 23
+    ) {
+      return String(timeValue);
+    }
+
+    const date = new Date();
+    date.setHours(hours, minutes || 0, 0, 0);
+
+    return new Intl.DateTimeFormat('en-NG', {
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true,
+    }).format(date);
+  } catch {
+    return String(timeValue);
+  }
+};
+
+const formatClassDays = (classDays) => {
+  if (!Array.isArray(classDays) || classDays.length === 0) {
+    return '';
+  }
+
+  return classDays.join(', ');
 };
 
 /* ----------------------------- Price atom --------------------------------- */
@@ -592,6 +655,17 @@ const CourseDetailPage = () => {
     (curriculumUrl ? 'Course Curriculum' : '');
   const curriculumExt = extFromName(curriculumFilename) || 'PDF';
 
+  const startDate = formatStartDate(course.start_date);
+  const classDays = formatClassDays(course.class_days);
+  const classTime = formatClassTime(course.class_time);
+
+  const hasSchedule =
+    startDate ||
+    classDays ||
+    classTime ||
+    course.class_duration ||
+    course.venue;
+
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
@@ -669,17 +743,99 @@ const CourseDetailPage = () => {
                     <div className="mt-10 flex flex-wrap gap-4">
                       <div className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 backdrop-blur">
                         <Clock className="h-4 w-4 text-primary" />
-                        <span className="text-sm text-white/80">{course.duration}</span>
+                        <span className="text-sm text-white/80">
+                          {course.duration || 'Duration not specified'}
+                        </span>
                       </div>
+
                       <div className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 backdrop-blur">
                         <BookOpen className="h-4 w-4 text-primary" />
-                        <span className="text-sm text-white/80">{lessons.length} Lessons</span>
+                        <span className="text-sm text-white/80">
+                          {lessons.length} Lesson{lessons.length === 1 ? '' : 's'}
+                        </span>
                       </div>
+
                       <div className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 backdrop-blur">
                         <Star className="h-4 w-4 fill-primary text-primary" />
-                        <span className="text-sm text-white/80">4.5 (1,200+ Students)</span>
+                        <span className="text-sm text-white/80">
+                          4.5 (1,200+ Students)
+                        </span>
                       </div>
                     </div>
+
+                    {hasSchedule && (
+                      <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                        {startDate && (
+                          <div className="flex items-start gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur">
+                            <CalendarDays className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
+                            <div>
+                              <p className="text-xs uppercase tracking-wider text-white/50">
+                                Start Date
+                              </p>
+                              <p className="mt-1 text-sm font-medium text-white">
+                                {startDate}
+                              </p>
+                            </div>
+                          </div>
+                        )}
+
+                        {classDays && (
+                          <div className="flex items-start gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur">
+                            <CalendarDays className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
+                            <div>
+                              <p className="text-xs uppercase tracking-wider text-white/50">
+                                Class Days
+                              </p>
+                              <p className="mt-1 text-sm font-medium text-white">
+                                {classDays}
+                              </p>
+                            </div>
+                          </div>
+                        )}
+
+                        {classTime && (
+                          <div className="flex items-start gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur">
+                            <Clock className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
+                            <div>
+                              <p className="text-xs uppercase tracking-wider text-white/50">
+                                Class Time
+                              </p>
+                              <p className="mt-1 text-sm font-medium text-white">
+                                {classTime}
+                              </p>
+                            </div>
+                          </div>
+                        )}
+
+                        {course.class_duration && (
+                          <div className="flex items-start gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur">
+                            <Timer className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
+                            <div>
+                              <p className="text-xs uppercase tracking-wider text-white/50">
+                                Class Duration
+                              </p>
+                              <p className="mt-1 text-sm font-medium text-white">
+                                {course.class_duration}
+                              </p>
+                            </div>
+                          </div>
+                        )}
+
+                        {course.venue && (
+                          <div className="flex items-start gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur sm:col-span-2 lg:col-span-1">
+                            <MapPin className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
+                            <div className="min-w-0">
+                              <p className="text-xs uppercase tracking-wider text-white/50">
+                                Venue
+                              </p>
+                              <p className="mt-1 break-words text-sm font-medium text-white">
+                                {course.venue}
+                              </p>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
 
                     {/* Pricing Card */}
                     <div className="mt-12 rounded-3xl border border-white/10 bg-white/5 p-8 shadow-2xl backdrop-blur-xl transition-all hover:border-primary/30">
