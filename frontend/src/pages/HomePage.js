@@ -205,45 +205,59 @@ const HomePage = () => {
           </h2>
       
           {testimonials.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {testimonials.map((t) => (
-                <div
-                  key={t.id}
-                  className="bg-white p-6 rounded-xl shadow hover:shadow-lg transition duration-300"
-                >
-                  {/* Student Info */}
-                  <div className="flex items-center gap-4 mb-4">
-                    <img
-                      src={t.avatar_url || "/default-avatar.png"}
-                      alt={t.user_name || "Student"}
-                      className="w-14 h-14 rounded-full object-cover border-2 border-emerald-500"
-                      loading="lazy"
-                      onError={(e) => {
-                        e.currentTarget.src = "/default-avatar.png";
-                      }}
-                    />
+            <>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {testimonials.map((t) => (
+                  <div
+                    key={t.id}
+                    className="bg-white p-6 rounded-xl shadow hover:shadow-lg transition duration-300"
+                  >
+                    {/* Student Info */}
+                    <div className="flex items-center gap-4 mb-4">
+                      <img
+                        src={t.avatar_url || "/default-avatar.png"}
+                        alt={t.user_name || "Student"}
+                        className="w-14 h-14 rounded-full object-cover border-2 border-emerald-500"
+                        loading="lazy"
+                        onError={(e) => {
+                          e.currentTarget.src = "/default-avatar.png";
+                        }}
+                      />
       
-                    <div>
-                      <h4 className="font-semibold text-lg">
-                        {t.user_name || "Anonymous Student"}
-                      </h4>
+                      <div>
+                        <h4 className="font-semibold text-lg">
+                          {t.user_name || "Anonymous Student"}
+                        </h4>
       
-                      <div
-                        className="text-yellow-500 text-sm"
-                        aria-label={`${t.rating || 0} out of 5 stars`}
-                      >
-                        {"⭐".repeat(t.rating || 0)}
+                        <div
+                          className="text-yellow-500 text-sm"
+                          aria-label={`${t.rating || 0} out of 5 stars`}
+                        >
+                          {"⭐".repeat(t.rating || 0)}
+                        </div>
                       </div>
                     </div>
-                  </div>
       
-                  {/* Testimonial */}
-                  <p className="text-gray-600 leading-relaxed">
-                    “{t.content}”
-                  </p>
-                </div>
-              ))}
-            </div>
+                    {/* Testimonial */}
+                    <p className="text-gray-600 leading-relaxed">
+                      “{t.content}”
+                    </p>
+                  </div>
+                ))}
+              </div>
+      
+              {/* Read More Button */}
+              <div className="mt-10 flex justify-center">
+                <Link to="/testimonials">
+                  <Button
+                    size="lg"
+                    className="rounded-full px-8"
+                  >
+                    Read More Testimonials
+                  </Button>
+                </Link>
+              </div>
+            </>
           ) : (
             <p className="text-center text-gray-500">
               No testimonials are available yet.
