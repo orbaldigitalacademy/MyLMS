@@ -1,60 +1,149 @@
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
+
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import CurrencySelector from '../components/CurrencySelector';
+
 import { Button } from '../components/ui/button';
-import { Input } from '../components/ui/input';
-import { Textarea } from '../components/ui/textarea';
 import { Card, CardContent } from '../components/ui/card';
-import { Label } from '../components/ui/label';
-import { contactAPI } from '../services/api';
-import { toast } from 'sonner';
-import { Mail, Phone, MapPin, Send, Loader2 } from 'lucide-react';
+import { Input } from '../components/ui/input';
+import { Skeleton } from '../components/ui/skeleton';
 
-const ContactPage = () => {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    subject: '',
-    message: ''
-  });
-  const [loading, setLoading] = useState(false);
+import { coursesAPI } from '../services/api';
+import { useLocalCurrency } from '../context/CurrencyContext';
+import { formatLocalPrice } from '../lib/currency';
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+import {
+  BookOpen,
+  CalendarDays,
+  Clock,
+  MapPin,
+  Search,
+  Timer,
+} from 'lucide-react';
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
+const FALLBACK_IMAGE =
+  'https://images.unsplash.com/photo-1665586510291-ae722d1d1f00?crop=entropy&cs=srgb&fm=jpg&q=85';
 
-    try {
-      await contactAPI.submit(formData);
-      toast.success('Message sent successfully! We\'ll get back to you soon.');
-      setFormData({ name: '', email: '', subject: '', message: '' });
-    } catch (error) {
-      toast.error('Failed to send message. Please try again.');
-    } finally {
-      setLoading(false);
+/**
+ * Convert a date string such as 2026-08-15 into a readable date.
+ * Parsing the date parts manually avoids timezone-related date changes.
+ */
+const formatStartDate = (dateValue) => {
+  if (!dateValue) return '';
+
+  try {
+    const [year, month, day] = dateValue.split('-').map(Number);
+
+    if (!year || !month || !day) {
+      return dateValue;
     }
-  };
 
-  const contactInfo = [
-    {
-      icon: MapPin,
-      title: 'Address',
-      content: 'Opposite Tourist Lodge, Katsina, Nigeria'
-    },
-    {
-      icon: Phone,
-      title: 'Phone',
-      content: '+234 803 580 7517'
-    },
-    {
-      icon: Mail,
-      title: 'Email',
-      content: 'info@orbal.com'
+    const date = new Date(year, month - 1, day);
+
+    return new Intl.DateTimeFormat('en-NG', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+    }).format(date);
+  } catch {
+    return dateValue;
+  }
+};
+
+/**
+ * Convert 24-hour time, such as 18:00, into 6:00 PM.
+ */
+const formatClassTime = (timeValue) => {
+  if (!timeValue) return '';
+
+  try {
+    const [hours, minutes] = timeValue.split(':').map(Number);
+
+    if (
+      Number.isNaN(hours) ||
+      Number.isNaN(minutes) ||
+      hours < 0 ||
+      hours > 23
+    ) {
+      return timeValue;
     }
-  ];
+
+    const date = new Date();
+    date.setHours(hours, minutes || 0, 0, 0);
+
+    return new Intl.DateTimeFormat('en-NG', {
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true,
+    }).format(date);
+  } catch {
+    return timeValue;
+  }
+};
+
+/**
+ * Format the selected class days.
+ */
+const formatClassDays = (classDays) => {
+  if (!Array.isArray(classDays) || classDays.length === 0) {
+    return '';
+  }
+
+  return classDays.join(', ');
+};
+
+const CoursesPage = () => {
+  const [courses, setCourses] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
+
+  const { fx, fxLoading } = useLocalCurrency();
+
+  useEffect(() => {
+    const fetchCourses = async () => {
+      try {
+        setLoading(true);
+
+        const response = await coursesAPI.getAll();
+
+        setCourses(Array.isArray(response.data) ? response.data : []);
+      } catch (error) {
+        console.error('Failed to fetch courses:', error);
+        setCourses([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCourses();
+  }, []);
+
+  const filteredCourses = useMemo(() => {
+    const normalizedSearch = searchTerm.trim().toLowerCase();
+
+    if (!normalizedSearch) {
+      return courses;
+    }
+
+    return courses.filter((course) => {
+      const title = course?.title?.toLowerCase() || '';
+      const description =
+        course?.short_description?.toLowerCase() || '';
+      const venue = course?.venue?.toLowerCase() || '';
+      const classDays = Array.isArray(course?.class_days)
+        ? course.class_days.join(' ').toLowerCase()
+        : '';
+
+      return (
+        title.includes(normalizedSearch) ||
+        description.includes(normalizedSearch) ||
+        venue.includes(normalizedSearch) ||
+        classDays.includes(normalizedSearch)
+      );
+    });
+  }, [courses, searchTerm]);
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -62,146 +151,253 @@ const ContactPage = () => {
 
       {/* Header */}
       <section className="bg-secondary py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="font-serif text-4xl md:text-5xl font-bold text-white mb-4">
-            Contact Us
-          </h1>
-          <p className="text-white/70 text-lg max-w-2xl mx-auto">
-            Have questions? We'd love to hear from you. Send us a message and we'll respond as soon as possible.
-          </p>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <h1 className="font-serif text-4xl md:text-5xl font-bold text-white mb-4">
+              Our Courses
+            </h1>
+
+            <p className="text-white/70 text-lg max-w-2xl mx-auto">
+              Explore our carefully curated courses designed to help you
+              succeed in your career.
+            </p>
+          </div>
         </div>
       </section>
 
-      {/* Contact Section */}
-      <section className="py-16 bg-background flex-1">
+      {/* Search and currency selector */}
+      <section className="py-8 bg-background border-b border-border">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid lg:grid-cols-3 gap-8">
-            {/* Contact Info */}
-            <div className="space-y-6">
-              <h2 className="font-serif text-2xl font-bold text-secondary">Get in Touch</h2>
-              <p className="text-muted-foreground">
-                Whether you have a question about courses, payments, or anything else, our team is ready to answer all your questions.
-              </p>
-              <div className="space-y-4">
-                {contactInfo.map((item, index) => {
-                  const Icon = item.icon;
-                  return (
-                    <div key={index} className="flex items-start gap-4">
-                      <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                        <Icon className="w-5 h-5 text-primary" />
-                      </div>
-                      <div>
-                        <h3 className="font-medium text-secondary">{item.title}</h3>
-                        <p className="text-muted-foreground">{item.content}</p>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
+          <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
+            <div className="relative w-full md:w-96">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground w-5 h-5" />
 
-              {/* Office Hours */}
-              <Card>
-                <CardContent className="p-6">
-                  <h3 className="font-serif font-bold text-lg text-secondary mb-3">Office Hours</h3>
-                  <div className="space-y-2 text-sm">
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Monday - Friday</span>
-                      <span className="font-medium">9:00 AM - 6:00 PM</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Saturday</span>
-                      <span className="font-medium">10:00 AM - 4:00 PM</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Sunday</span>
-                      <span className="font-medium">Closed</span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+              <Input
+                type="text"
+                placeholder="Search courses, days or venue..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10"
+                data-testid="course-search-input"
+              />
             </div>
 
-            {/* Contact Form */}
-            <div className="lg:col-span-2">
-              <Card>
-                <CardContent className="p-6 md:p-8">
-                  <h2 className="font-serif text-2xl font-bold text-secondary mb-6">Send us a Message</h2>
-                  <form onSubmit={handleSubmit} className="space-y-6">
-                    <div className="grid md:grid-cols-2 gap-6">
-                      <div className="space-y-2">
-                        <Label htmlFor="name">Full Name</Label>
-                        <Input
-                          id="name"
-                          name="name"
-                          value={formData.name}
-                          onChange={handleChange}
-                          placeholder="Oryiman John "
-                          required
-                          data-testid="contact-name-input"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="email">Email Address</Label>
-                        <Input
-                          id="email"
-                          name="email"
-                          type="email"
-                          value={formData.email}
-                          onChange={handleChange}
-                          placeholder="john@egamail.com"
-                          required
-                          data-testid="contact-email-input"
-                        />
-                      </div>
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="subject">Subject</Label>
-                      <Input
-                        id="subject"
-                        name="subject"
-                        value={formData.subject}
-                        onChange={handleChange}
-                        placeholder=" "
-                        required
-                        data-testid="contact-subject-input"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="message">Message</Label>
-                      <Textarea
-                        id="message"
-                        name="message"
-                        value={formData.message}
-                        onChange={handleChange}
-                        placeholder="Tell us more about your inquiry..."
-                        rows={6}
-                        required
-                        data-testid="contact-message-input"
-                      />
-                    </div>
-                    <Button 
-                      type="submit" 
-                      className="rounded-full px-8" 
-                      disabled={loading}
-                      data-testid="contact-submit-btn"
-                    >
-                      {loading ? (
-                        <>
-                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                          Sending...
-                        </>
-                      ) : (
-                        <>
-                          <Send className="w-4 h-4 mr-2" />
-                          Send Message
-                        </>
-                      )}
-                    </Button>
-                  </form>
-                </CardContent>
-              </Card>
+            <div className="flex items-center gap-4 w-full md:w-auto justify-between md:justify-end">
+              <p className="text-muted-foreground text-sm">
+                {filteredCourses.length}{' '}
+                course{filteredCourses.length !== 1 ? 's' : ''} available
+              </p>
+
+              <CurrencySelector
+                variant="compact"
+                testId="courses-currency-selector"
+              />
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* Course Grid */}
+      <section className="py-12 bg-background flex-1">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          {loading ? (
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {[1, 2, 3, 4, 5, 6].map((item) => (
+                <Card key={item} className="overflow-hidden">
+                  <div className="h-48 bg-muted animate-pulse" />
+
+                  <CardContent className="p-6">
+                    <div className="h-6 bg-muted rounded animate-pulse mb-2" />
+                    <div className="h-4 bg-muted rounded animate-pulse w-3/4 mb-5" />
+
+                    <div className="space-y-3">
+                      <div className="h-4 bg-muted rounded animate-pulse" />
+                      <div className="h-4 bg-muted rounded animate-pulse w-4/5" />
+                      <div className="h-4 bg-muted rounded animate-pulse w-3/4" />
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          ) : filteredCourses.length > 0 ? (
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {filteredCourses.map((course) => {
+                const startDate = formatStartDate(course.start_date);
+                const classDays = formatClassDays(course.class_days);
+                const classTime = formatClassTime(course.class_time);
+
+                const hasSchedule =
+                  startDate ||
+                  classDays ||
+                  classTime ||
+                  course.class_duration ||
+                  course.venue;
+
+                return (
+                  <Card
+                    key={course.id}
+                    className="overflow-hidden card-hover group flex flex-col"
+                    data-testid={`course-card-${course.id}`}
+                  >
+                    {/* Course image */}
+                    <div className="relative h-48 overflow-hidden">
+                      <img
+                        src={course.image_url || FALLBACK_IMAGE}
+                        alt={course.title || 'Course'}
+                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                        onError={(e) => {
+                          e.currentTarget.src = FALLBACK_IMAGE;
+                        }}
+                      />
+
+                      {/* Price */}
+                      <div
+                        className="absolute top-4 right-4 bg-primary text-primary-foreground px-3 py-1 rounded-full text-sm font-bold price-tag min-w-[70px] text-center"
+                        data-testid={`course-price-${course.id}`}
+                      >
+                        {fxLoading ? (
+                          <Skeleton className="h-4 w-16 bg-white/30" />
+                        ) : (
+                          formatLocalPrice(course.price, fx)
+                        )}
+                      </div>
+                    </div>
+
+                    <CardContent className="p-6 flex flex-col flex-1">
+                      {/* Course title */}
+                      <h3 className="font-serif font-bold text-xl text-secondary mb-2 line-clamp-2">
+                        {course.title}
+                      </h3>
+
+                      {/* Short description */}
+                      <p className="text-muted-foreground text-sm mb-5 line-clamp-2">
+                        {course.short_description}
+                      </p>
+
+                      {/* General course information */}
+                      <div className="grid grid-cols-2 gap-3 text-sm text-muted-foreground mb-5">
+                        <span className="flex items-center gap-2">
+                          <Clock className="w-4 h-4 shrink-0 text-primary" />
+                          <span>{course.duration || 'Not specified'}</span>
+                        </span>
+
+                        <span className="flex items-center gap-2">
+                          <BookOpen className="w-4 h-4 shrink-0 text-primary" />
+
+                          <span>
+                            {course.lesson_count || 0}{' '}
+                            lesson{course.lesson_count === 1 ? '' : 's'}
+                          </span>
+                        </span>
+                      </div>
+
+                      {/* Class schedule */}
+                      {hasSchedule && (
+                        <div className="border-t border-border pt-4 mb-5">
+                          <p className="text-xs font-semibold uppercase tracking-wide text-secondary mb-3">
+                            Class Schedule
+                          </p>
+
+                          <div className="space-y-2.5 text-sm text-muted-foreground">
+                            {startDate && (
+                              <div className="flex items-start gap-2">
+                                <CalendarDays className="w-4 h-4 mt-0.5 shrink-0 text-primary" />
+
+                                <div>
+                                  <span className="font-medium text-secondary">
+                                    Starts:
+                                  </span>{' '}
+                                  {startDate}
+                                </div>
+                              </div>
+                            )}
+
+                            {classDays && (
+                              <div className="flex items-start gap-2">
+                                <CalendarDays className="w-4 h-4 mt-0.5 shrink-0 text-primary" />
+
+                                <div>
+                                  <span className="font-medium text-secondary">
+                                    Days:
+                                  </span>{' '}
+                                  {classDays}
+                                </div>
+                              </div>
+                            )}
+
+                            {classTime && (
+                              <div className="flex items-start gap-2">
+                                <Clock className="w-4 h-4 mt-0.5 shrink-0 text-primary" />
+
+                                <div>
+                                  <span className="font-medium text-secondary">
+                                    Time:
+                                  </span>{' '}
+                                  {classTime}
+                                </div>
+                              </div>
+                            )}
+
+                            {course.class_duration && (
+                              <div className="flex items-start gap-2">
+                                <Timer className="w-4 h-4 mt-0.5 shrink-0 text-primary" />
+
+                                <div>
+                                  <span className="font-medium text-secondary">
+                                    Class duration:
+                                  </span>{' '}
+                                  {course.class_duration}
+                                </div>
+                              </div>
+                            )}
+
+                            {course.venue && (
+                              <div className="flex items-start gap-2">
+                                <MapPin className="w-4 h-4 mt-0.5 shrink-0 text-primary" />
+
+                                <div className="break-words">
+                                  <span className="font-medium text-secondary">
+                                    Venue:
+                                  </span>{' '}
+                                  {course.venue}
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* View details */}
+                      <div className="mt-auto">
+                        <Link to={`/courses/${course.id}`}>
+                          <Button
+                            className="w-full rounded-full"
+                            data-testid={`view-course-${course.id}-btn`}
+                          >
+                            View Details
+                          </Button>
+                        </Link>
+                      </div>
+                    </CardContent>
+                  </Card>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="text-center py-16">
+              <BookOpen className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+
+              <h3 className="font-serif text-xl font-bold text-secondary mb-2">
+                No Courses Found
+              </h3>
+
+              <p className="text-muted-foreground">
+                {searchTerm
+                  ? 'Try adjusting your search terms.'
+                  : 'Check back soon for new courses!'}
+              </p>
+            </div>
+          )}
         </div>
       </section>
 
@@ -210,4 +406,4 @@ const ContactPage = () => {
   );
 };
 
-export default ContactPage;
+export default CoursesPage;
