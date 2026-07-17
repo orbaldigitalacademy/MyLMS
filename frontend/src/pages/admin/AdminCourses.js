@@ -61,6 +61,16 @@ const INITIAL_INSTRUCTOR = {
   bio: '',
 };
 
+const DAY_OPTIONS = [
+  'Monday',
+  'Tuesday',
+  'Wednesday',
+  'Thursday',
+  'Friday',
+  'Saturday',
+  'Sunday',
+];
+
 const INITIAL_FORM_STATE = {
   // Hero / basics
   title: '',
@@ -70,6 +80,13 @@ const INITIAL_FORM_STATE = {
   price: '',
   video_url: '',
   image_url: '',
+
+  // Class schedule
+  start_date: '',
+  class_days: [],
+  class_time: '',
+  class_duration: '',
+  venue: '',
 
   // Curriculum document (PDF / Word)
   curriculum_url: '',
@@ -292,6 +309,12 @@ const AdminCourses = () => {
       video_url: course.video_url || '',
       image_url: course.image_url || '',
 
+      start_date: course.start_date || '',
+      class_days: Array.isArray(course.class_days) ? course.class_days : [],
+      class_time: course.class_time || '',
+      class_duration: course.class_duration || '',
+      venue: course.venue || '',
+
       curriculum_url: course.curriculum_url || '',
       curriculum_filename:
         course.curriculum_filename || filenameFromUrl(course.curriculum_url),
@@ -321,6 +344,15 @@ const AdminCourses = () => {
 
   const setField = (key, value) =>
     setFormData((prev) => ({ ...prev, [key]: value }));
+
+  const toggleClassDay = (day) => {
+    setFormData((prev) => ({
+      ...prev,
+      class_days: prev.class_days.includes(day)
+        ? prev.class_days.filter((item) => item !== day)
+        : [...prev.class_days, day],
+    }));
+  };
 
   const setInstructorField = (key, value) =>
     setFormData((prev) => ({
@@ -501,6 +533,36 @@ const AdminCourses = () => {
       return;
     }
 
+    if (!formData.start_date) {
+      toast.error('Please select the class start date');
+      setActiveTab('basics');
+      return;
+    }
+
+    if (formData.class_days.length === 0) {
+      toast.error('Please select at least one class day');
+      setActiveTab('basics');
+      return;
+    }
+
+    if (!formData.class_time) {
+      toast.error('Please select the class time');
+      setActiveTab('basics');
+      return;
+    }
+
+    if (!formData.class_duration.trim()) {
+      toast.error('Please enter the duration of each class');
+      setActiveTab('basics');
+      return;
+    }
+
+    if (!formData.venue.trim()) {
+      toast.error('Please enter the class venue');
+      setActiveTab('basics');
+      return;
+    }
+
     setSubmitting(true);
 
     const courseData = {
@@ -512,6 +574,13 @@ const AdminCourses = () => {
       price: Number(formData.price),
       video_url: formData.video_url || null,
       image_url: formData.image_url || null,
+
+      // Class schedule
+      start_date: formData.start_date,
+      class_days: formData.class_days,
+      class_time: formData.class_time,
+      class_duration: formData.class_duration.trim(),
+      venue: formData.venue.trim(),
 
       // Curriculum document
       curriculum_url: formData.curriculum_url || null,
@@ -686,7 +755,7 @@ const AdminCourses = () => {
 
                     <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <Label htmlFor="duration">Duration</Label>
+                        <Label htmlFor="duration">Course Duration</Label>
                         <Input
                           id="duration"
                           value={formData.duration}
@@ -708,6 +777,95 @@ const AdminCourses = () => {
                           placeholder="25000"
                           required
                         />
+                      </div>
+                    </div>
+
+                    {/* Class schedule */}
+                    <div className="border border-border rounded-lg p-4 space-y-4 bg-muted/20">
+                      <div>
+                        <h3 className="font-serif text-lg font-semibold text-secondary">
+                          Class Schedule
+                        </h3>
+                        <p className="text-sm text-muted-foreground">
+                          Set the start date, recurring class days, time, session duration and venue.
+                        </p>
+                      </div>
+
+                      <div className="grid md:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="start_date">Start Date</Label>
+                          <Input
+                            id="start_date"
+                            type="date"
+                            value={formData.start_date}
+                            onChange={(e) => setField('start_date', e.target.value)}
+                            required
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label htmlFor="class_time">Class Time</Label>
+                          <Input
+                            id="class_time"
+                            type="time"
+                            value={formData.class_time}
+                            onChange={(e) => setField('class_time', e.target.value)}
+                            required
+                          />
+                        </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Days of the Week</Label>
+                        <div className="flex flex-wrap gap-2">
+                          {DAY_OPTIONS.map((day) => {
+                            const selected = formData.class_days.includes(day);
+
+                            return (
+                              <Button
+                                key={day}
+                                type="button"
+                                size="sm"
+                                variant={selected ? 'default' : 'outline'}
+                                onClick={() => toggleClassDay(day)}
+                                aria-pressed={selected}
+                              >
+                                {day}
+                              </Button>
+                            );
+                          })}
+                        </div>
+                        <p className="text-xs text-muted-foreground">
+                          Select every day on which the class will hold.
+                        </p>
+                      </div>
+
+                      <div className="grid md:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="class_duration">
+                            Duration of Each Class
+                          </Label>
+                          <Input
+                            id="class_duration"
+                            value={formData.class_duration}
+                            onChange={(e) =>
+                              setField('class_duration', e.target.value)
+                            }
+                            placeholder="e.g. 2 hours"
+                            required
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label htmlFor="venue">Venue</Label>
+                          <Input
+                            id="venue"
+                            value={formData.venue}
+                            onChange={(e) => setField('venue', e.target.value)}
+                            placeholder="e.g. Google Meet, Zoom or Lagos Training Centre"
+                            required
+                          />
+                        </div>
                       </div>
                     </div>
 
@@ -1612,6 +1770,29 @@ const AdminCourses = () => {
                         <span>{course.duration}</span>
                         <span>{course.lesson_count || 0} lessons</span>
                       </div>
+
+                      {(course.start_date ||
+                        course.class_days?.length ||
+                        course.class_time ||
+                        course.venue) && (
+                        <div className="mt-1 text-xs text-muted-foreground flex flex-wrap gap-x-3 gap-y-1">
+                          {course.start_date && (
+                            <span>Starts: {course.start_date}</span>
+                          )}
+                          {course.class_days?.length > 0 && (
+                            <span>{course.class_days.join(', ')}</span>
+                          )}
+                          {course.class_time && (
+                            <span>
+                              {course.class_time}
+                              {course.class_duration
+                                ? ` · ${course.class_duration}`
+                                : ''}
+                            </span>
+                          )}
+                          {course.venue && <span>{course.venue}</span>}
+                        </div>
+                      )}
                     </div>
 
                     <div className="flex items-center gap-2">
