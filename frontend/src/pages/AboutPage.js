@@ -159,7 +159,7 @@ const AboutPage = () => {
           <div className="grid md:grid-cols-3 gap-8">
             {[
               { name: 'Dorcas Kr', role: 'CEO & Founder', image: './images/doo.jpeg' },
-              { name: 'Kor Moses', role: 'Head of Training', image: './images/hero.jpeg' },
+              { name: 'Kor Moses', role: 'Head of Training', image: './images/hero.png' },
               { name: 'Abutu Gabriel', role: 'Student Success Lead', image: './images/Abu.png' }
             ].map((member, index) => (
               <div key={index} className="bg-white/10 rounded-xl p-6">
