@@ -671,7 +671,7 @@ const CourseDetailPage = () => {
       <Navbar />
 
       <div className="flex-1">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto px-4 pt-2 pb-4 sm:px-6 lg:px-8">
           <div className="xl:flex gap-10">
             {/* Sidebar */}
             <aside className="hidden xl:block w-40 shrink-0">
