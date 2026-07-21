@@ -40,26 +40,36 @@ const RegisterPage = () => {
     setLoading(true);
 
     try {
-      const user = await register(formData.email, formData.password, formData.full_name);
-      toast.success(`Welcome to Orbal Digital Academy, ${user.name || 'Student'}!`);
-      navigate('/dashboard');
-    } catch (error) {
-      const data = error.response?.data;
+  const response = await register(
+    formData.email,
+    formData.password,
+    formData.full_name
+  );
 
-      let message = 'Registration failed. Please try again.';
+  toast.success(
+    response.message ||
+      "Registration successful! Please check your email to verify your account."
+  );
 
-      if (Array.isArray(data?.detail)) {
-        message = data.detail[0].msg;
-      } else if (typeof data?.detail === 'string') {
-        message = data.detail;
-      }
+  // Redirect to login (or a Verify Email page)
+  navigate("/login");
 
-      toast.error(message);
-    } finally {
-      setLoading(false);
-    }
-  };
+} catch (error) {
+  const data = error.response?.data;
 
+  let message = "Registration failed. Please try again.";
+
+  if (Array.isArray(data?.detail)) {
+    message = data.detail[0].msg;
+  } else if (typeof data?.detail === "string") {
+    message = data.detail;
+  }
+
+  toast.error(message);
+
+} finally {
+  setLoading(false);
+}
   return (
     <div className="min-h-screen bg-background flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-md">
