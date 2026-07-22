@@ -15,6 +15,7 @@ import RegisterPage from './pages/RegisterPage';
 import PaymentPage from './pages/PaymentPage';
 import TestimonialPage from "./pages/TestimonialPage";
 import ProfilePage from "./pages/ProfilePage";
+import VerifyEmailPage from "./pages/VerifyEmailPage";
 
 // Student Pages
 import StudentDashboard from './pages/student/StudentDashboard';
@@ -87,17 +88,20 @@ function AppRoutes() {
   return (
     <Routes>
       {/* Public Routes */}
+    
       <Route path="/" element={<HomePage />} />
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/register" element={<RegisterPage />} />
+      <Route path="/admin/create-user" element={<CreateUser />} />
+      <Route path="/profile" element={<ProfilePage />} />
+      <Route path="/verify-email" element={<VerifyEmailPage />}/>
+
       <Route path="/courses" element={<CoursesPage />} />
       <Route path="/courses/:id" element={<CourseDetailPage />} />
       <Route path="/about" element={<AboutPage />} />
       <Route path="/contact" element={<ContactPage />} />
       <Route path="/testimonials" element={<TestimonialPage />} />
-      <Route path="/login" element={<LoginPage />} />
-      <Route path="/register" element={<RegisterPage />} />
-      <Route path="/admin/create-user" element={<CreateUser />} />
-      <Route path="/profile" element={<ProfilePage />} />
-
+      
       {/* Payment Route - requires auth */}
       <Route path="/payment/:courseId" element={<ProtectedRoute><PaymentPage /></ProtectedRoute> } />
 
