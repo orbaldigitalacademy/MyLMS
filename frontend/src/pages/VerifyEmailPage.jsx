@@ -1,5 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import {
+  Link,
+  useNavigate,
+  useSearchParams,
+} from "react-router-dom";
 import api from "../services/api";
 import {
   Loader2,
@@ -17,16 +21,25 @@ import {
 
 const VerifyEmailPage = () => {
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
 
   const [status, setStatus] = useState("loading");
   const [message, setMessage] = useState(
     "Verifying your email address..."
   );
 
+  const token = searchParams.get("token");
+  const requestedNext = searchParams.get("next");
+
+  const safeNext =
+    requestedNext &&
+    requestedNext.startsWith("/") &&
+    !requestedNext.startsWith("//")
+      ? requestedNext
+      : "/dashboard";
+
   useEffect(() => {
     const verifyEmail = async () => {
-      const token = searchParams.get("token");
-
       if (!token) {
         setStatus("error");
         setMessage("The verification token is missing.");
@@ -41,20 +54,36 @@ const VerifyEmailPage = () => {
           }
         );
 
+        const accessToken = response.data?.access_token;
+        const user = response.data?.user;
+
+        if (accessToken) {
+          localStorage.setItem("token", accessToken);
+        }
+
+        if (user) {
+          localStorage.setItem(
+            "user",
+            JSON.stringify(user)
+          );
+        }
+
         setStatus("success");
         setMessage(
           response.data?.message ||
             "Your email has been verified successfully."
         );
+
+        // Redirect back to the original course after a short delay.
+        setTimeout(() => {
+          navigate(safeNext, {
+            replace: true,
+          });
+        }, 2000);
       } catch (error) {
-        console.error("Email verification error:", error);
         console.error(
-          "Verification status:",
-          error.response?.status
-        );
-        console.error(
-          "Verification response:",
-          error.response?.data
+          "Email verification error:",
+          error
         );
 
         const detail = error.response?.data?.detail;
@@ -81,15 +110,13 @@ const VerifyEmailPage = () => {
     };
 
     verifyEmail();
-  }, [searchParams]);
+  }, [token, safeNext, navigate]);
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center px-4">
       <Card className="w-full max-w-md text-center shadow-lg">
         <CardHeader>
-          <CardTitle>
-            Email Verification
-          </CardTitle>
+          <CardTitle>Email Verification</CardTitle>
 
           <CardDescription>
             Orbal Digital Academy
@@ -114,15 +141,30 @@ const VerifyEmailPage = () => {
           </p>
 
           {status === "success" && (
-            <Link to="/login">
-              <Button className="w-full">
-                Continue to Login
+            <>
+              <p className="text-sm text-muted-foreground">
+                Redirecting you shortly...
+              </p>
+
+              <Button
+                className="w-full"
+                onClick={() =>
+                  navigate(safeNext, {
+                    replace: true,
+                  })
+                }
+              >
+                Continue
               </Button>
-            </Link>
+            </>
           )}
 
           {status === "error" && (
-            <Link to="/login">
+            <Link
+              to={`/login?next=${encodeURIComponent(
+                safeNext
+              )}`}
+            >
               <Button
                 variant="outline"
                 className="w-full"
