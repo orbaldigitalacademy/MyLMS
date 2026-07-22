@@ -1,7 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import axios from "axios";
-import { Loader2, CheckCircle, XCircle } from "lucide-react";
+import api from "../services/api";
+import {
+  Loader2,
+  CheckCircle,
+  XCircle,
+} from "lucide-react";
 import { Button } from "../components/ui/button";
 import {
   Card,
@@ -10,8 +14,6 @@ import {
   CardTitle,
   CardDescription,
 } from "../components/ui/card";
-
-const API_URL = process.env.REACT_APP_BACKEND_URL;
 
 const VerifyEmailPage = () => {
   const [searchParams] = useSearchParams();
@@ -32,8 +34,8 @@ const VerifyEmailPage = () => {
       }
 
       try {
-        const response = await axios.get(
-          `${API_URL}/api/auth/verify-email`,
+        const response = await api.get(
+          "/auth/verify-email",
           {
             params: { token },
           }
@@ -46,12 +48,35 @@ const VerifyEmailPage = () => {
         );
       } catch (error) {
         console.error("Email verification error:", error);
+        console.error(
+          "Verification status:",
+          error.response?.status
+        );
+        console.error(
+          "Verification response:",
+          error.response?.data
+        );
+
+        const detail = error.response?.data?.detail;
 
         setStatus("error");
-        setMessage(
-          error.response?.data?.detail ||
+
+        if (Array.isArray(detail)) {
+          setMessage(
+            detail[0]?.msg ||
+              "The verification request could not be processed."
+          );
+        } else if (typeof detail === "string") {
+          setMessage(detail);
+        } else if (!error.response) {
+          setMessage(
+            "Unable to connect to the verification server."
+          );
+        } else {
+          setMessage(
             "The verification link is invalid or has expired."
-        );
+          );
+        }
       }
     };
 
@@ -62,7 +87,9 @@ const VerifyEmailPage = () => {
     <div className="min-h-screen bg-background flex items-center justify-center px-4">
       <Card className="w-full max-w-md text-center shadow-lg">
         <CardHeader>
-          <CardTitle>Email Verification</CardTitle>
+          <CardTitle>
+            Email Verification
+          </CardTitle>
 
           <CardDescription>
             Orbal Digital Academy
@@ -96,7 +123,10 @@ const VerifyEmailPage = () => {
 
           {status === "error" && (
             <Link to="/login">
-              <Button variant="outline" className="w-full">
+              <Button
+                variant="outline"
+                className="w-full"
+              >
                 Go to Login
               </Button>
             </Link>
