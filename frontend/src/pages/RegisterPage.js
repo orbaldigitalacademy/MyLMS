@@ -21,7 +21,7 @@ import {
 
 const RegisterPage = () => {
   const [formData, setFormData] = useState({
-    name: "",
+    full_name: "",
     email: "",
     password: "",
     confirmPassword: "",
@@ -45,7 +45,7 @@ const RegisterPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const fullName = formData.name.trim();
+    const fullName = formData.full_name.trim();
     const email = formData.email.trim().toLowerCase();
 
     if (!fullName) {
@@ -154,13 +154,13 @@ const RegisterPage = () => {
             >
               {/* Full name */}
               <div className="space-y-2">
-                <Label htmlFor="name">
+                <Label htmlFor="full_name">
                   Full Name
                 </Label>
 
                 <Input
-                  id="name"
-                  name="name"
+                  id="full_name"
+                  name="full_name"
                   type="text"
                   value={formData.full_name}
                   onChange={handleChange}
