@@ -47,6 +47,7 @@ export const AuthProvider = ({ children }) => {
       email: email.trim().toLowerCase(),
       password,
       name: full_name.trim(),
+      next,
     }
   );
 
