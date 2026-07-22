@@ -19,12 +19,6 @@ import {
   EyeOff,
 } from "lucide-react";
 
-import React, { useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import { toast } from "sonner";
-
-import { useAuth } from "../context/AuthContext";
-
 const RegisterPage = () => {
   const [formData, setFormData] = useState({
     full_name: "",
