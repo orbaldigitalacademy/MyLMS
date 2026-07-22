@@ -310,8 +310,8 @@ const RegisterPage = () => {
               </span>
 
               <Link
-                to="/login"
-                className="text-primary font-medium hover:underline"
+                to={`/login?next=${encodeURIComponent(next)}`}
+                className="text-primary hover:underline"
               >
                 Login
               </Link>
