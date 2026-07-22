@@ -19,6 +19,12 @@ import {
   EyeOff,
 } from "lucide-react";
 
+import React, { useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { toast } from "sonner";
+
+import { useAuth } from "../context/AuthContext";
+
 const RegisterPage = () => {
   const [formData, setFormData] = useState({
     full_name: "",
@@ -32,6 +38,16 @@ const RegisterPage = () => {
 
   const { register } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+
+  const requestedNext = searchParams.get("next");
+
+  const next =
+    requestedNext &&
+    requestedNext.startsWith("/") &&
+    !requestedNext.startsWith("//")
+      ? requestedNext
+      : "/dashboard";
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -47,6 +63,7 @@ const RegisterPage = () => {
 
     const fullName = formData.full_name.trim();
     const email = formData.email.trim().toLowerCase();
+    const password = formData.password;
 
     if (!fullName) {
       toast.error("Please enter your full name.");
@@ -58,12 +75,12 @@ const RegisterPage = () => {
       return;
     }
 
-    if (formData.password !== formData.confirmPassword) {
+    if (password !== formData.confirmPassword) {
       toast.error("Passwords do not match.");
       return;
     }
 
-    if (formData.password.length < 6) {
+    if (password.length < 6) {
       toast.error("Password must be at least 6 characters.");
       return;
     }
@@ -73,8 +90,9 @@ const RegisterPage = () => {
     try {
       const response = await register(
         email,
-        formData.password,
-        fullName
+        password,
+        fullName,
+        next
       );
 
       toast.success(
@@ -85,20 +103,22 @@ const RegisterPage = () => {
         }
       );
 
-      navigate("/login", {
-        replace: true,
-        state: {
-          email,
-          registrationSuccessful: true,
-        },
-      });
+      navigate(
+        `/login?next=${encodeURIComponent(next)}`,
+        {
+          replace: true,
+          state: {
+            email,
+            registrationSuccessful: true,
+          },
+        }
+      );
     } catch (error) {
       console.error("Registration error:", error);
 
       const data = error.response?.data;
 
-      let message =
-        "Registration failed. Please try again.";
+      let message = "Registration failed. Please try again.";
 
       if (Array.isArray(data?.detail)) {
         message =
