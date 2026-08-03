@@ -50,7 +50,7 @@ const Navbar = () => {
               key={link.to}
               to={link.to}
               data-testid={`nav-${link.label.toLowerCase()}`}
-              className={`text-sm font-medium transition-colors ${
+              className={`text-sm font-bold transition-colors ${
                 isActive(link.to)
                   ? 'text-primary'
                   : 'text-muted-foreground hover:text-foreground'
