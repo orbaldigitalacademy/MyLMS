@@ -42,12 +42,19 @@ const AdminStudents = () => {
       day: 'numeric',
     });
 
-  const fetchCourses = async () => {
-    const res = await coursesAPI.getAll(false);
-    setCourses(res.data);
+ const fetchCourses = async () => {
+    try {
+      const res = await coursesAPI.getAll(); // Fetch all courses
+      console.log("Courses:", res.data);
+      setCourses(res.data);
+    } catch (err) {
+      console.error("Failed to fetch courses", err);
+      setMessage({
+        type: "error",
+        text: "Failed to load courses.",
+      });
+    }
   };
-
- 
   const openAssignModal = (user) => {
     setSelectedUser(user);
     setShowModal(true);
