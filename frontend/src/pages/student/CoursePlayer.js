@@ -67,9 +67,9 @@ const CoursePlayer = () => {
 
   const handleLessonComplete = async (lessonId, completed) => {
     try {
-      const response = await enrollmentsAPI.updateProgress(courseId, {
+      const response = await enrollmentsAPI.updateProgress({
         lesson_id: lessonId,
-        completed
+        completed: Boolean(completed)
       });
       setCompletedLessons(response.data.completed_lessons);
       if (completed) {
