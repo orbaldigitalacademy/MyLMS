@@ -45,7 +45,7 @@ const CoursePlayer = () => {
         setCourse(courseRes.data);
         setLessons(lessonsRes.data);
 
-        const enrollment = enrollmentsRes.data.find(e => e.course_id === courseId);
+        const enrollment = enrollmentsRes.data.find( e => String(e.course_id) === String(courseId));
         if (enrollment) {
           setCompletedLessons(enrollment.completed_lessons || []);
         }
