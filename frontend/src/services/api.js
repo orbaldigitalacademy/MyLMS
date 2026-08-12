@@ -175,7 +175,7 @@ export const enrollmentsAPI = {
     api.get("/enrollments/me"),
 
   checkAccess: (courseId) =>
-    api.get(`/enrollments/check/${courseId}`),
+    api.get(`/enrollments/check-access/${courseId}`),
 
   updateProgress: (data) =>
   api.post("/enrollments/progress", data)
