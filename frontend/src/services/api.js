@@ -110,13 +110,13 @@ export const coursesAPI = {
 // ==========================
 export const lessonsAPI = {
   getByCourse: (courseId) =>
-  api.get(`/lessons/by-course/${courseId}`),
+    api.get(`/lessons/by-course/${courseId}`),
 
   create: (data) =>
     api.post("/lessons", data),
 
   update: (id, data) =>
-    api.put(`/lessons/${id}`, data),
+    api.patch(`/lessons/${id}`, data),
 
   delete: (id) =>
     api.delete(`/lessons/${id}`),
