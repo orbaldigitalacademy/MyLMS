@@ -84,26 +84,58 @@ useEffect(() => {
     setDialogOpen(true);
   };
 
-  const handleVideoUpload = async (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+ const handleVideoUpload = async (e) => {
+  const file = e.target.files?.[0];
 
-    if (file.size > 100 * 1024 * 1024) {
-      toast.error('Video must be less than 100MB');
-      return;
-    }
+  if (!file) return;
 
-    setUploadingVideo(true);
-    try {
-      const response = await uploadAPI.video(file);
-      setFormData({ ...formData, video_url: response.data.url });
-      toast.success('Video uploaded');
-    } catch (error) {
-      toast.error('Failed to upload video');
-    } finally {
-      setUploadingVideo(false);
-    }
-  };
+  const MAX_VIDEO_SIZE = 100 * 1024 * 1024;
+
+  if (file.size > MAX_VIDEO_SIZE) {
+    toast.error("Video must be less than 100MB");
+    e.target.value = "";
+    return;
+  }
+
+  if (!file.type.startsWith("video/")) {
+    toast.error("Please select a valid video file");
+    e.target.value = "";
+    return;
+  }
+
+  setUploadingVideo(true);
+
+  try {
+    console.log("Uploading video:", {
+      name: file.name,
+      type: file.type,
+      size: `${(file.size / 1024 / 1024).toFixed(2)} MB`,
+    });
+
+    const response = await uploadAPI.video(file);
+
+    console.log("Video upload response:", response.data);
+
+    setFormData((prev) => ({
+      ...prev,
+      video_url: response.data.url,
+    }));
+
+    toast.success("Video uploaded successfully");
+  } catch (error) {
+    console.error("Video upload error:", error);
+
+    toast.error(
+      error.response?.data?.detail ||
+      error.response?.data?.message ||
+      error.message ||
+      "Failed to upload video"
+    );
+  } finally {
+    setUploadingVideo(false);
+    e.target.value = "";
+  }
+};
 
   const handleSubmit = async (e) => {
     e.preventDefault();
