@@ -8,7 +8,7 @@ if (!API_URL) {
 
 const api = axios.create({
   baseURL: `${API_URL}/api`,
-  timeout: 150000,
+  timeout: 1000000,
 });
 
 console.log("BACKEND URL:", process.env.REACT_APP_BACKEND_URL);
