@@ -41,6 +41,7 @@ api.interceptors.request.use(
 // ==========================
 // FILE UPLOAD HELPERS
 // ==========================
+
 const allowedImageTypes = [
   "image/jpeg",
   "image/png",
@@ -64,7 +65,7 @@ export const uploadFile = (endpoint, file) => {
 
   // Validate file size
   if (file.size > MAX_SIZE) {
-    throw new Error("File too large");
+    throw new Error("File too large. Maximum size is 100MB.");
   }
 
   const formData = new FormData();
