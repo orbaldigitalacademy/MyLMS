@@ -19,22 +19,6 @@ console.log("AXIOS BASE URL:", api.defaults.baseURL);
 // ==========================
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("token");
-
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-
-    return config;
-  },
-  (error) => Promise.reject(error)
-);
-
-// ==========================
-// REQUEST INTERCEPTOR
-// ==========================
-api.interceptors.request.use(
-  (config) => {
     config.headers = config.headers || {};
 
     // User JWT
@@ -63,7 +47,7 @@ const allowedImageTypes = [
   "image/webp",
 ];
 
-const MAX_SIZE = 50 * 1024 * 1024; // 50MB
+const MAX_SIZE = 100 * 1024 * 1024; // 100MB
 
 export const uploadFile = (endpoint, file) => {
   if (!file) {
@@ -86,11 +70,7 @@ export const uploadFile = (endpoint, file) => {
   const formData = new FormData();
   formData.append("file", file);
 
-  return api.post(endpoint, formData, {
-    headers: {
-      "Content-Type": "multipart/form-data",
-    },
-  });
+  return api.post(endpoint, formData);
 };
 
 // ==========================
