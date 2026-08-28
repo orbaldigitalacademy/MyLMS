@@ -24,6 +24,7 @@ import StudentPayments from './pages/student/StudentPayments';
 import CoursePlayer from './pages/student/CoursePlayer';
 import LiveClassRoomPage from "./pages/student/LiveClassRoomPage";
 import StudentLiveClasses from "./pages/student/LiveClassRoomPage";
+import QuizPage from "./pages/student/QuizPage";
 
 
 // Admin Pages
