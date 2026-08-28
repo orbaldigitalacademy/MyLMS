@@ -1,66 +1,132 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import axios from "axios";
 
 const QuizPage = ({ courseId, token }) => {
   const [quiz, setQuiz] = useState(null);
   const [answers, setAnswers] = useState({});
   const [result, setResult] = useState(null);
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
+  // Fetch quiz
   useEffect(() => {
-    axios.get(`/api/courses/${courseId}/quiz`, {
-      headers: { Authorization: `Bearer ${token}` }
-    }).then(res => setQuiz(res.data));
-  }, []);
+    const fetchQuiz = async () => {
+      try {
+        const res = await axios.get(`/api/courses/${courseId}/quiz`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
 
+        setQuiz(res.data);
+      } catch (error) {
+        console.error("Failed to load quiz:", error);
+      }
+    };
+
+    if (courseId && token) {
+      fetchQuiz();
+    }
+  }, [courseId, token]);
+
+  // Submit quiz
+  const submitQuiz = useCallback(async () => {
+    // Prevent submission if quiz hasn't loaded
+    if (!quiz) {
+      console.warn("Quiz is not loaded yet.");
+      return;
+    }
+
+    // Prevent multiple submissions
+    if (isSubmitted) {
+      return;
+    }
+
+    try {
+      const res = await axios.post(
+        "/api/quiz/submit",
+        {
+          quiz_id: quiz.id,
+          answers,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      setResult(res.data);
+      setIsSubmitted(true);
+    } catch (error) {
+      console.error("Failed to submit quiz:", error);
+    }
+  }, [quiz, answers, token, isSubmitted]);
+
+  // Detect tab switching
   useEffect(() => {
-  const handleTabSwitch = () => {
-    alert("Tab switching detected! Quiz will be submitted.");
-    submitQuiz();
-  };
+    const handleTabSwitch = () => {
+      if (!quiz || isSubmitted) {
+        return;
+      }
 
-  window.addEventListener("blur", handleTabSwitch);
+      alert("Tab switching detected! Quiz will be submitted.");
+      submitQuiz();
+    };
 
-  return () => window.removeEventListener("blur", handleTabSwitch);
-}, []);
+    window.addEventListener("blur", handleTabSwitch);
 
+    return () => {
+      window.removeEventListener("blur", handleTabSwitch);
+    };
+  }, [quiz, submitQuiz, isSubmitted]);
+
+  // Handle answer selection
   const handleSelect = (qid, option) => {
-    setAnswers({ ...answers, [qid]: option });
-  }; 
+    if (isSubmitted) {
+      return;
+    }
 
-  const submitQuiz = async () => {
-    const res = await axios.post("/api/quiz/submit", {
-      quiz_id: quiz.id,
-      answers
-    }, {
-      headers: { Authorization: `Bearer ${token}` }
-    });
-
-    setResult(res.data);
+    setAnswers((prevAnswers) => ({
+      ...prevAnswers,
+      [qid]: option,
+    }));
   };
 
-  if (!quiz) return <p>Loading...</p>;
+  if (!quiz) {
+    return <p>Loading...</p>;
+  }
 
   return (
     <div>
       <h2>{quiz.title}</h2>
 
-      {quiz.questions.map(q => (
+      {quiz.questions.map((q) => (
         <div key={q.id}>
           <h4>{q.question}</h4>
-          {q.options.map(opt => (
-            <button key={opt} onClick={() => handleSelect(q.id, opt)}>
+
+          {q.options.map((opt) => (
+            <button
+              key={opt}
+              onClick={() => handleSelect(q.id, opt)}
+              disabled={isSubmitted}
+            >
               {opt}
             </button>
           ))}
         </div>
       ))}
 
-      <button onClick={submitQuiz}>Submit</button>
+      <button onClick={submitQuiz} disabled={isSubmitted}>
+        {isSubmitted ? "Quiz Submitted" : "Submit"}
+      </button>
 
       {result && (
         <div>
           <h3>Score: {result.score}%</h3>
-          <p>{result.passed ? "✅ Passed" : "❌ Failed"}</p>
+
+          <p>
+            {result.passed ? "✅ Passed" : "❌ Failed"}
+          </p>
         </div>
       )}
     </div>
