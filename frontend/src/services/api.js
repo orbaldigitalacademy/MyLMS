@@ -268,5 +268,39 @@ export const liveClassAPI = {
   getByCourse: (courseId) =>
     api.get(`/live-classes/course/${courseId}`),
 };
+// ==========================
+// Quiz API
+// ==========================
+export const quizzesAPI = {
+  getByLesson: (lessonId) =>
+    api.get(`/quizzes/lesson/${lessonId}`),
+
+  getOne: (quizId) =>
+    api.get(`/quizzes/${quizId}`),
+
+  submit: (quizId, answers) =>
+    api.post(`/quizzes/${quizId}/submit`, {
+      answers
+    }),
+
+  getMyAttempts: (quizId) =>
+    api.get(`/quizzes/${quizId}/attempts`),
+
+  // Admin
+  getAll: () =>
+    api.get('/quizzes/admin/all'),
+
+  create: (data) =>
+    api.post('/quizzes', data),
+
+  update: (quizId, data) =>
+    api.put(`/quizzes/${quizId}`, data),
+
+  delete: (quizId) =>
+    api.delete(`/quizzes/${quizId}`),
+
+  getAllAttempts: (quizId) =>
+    api.get(`/quizzes/${quizId}/attempts/all`)
+};
 
 export default api;
