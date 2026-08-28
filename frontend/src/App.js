@@ -114,7 +114,7 @@ function AppRoutes() {
       <Route path="/dashboard/live/:classId" element={<LiveClassRoomPage />} />
       <Route path="/student/live-classes" element={<StudentLiveClasses />} />
       <Route path="/live-class/:classId" element={<LiveClassRoomPage />} />
-      <Route path="/dashboard/quiz/:quizId" element={<QuizPage />}/>
+      <Route path="/dashboard/quiz/:courseId" element={<QuizPage />}/>
 
       {/* Admin Routes */}
       <Route path="/admin" element={<ProtectedRoute adminOnly><AdminDashboard /></ProtectedRoute>} />
