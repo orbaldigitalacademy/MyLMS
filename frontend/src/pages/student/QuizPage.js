@@ -4,32 +4,30 @@ import { useParams } from "react-router-dom";
 
 const QuizPage = ({ token }) => {
   const { quizId } = useParams();
-
   const [quiz, setQuiz] = useState(null);
   const [answers, setAnswers] = useState({});
   const [result, setResult] = useState(null);
   const [isSubmitted, setIsSubmitted] = useState(false);
 
   // Fetch quiz
- useEffect(() => {
-  const fetchQuiz = async () => {
-    try {
-      const res = await axios.get(`/api/quizzes/${quizId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      setQuiz(res.data);
-    } catch (error) {
-      console.error("Failed to load quiz:", error);
+  useEffect(() => {
+    const fetchQuiz = async () => {
+      try {
+        const res = await axios.get(`/api/quizzes/${quizId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setQuiz(res.data);
+      } catch (error) {
+        console.error("Failed to load quiz:", error);
+      }
+    };
+    if (quizId && token) {
+      fetchQuiz();
     }
-  };
+  }, [quizId, token]);
 
-  if (quizId && token) {
-    fetchQuiz();
-  }
-}, [quizId, token]);
   // Submit quiz
   const submitQuiz = useCallback(async () => {
     // Prevent submission if quiz hasn't loaded
@@ -37,17 +35,14 @@ const QuizPage = ({ token }) => {
       console.warn("Quiz is not loaded yet.");
       return;
     }
-
     // Prevent multiple submissions
     if (isSubmitted) {
       return;
     }
-
     try {
       const res = await axios.post(
-        "/api/quiz/submit",
+        `/api/quizzes/${quiz.id}/submit`,
         {
-          quiz_id: quiz.id,
           answers,
         },
         {
@@ -56,7 +51,6 @@ const QuizPage = ({ token }) => {
           },
         }
       );
-
       setResult(res.data);
       setIsSubmitted(true);
     } catch (error) {
@@ -70,27 +64,23 @@ const QuizPage = ({ token }) => {
       if (!quiz || isSubmitted) {
         return;
       }
-
       alert("Tab switching detected! Quiz will be submitted.");
       submitQuiz();
     };
-
     window.addEventListener("blur", handleTabSwitch);
-
     return () => {
       window.removeEventListener("blur", handleTabSwitch);
     };
   }, [quiz, submitQuiz, isSubmitted]);
 
-  // Handle answer selection
-  const handleSelect = (qid, option) => {
+  // Handle answer selection / input
+  const handleAnswer = (qid, value) => {
     if (isSubmitted) {
       return;
     }
-
     setAnswers((prevAnswers) => ({
       ...prevAnswers,
-      [qid]: option,
+      [qid]: value,
     }));
   };
 
@@ -106,15 +96,28 @@ const QuizPage = ({ token }) => {
         <div key={q.id}>
           <h4>{q.question}</h4>
 
-          {q.options.map((opt) => (
-            <button
-              key={opt}
-              onClick={() => handleSelect(q.id, opt)}
+          {q.question_type === "short" ? (
+            <input
+              type="text"
+              value={answers[q.id] || ""}
+              onChange={(e) => handleAnswer(q.id, e.target.value)}
               disabled={isSubmitted}
-            >
-              {opt}
-            </button>
-          ))}
+              placeholder="Type your answer"
+            />
+          ) : (
+            q.options.map((opt) => (
+              <button
+                key={opt}
+                onClick={() => handleAnswer(q.id, opt)}
+                disabled={isSubmitted}
+                style={{
+                  fontWeight: answers[q.id] === opt ? "bold" : "normal",
+                }}
+              >
+                {opt}
+              </button>
+            ))
+          )}
         </div>
       ))}
 
@@ -125,10 +128,7 @@ const QuizPage = ({ token }) => {
       {result && (
         <div>
           <h3>Score: {result.score}%</h3>
-
-          <p>
-            {result.passed ? "✅ Passed" : "❌ Failed"}
-          </p>
+          <p>{result.passed ? "✅ Passed" : "❌ Failed"}</p>
         </div>
       )}
     </div>
