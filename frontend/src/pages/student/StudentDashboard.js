@@ -178,43 +178,167 @@ const StudentDashboard = () => {
         {/* Courses */}
         <Card className="mb-6 sm:mb-8">
           <CardHeader className="flex flex-row items-center justify-between gap-2 space-y-0">
-            <CardTitle className="text-base sm:text-lg">My Courses</CardTitle>
+            <CardTitle className="text-base sm:text-lg">
+              My Courses
+            </CardTitle>
+        
             <Link to="/dashboard/courses">
-              <Button variant="ghost" size="sm" data-testid="view-all-courses-btn">
+              <Button variant="ghost" size="sm">
                 View All
               </Button>
             </Link>
           </CardHeader>
-
+        
           <CardContent>
             {loading ? (
-              <p className="text-sm text-muted-foreground">Loading...</p>
+              <p className="text-sm text-muted-foreground">
+                Loading...
+              </p>
             ) : approvedEnrollments.length > 0 ? (
-              approvedEnrollments.slice(0, 3).map(enrollment => (
-                <div
-                  key={enrollment.id}
-                  className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-4 pb-4 border-b last:border-0 last:pb-0 last:mb-0"
-                >
-                  <div className="min-w-0 flex-1">
-                    <p className="font-medium truncate">{enrollment.course_title}</p>
-                    <small className="text-muted-foreground">
-                      {enrollment.completed_lessons?.length || 0} lessons
-                    </small>
-                  </div>
-
-                  <Link
-                    to={`/dashboard/learn/${enrollment.course_id}`}
-                    className="w-full sm:w-auto"
-                  >
-                    <Button size="sm" className="w-full sm:w-auto" data-testid={`continue-course-${enrollment.course_id}`}>
-                      <Play className="w-4 h-4 mr-1" />
-                      Continue
-                    </Button>
-                  </Link>
-                </div>
-              ))
+        
+              <div className="space-y-4">
+        
+                {approvedEnrollments.slice(0, 3).map(enrollment => {
+        
+                  const completedLessons =
+                    enrollment.completed_lessons?.length || 0;
+        
+                  const completedQuizzes =
+                    enrollment.completed_quizzes?.length || 0;
+        
+                  const progress =
+                    enrollment.progress || 0;
+        
+                  const courseCompleted =
+                    enrollment.course_completed === true;
+        
+                  const finalTestPassed =
+                    enrollment.final_quiz_id &&
+                    enrollment.final_quiz_score !== null &&
+                    enrollment.final_quiz_score !== undefined;
+        
+                  return (
+                    <div
+                      key={enrollment.id}
+                      className="p-4 border rounded-lg bg-card"
+                    >
+        
+                      {/* Course information */}
+                      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+        
+                        <div className="min-w-0 flex-1">
+        
+                          <p className="font-semibold text-base">
+                            {enrollment.course_title}
+                          </p>
+        
+                          <p className="text-sm text-muted-foreground mt-1">
+                            {completedLessons} lesson
+                            {completedLessons !== 1 ? "s" : ""} completed
+                          </p>
+        
+                          <p className="text-sm text-muted-foreground">
+                            {completedQuizzes} quiz
+                            {completedQuizzes !== 1 ? "zes" : ""} passed
+                          </p>
+        
+                          {/* Progress */}
+                          <div className="mt-3">
+        
+                            <div className="flex justify-between text-xs mb-1">
+                              <span>Course Progress</span>
+                              <span>{Math.round(progress)}%</span>
+                            </div>
+        
+                            <div className="w-full bg-muted rounded-full h-2">
+                              <div
+                                className="bg-primary h-2 rounded-full transition-all"
+                                style={{
+                                  width: `${Math.min(progress, 100)}%`
+                                }}
+                              />
+                            </div>
+        
+                          </div>
+        
+                        </div>
+        
+        
+                        {/* Actions */}
+                        <div className="flex flex-col sm:flex-row lg:flex-col xl:flex-row gap-2">
+        
+                          {/* Continue learning */}
+                          {!courseCompleted && (
+                            <Link
+                              to={`/dashboard/learn/${enrollment.course_id}`}
+                              className="w-full sm:w-auto"
+                            >
+                              <Button
+                                size="sm"
+                                className="w-full sm:w-auto"
+                              >
+                                <Play className="w-4 h-4 mr-1" />
+                                Continue Learning
+                              </Button>
+                            </Link>
+                          )}
+        
+        
+                          {/* Final Test */}
+                          {!courseCompleted && progress >= 100 && (
+                            <Link
+                              to={`/dashboard/quiz/final/${enrollment.course_id}`}
+                              className="w-full sm:w-auto"
+                            >
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="w-full sm:w-auto"
+                              >
+                                <CheckCircle className="w-4 h-4 mr-1" />
+                                Take Final Test
+                              </Button>
+                            </Link>
+                          )}
+        
+        
+                          {/* Completed */}
+                          {courseCompleted && (
+                            <>
+                              <div className="flex items-center gap-2 text-green-600 text-sm font-medium px-2">
+                                <CheckCircle className="w-5 h-5" />
+                                Course Completed
+                              </div>
+        
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() =>
+                                  window.open(
+                                    `/api/enrollments/certificate/${enrollment.course_id}`,
+                                    "_blank"
+                                  )
+                                }
+                              >
+                                Download Certificate
+                              </Button>
+                            </>
+                          )}
+        
+                        </div>
+        
+                      </div>
+        
+                    </div>
+                  );
+                })}
+        
+              </div>
+        
             ) : (
-              <p className="text-sm text-muted-foreground">No courses yet</p>
+              <p className="text-sm text-muted-foreground">
+                No courses yet
+              </p>
             )}
           </CardContent>
         </Card>
