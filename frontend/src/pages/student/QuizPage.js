@@ -1,7 +1,10 @@
 import React, { useCallback, useEffect, useState } from "react";
 import axios from "axios";
+import { useParams } from "react-router-dom";
 
-const QuizPage = ({ courseId, token }) => {
+const QuizPage = ({ token }) => {
+  const { quizId } = useParams();
+
   const [quiz, setQuiz] = useState(null);
   const [answers, setAnswers] = useState({});
   const [result, setResult] = useState(null);
