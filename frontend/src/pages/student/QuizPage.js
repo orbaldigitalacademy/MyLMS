@@ -11,26 +11,25 @@ const QuizPage = ({ token }) => {
   const [isSubmitted, setIsSubmitted] = useState(false);
 
   // Fetch quiz
-  useEffect(() => {
-    const fetchQuiz = async () => {
-      try {
-        const res = await axios.get(`/api/courses/${courseId}/quiz`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+ useEffect(() => {
+  const fetchQuiz = async () => {
+    try {
+      const res = await axios.get(`/api/quizzes/${quizId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-        setQuiz(res.data);
-      } catch (error) {
-        console.error("Failed to load quiz:", error);
-      }
-    };
-
-    if (courseId && token) {
-      fetchQuiz();
+      setQuiz(res.data);
+    } catch (error) {
+      console.error("Failed to load quiz:", error);
     }
-  }, [courseId, token]);
+  };
 
+  if (quizId && token) {
+    fetchQuiz();
+  }
+}, [quizId, token]);
   // Submit quiz
   const submitQuiz = useCallback(async () => {
     // Prevent submission if quiz hasn't loaded
