@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
+import { ClipboardList } from "lucide-react";
 
 import AdminSidebar from '../../components/AdminSidebar';
 
@@ -258,6 +260,7 @@ const AdminCourses = () => {
   const [uploadingCurriculum, setUploadingCurriculum] = useState(false);
   // For per-item image uploads (projects, testimonials): keyed as "section-index"
   const [itemUploading, setItemUploading] = useState({});
+  const navigate = useNavigate();
 
   /* ------------------------------ Data loading ---------------------------- */
 
@@ -1801,6 +1804,7 @@ const AdminCourses = () => {
                         onCheckedChange={() => handlePublishToggle(course)}
                         aria-label="Toggle publish status"
                       />
+                    
                       <Link to={`/admin/courses/${course.id}/lessons`}>
                         <Button
                           variant="ghost"
@@ -1810,6 +1814,17 @@ const AdminCourses = () => {
                           <FileVideo className="w-4 h-4" />
                         </Button>
                       </Link>
+                    
+                      {/* Create Quiz */}
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        aria-label="Create quiz"
+                        onClick={() => navigate(`/admin/quizzes?course=${course.id}`)}
+                      >
+                        <ClipboardList className="w-4 h-4" />
+                      </Button>
+                    
                       <Button
                         variant="ghost"
                         size="icon"
@@ -1818,6 +1833,7 @@ const AdminCourses = () => {
                       >
                         <Edit className="w-4 h-4" />
                       </Button>
+                    
                       <Button
                         variant="ghost"
                         size="icon"
@@ -1828,9 +1844,6 @@ const AdminCourses = () => {
                         <Trash2 className="w-4 h-4" />
                       </Button>
                     </div>
-                  </div>
-                ))}
-              </div>
             ) : (
               <div className="text-center py-16">
                 <BookOpen className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
