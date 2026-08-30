@@ -38,6 +38,8 @@ import AdminSettings from './pages/admin/AdminSettings';
 import AdminTestimonial from "./pages/admin/AdminTestimonial";
 import AdminAnalytics from './pages/admin/AdminAnalytics';
 import CreateUser from "./pages/admin/CreateUser";
+import AdminQuiz from './pages/admin/AdminQuiz';
+
 
 // Protected Route Component
 const ProtectedRoute = ({ children, adminOnly = false }) => {
@@ -127,6 +129,7 @@ function AppRoutes() {
       <Route path="/admin/testimonials" element={<ProtectedRoute adminOnly> <AdminTestimonial /></ProtectedRoute>} />
       <Route path="/admin/analytics" element={<ProtectedRoute adminOnly> <AdminAnalytics /></ProtectedRoute>} />
       <Route path="/admin/create-user" element={<ProtectedRoute role="admin"><CreateUser /> </ProtectedRoute>}/>
+      <Route path="/admin/quiz" element={<ProtectedRoute adminOnly> <AdminQuiz /></ProtectedRoute>}/>
       {/* Fallback */}
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
