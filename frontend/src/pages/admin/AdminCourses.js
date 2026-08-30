@@ -1837,7 +1837,7 @@ const AdminCourses = () => {
                         aria-label="Create quiz"
                         onClick={() =>
                           navigate(
-                            `/admin/quizzes?course=${course.id}`
+                            `/admin/quiz?course=${course.id}`
                           )
                         }
                       >
