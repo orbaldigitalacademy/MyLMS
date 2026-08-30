@@ -1739,12 +1739,13 @@ const AdminCourses = () => {
                         e.currentTarget.src = FALLBACK_IMAGE;
                       }}
                     />
-
+        
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
                         <h3 className="font-medium text-secondary truncate">
                           {course.title}
                         </h3>
+        
                         <Badge
                           variant={
                             course.is_published ? 'default' : 'secondary'
@@ -1752,6 +1753,7 @@ const AdminCourses = () => {
                         >
                           {course.is_published ? 'Published' : 'Draft'}
                         </Badge>
+        
                         {course.curriculum_url && (
                           <Badge
                             variant="outline"
@@ -1763,17 +1765,21 @@ const AdminCourses = () => {
                           </Badge>
                         )}
                       </div>
+        
                       <p className="text-sm text-muted-foreground truncate">
                         {course.short_description}
                       </p>
+        
                       <div className="flex items-center gap-4 mt-1 text-sm text-muted-foreground">
                         <span className="font-bold text-primary">
                           {formatPrice(course.price)}
                         </span>
+        
                         <span>{course.duration}</span>
+        
                         <span>{course.lesson_count || 0} lessons</span>
                       </div>
-
+        
                       {(course.start_date ||
                         course.class_days?.length ||
                         course.class_time ||
@@ -1782,9 +1788,11 @@ const AdminCourses = () => {
                           {course.start_date && (
                             <span>Starts: {course.start_date}</span>
                           )}
+        
                           {course.class_days?.length > 0 && (
                             <span>{course.class_days.join(', ')}</span>
                           )}
+        
                           {course.class_time && (
                             <span>
                               {course.class_time}
@@ -1793,19 +1801,26 @@ const AdminCourses = () => {
                                 : ''}
                             </span>
                           )}
+        
                           {course.venue && <span>{course.venue}</span>}
                         </div>
                       )}
                     </div>
-
-                                       <div className="flex items-center gap-2">
+        
+                    {/* COURSE ACTIONS */}
+                    <div className="flex items-center gap-2">
                       <Switch
                         checked={course.is_published}
-                        onCheckedChange={() => handlePublishToggle(course)}
+                        onCheckedChange={() =>
+                          handlePublishToggle(course)
+                        }
                         aria-label="Toggle publish status"
                       />
-
-                      <Link to={`/admin/courses/${course.id}/lessons`}>
+        
+                      {/* Manage Lessons */}
+                      <Link
+                        to={`/admin/courses/${course.id}/lessons`}
+                      >
                         <Button
                           variant="ghost"
                           size="icon"
@@ -1814,52 +1829,61 @@ const AdminCourses = () => {
                           <FileVideo className="w-4 h-4" />
                         </Button>
                       </Link>
-
+        
                       {/* Create Quiz */}
                       <Button
                         variant="ghost"
                         size="icon"
                         aria-label="Create quiz"
                         onClick={() =>
-                          navigate(`/admin/quizzes?course=${course.id}`)
+                          navigate(
+                            `/admin/quizzes?course=${course.id}`
+                          )
                         }
                       >
                         <ClipboardList className="w-4 h-4" />
                       </Button>
-
+        
+                      {/* Edit Course */}
                       <Button
                         variant="ghost"
                         size="icon"
                         aria-label="Edit course"
-                        onClick={() => openEditDialog(course)}
+                        onClick={() =>
+                          openEditDialog(course)
+                        }
                       >
                         <Edit className="w-4 h-4" />
                       </Button>
-
+        
+                      {/* Delete Course */}
                       <Button
                         variant="ghost"
                         size="icon"
                         aria-label="Delete course"
                         className="text-destructive"
-                        onClick={() => handleDelete(course.id)}
+                        onClick={() =>
+                          handleDelete(course.id)
+                        }
                       >
                         <Trash2 className="w-4 h-4" />
                       </Button>
                     </div>
-
                   </div>
                 ))}
               </div>
             ) : (
-            ) : (
               <div className="text-center py-16">
                 <BookOpen className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+        
                 <h3 className="font-serif text-xl font-bold text-secondary mb-2">
                   No Courses Yet
                 </h3>
+        
                 <p className="text-muted-foreground mb-4">
                   Create your first course to get started
                 </p>
+        
                 <Button
                   className="rounded-full"
                   onClick={() => setDialogOpen(true)}
