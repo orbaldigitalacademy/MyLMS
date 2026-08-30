@@ -1798,13 +1798,13 @@ const AdminCourses = () => {
                       )}
                     </div>
 
-                    <div className="flex items-center gap-2">
+                                       <div className="flex items-center gap-2">
                       <Switch
                         checked={course.is_published}
                         onCheckedChange={() => handlePublishToggle(course)}
                         aria-label="Toggle publish status"
                       />
-                    
+
                       <Link to={`/admin/courses/${course.id}/lessons`}>
                         <Button
                           variant="ghost"
@@ -1814,17 +1814,19 @@ const AdminCourses = () => {
                           <FileVideo className="w-4 h-4" />
                         </Button>
                       </Link>
-                    
+
                       {/* Create Quiz */}
                       <Button
                         variant="ghost"
                         size="icon"
                         aria-label="Create quiz"
-                        onClick={() => navigate(`/admin/quizzes?course=${course.id}`)}
+                        onClick={() =>
+                          navigate(`/admin/quizzes?course=${course.id}`)
+                        }
                       >
                         <ClipboardList className="w-4 h-4" />
                       </Button>
-                    
+
                       <Button
                         variant="ghost"
                         size="icon"
@@ -1833,7 +1835,7 @@ const AdminCourses = () => {
                       >
                         <Edit className="w-4 h-4" />
                       </Button>
-                    
+
                       <Button
                         variant="ghost"
                         size="icon"
@@ -1844,6 +1846,11 @@ const AdminCourses = () => {
                         <Trash2 className="w-4 h-4" />
                       </Button>
                     </div>
+
+                  </div>
+                ))}
+              </div>
+            ) : (
             ) : (
               <div className="text-center py-16">
                 <BookOpen className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
