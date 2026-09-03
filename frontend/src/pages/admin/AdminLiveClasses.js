@@ -22,8 +22,9 @@ const AdminLiveClasses = () => {
   useEffect(() => {
     const fetchCourses = async () => {
       try {
+      
         const res = await coursesAPI.getAll(false);
-
+        
         console.log("COURSES FROM API:", res.data);
         
         const normalizedCourses = res.data.map((course) => ({
@@ -34,8 +35,8 @@ const AdminLiveClasses = () => {
         console.log("NORMALIZED COURSES:", normalizedCourses);
         
         setCourses(normalizedCourses);
-        const res = await coursesAPI.getAll(false);
-        setCourses(res.data);
+
+
       } catch (err) {
         console.error(err);
         alert("Failed to load courses");
@@ -76,18 +77,28 @@ const AdminLiveClasses = () => {
         setLoading(false);
         return;
       }
-
+      
+        console.log("FORM BEFORE SUBMIT:", form);
+        console.log("COURSE ID BEFORE SUBMIT:", form.course_id);
+        
+        if (!form.course_id) {
+          alert("Please select a course.");
+          setLoading(false);
+          return;
+        }
+  
       const payload = {
-        title: form.title,
-        course_id: form.course_id,
-        meeting_url: form.meeting_url,
-        duration_minutes: Number(form.duration_minutes) || 60,
-        start_time: date.toISOString(),
-      };
+      title: form.title,
+      course_id: form.course_id,
+      meeting_link: form.meeting_link,
+      scheduled_date: form.scheduled_date,
+      start_time: form.start_time,
+      end_time: form.end_time,
+    };
+    
+    console.log("PAYLOAD SENT:", payload);
 
-      console.log("PAYLOAD SENT:", payload);
-
-      await liveClassAPI.create(payload);
+    await liveClassAPI.create(payload);
 
       alert("Live class created successfully");
 
@@ -121,20 +132,30 @@ const AdminLiveClasses = () => {
         className="border p-2 w-full mb-3"
       />
 
+  
       <select
         name="course_id"
         value={form.course_id}
-        onChange={handleChange}
+        onChange={(e) => {
+          console.log("SELECTED COURSE ID:", e.target.value);
+      
+          setForm((prev) => ({
+            ...prev,
+            course_id: e.target.value,
+          }));
+        }}
         className="border p-2 w-full mb-3"
       >
         <option value="">Select Course</option>
       
-        {courses.map((c) => (
-          <option key={c.id} value={c.id}>
-            {c.title}
+        {courses.map((course) => (
+          <option key={course.id} value={course.id}>
+            {course.title}
           </option>
         ))}
       </select>
+      
+
       <input
         type="datetime-local"
         name="start_time"
