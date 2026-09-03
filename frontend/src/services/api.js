@@ -258,15 +258,24 @@ export const profileAPI = {
 // ==========================
 // LIVE CLASS API
 // ==========================
+// ==========================
+// LIVE CLASS API
+// ==========================
 export const liveClassAPI = {
-  create: (data) =>
-    api.post("/live-classes", data),
+  // Admin / instructor
+  create: (data) => api.post("/live-classes", data),
+  update: (classId, data) => api.put(`/live-classes/${classId}`, data),
+  remove: (classId) => api.delete(`/live-classes/${classId}`),
+  getAttendance: (classId) => api.get(`/live-classes/${classId}/attendance`),
+  addRecording: (classId, data) =>
+    api.put(`/live-classes/${classId}/recording`, data),
 
-  getAll: () =>
-    api.get("/live-classes"),
-
-  getByCourse: (courseId) =>
-    api.get(`/live-classes/course/${courseId}`),
+  // Shared / student
+  getAll: () => api.get("/live-classes"),
+  getById: (classId) => api.get(`/live-classes/${classId}`),
+  getByCourse: (courseId) => api.get(`/live-classes/course/${courseId}`),
+  join: (classId) => api.post(`/live-classes/${classId}/join`),
+  leave: (classId) => api.post(`/live-classes/${classId}/leave`),
 };
 // ==========================
 // Quiz API
