@@ -5,11 +5,13 @@ const AdminLiveClasses = () => {
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(false);
 
+  // Field names now match the backend model:
+  // meeting_url, start_time (ISO), duration_minutes
   const [form, setForm] = useState({
     title: "",
     course_id: "",
-    meeting_link: "",
-    scheduled_at: "",
+    meeting_url: "",
+    start_time: "",      // datetime-local value
     duration_minutes: 60,
   });
 
@@ -45,7 +47,7 @@ const AdminLiveClasses = () => {
   // SUBMIT
   // -------------------------
   const handleSubmit = async () => {
-    if (!form.title || !form.course_id || !form.scheduled_at) {
+    if (!form.title || !form.course_id || !form.start_time) {
       alert("Please fill all required fields");
       return;
     }
@@ -53,9 +55,9 @@ const AdminLiveClasses = () => {
     setLoading(true);
 
     try {
-      const date = new Date(form.scheduled_at);
+      const date = new Date(form.start_time);
 
-      // ❌ protect invalid date (IMPORTANT FIX)
+      // protect invalid date
       if (isNaN(date.getTime())) {
         alert("Invalid date selected");
         setLoading(false);
@@ -65,9 +67,9 @@ const AdminLiveClasses = () => {
       const payload = {
         title: form.title,
         course_id: form.course_id,
-        meeting_link: form.meeting_link,
+        meeting_url: form.meeting_url,
         duration_minutes: Number(form.duration_minutes) || 60,
-        scheduled_at: date.toISOString(),
+        start_time: date.toISOString(),
       };
 
       console.log("PAYLOAD SENT:", payload);
@@ -79,11 +81,10 @@ const AdminLiveClasses = () => {
       setForm({
         title: "",
         course_id: "",
-        meeting_link: "",
-        scheduled_at: "",
+        meeting_url: "",
+        start_time: "",
         duration_minutes: 60,
       });
-
     } catch (err) {
       console.log(err.response?.data || err);
       alert("Error creating class");
@@ -115,7 +116,8 @@ const AdminLiveClasses = () => {
       >
         <option value="">Select Course</option>
         {courses.map((c) => (
-          <option key={c._id} value={c._id}>
+          // uuid string id, consistent with backend
+          <option key={c.id} value={c.id}>
             {c.title}
           </option>
         ))}
@@ -123,8 +125,8 @@ const AdminLiveClasses = () => {
 
       <input
         type="datetime-local"
-        name="scheduled_at"
-        value={form.scheduled_at}
+        name="start_time"
+        value={form.start_time}
         onChange={handleChange}
         className="border p-2 w-full mb-3"
       />
@@ -139,9 +141,9 @@ const AdminLiveClasses = () => {
       />
 
       <input
-        name="meeting_link"
+        name="meeting_url"
         placeholder="Meeting Link"
-        value={form.meeting_link}
+        value={form.meeting_url}
         onChange={handleChange}
         className="border p-2 w-full mb-3"
       />
