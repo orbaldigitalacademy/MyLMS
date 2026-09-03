@@ -18,9 +18,22 @@ const AdminLiveClasses = () => {
   // -------------------------
   // FETCH COURSES
   // -------------------------
+  
   useEffect(() => {
     const fetchCourses = async () => {
       try {
+        const res = await coursesAPI.getAll(false);
+
+        console.log("COURSES FROM API:", res.data);
+        
+        const normalizedCourses = res.data.map((course) => ({
+          ...course,
+          id: course.id || course._id || course.course_id,
+        }));
+        
+        console.log("NORMALIZED COURSES:", normalizedCourses);
+        
+        setCourses(normalizedCourses);
         const res = await coursesAPI.getAll(false);
         setCourses(res.data);
       } catch (err) {
@@ -115,14 +128,13 @@ const AdminLiveClasses = () => {
         className="border p-2 w-full mb-3"
       >
         <option value="">Select Course</option>
+      
         {courses.map((c) => (
-          // uuid string id, consistent with backend
           <option key={c.id} value={c.id}>
             {c.title}
           </option>
         ))}
       </select>
-
       <input
         type="datetime-local"
         name="start_time"
