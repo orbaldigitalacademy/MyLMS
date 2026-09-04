@@ -5,103 +5,83 @@ const AdminLiveClasses = () => {
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  // Field names now match the backend model:
-  // meeting_url, start_time (ISO), duration_minutes
+  // Field names match the backend model: meeting_url, start_time (ISO), duration_minutes
   const [form, setForm] = useState({
     title: "",
     course_id: "",
     meeting_url: "",
-    start_time: "",      // datetime-local value
+    start_time: "", // datetime-local value
     duration_minutes: 60,
   });
 
   // -------------------------
   // FETCH COURSES
   // -------------------------
-  
   useEffect(() => {
     const fetchCourses = async () => {
       try {
-      
         const res = await coursesAPI.getAll(false);
-        
-        console.log("COURSES FROM API:", res.data);
-        
+
+        // Log one raw course once to confirm which id field actually exists
+        if (res.data.length) console.log("RAW COURSE OBJECT:", res.data[0]);
+
         const normalizedCourses = res.data.map((course) => ({
           ...course,
-          id: course.id || course._id || course.course_id,
+          // coerce with String() in case _id is an object
+          id: String(course.id || course._id || course.course_id),
         }));
-        
-        console.log("NORMALIZED COURSES:", normalizedCourses);
-        
+
         setCourses(normalizedCourses);
-
-
       } catch (err) {
         console.error(err);
         alert("Failed to load courses");
       }
     };
-
     fetchCourses();
   }, []);
 
   // -------------------------
-  // HANDLE INPUT CHANGE
+  // HANDLE INPUT CHANGE  (works for every field, including the select)
   // -------------------------
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setForm((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setForm((prev) => ({ ...prev, [name]: value }));
   };
 
   // -------------------------
   // SUBMIT
   // -------------------------
   const handleSubmit = async () => {
-    if (!form.title || !form.course_id || !form.start_time) {
-      alert("Please fill all required fields");
-      return;
-    }
+    // ---- Guards ----
+    if (!form.title.trim()) return alert("Title is required");
+    if (!form.course_id) return alert("Please select a course");
+    if (!/^https?:\/\//.test(form.meeting_url.trim()))
+      return alert("Meeting URL must start with http:// or https://");
+
+    const date = new Date(form.start_time);
+    if (isNaN(date.getTime())) return alert("Invalid date selected");
+
+    const duration = Number(form.duration_minutes);
+    if (!duration || duration <= 0)
+      return alert("Duration must be greater than 0");
 
     setLoading(true);
-
     try {
-      const date = new Date(form.start_time);
+      // datetime-local (local time) -> UTC ISO
+      const startISO = date.toISOString();
 
-      // protect invalid date
-      if (isNaN(date.getTime())) {
-        alert("Invalid date selected");
-        setLoading(false);
-        return;
-      }
-      
-        console.log("FORM BEFORE SUBMIT:", form);
-        console.log("COURSE ID BEFORE SUBMIT:", form.course_id);
-        
-        if (!form.course_id) {
-          alert("Please select a course.");
-          setLoading(false);
-          return;
-        }
-  
       const payload = {
-      title: form.title,
-      course_id: form.course_id,
-      meeting_link: form.meeting_link,
-      scheduled_date: form.scheduled_date,
-      start_time: form.start_time,
-      end_time: form.end_time,
-    };
-    
-    console.log("PAYLOAD SENT:", payload);
+        title: form.title.trim(),
+        course_id: form.course_id,
+        meeting_url: form.meeting_url.trim(),
+        start_time: startISO,
+        duration_minutes: duration,
+      };
 
-    await liveClassAPI.create(payload);
+      console.log("PAYLOAD SENT:", payload);
+      await liveClassAPI.create(payload);
 
       alert("Live class created successfully");
-
       setForm({
         title: "",
         course_id: "",
@@ -111,7 +91,7 @@ const AdminLiveClasses = () => {
       });
     } catch (err) {
       console.log(err.response?.data || err);
-      alert("Error creating class");
+      alert(err.response?.data?.detail || "Error creating class");
     } finally {
       setLoading(false);
     }
@@ -132,29 +112,19 @@ const AdminLiveClasses = () => {
         className="border p-2 w-full mb-3"
       />
 
-  
       <select
         name="course_id"
         value={form.course_id}
-        onChange={(e) => {
-          console.log("SELECTED COURSE ID:", e.target.value);
-      
-          setForm((prev) => ({
-            ...prev,
-            course_id: e.target.value,
-          }));
-        }}
+        onChange={handleChange}
         className="border p-2 w-full mb-3"
       >
         <option value="">Select Course</option>
-      
         {courses.map((course) => (
           <option key={course.id} value={course.id}>
             {course.title}
           </option>
         ))}
       </select>
-      
 
       <input
         type="datetime-local"
