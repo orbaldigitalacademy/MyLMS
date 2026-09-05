@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 
+import { useNavigate } from 'react-router-dom';
+
 import AdminSidebar from '../../components/AdminSidebar';
 
 import {
@@ -32,6 +34,8 @@ import {
 
 
 const AdminDashboard = () => {
+  const navigate = useNavigate();
+
   const [stats, setStats] = useState(null);
 
   const [recentPayments, setRecentPayments] = useState([]);
@@ -375,18 +379,22 @@ const AdminDashboard = () => {
 
         <Card className="mb-8">
 
-          <CardHeader>
+          <CardHeader className="flex flex-row items-center justify-between">
 
             <CardTitle className="font-serif flex items-center gap-2">
-
               <Video className="w-5 h-5" />
-
               Scheduled Live Classes
-
             </CardTitle>
-
+          
+            <button
+              onClick={() => navigate('/admin/live-classes')}
+              className="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors"
+            >
+              <Video className="w-4 h-4" />
+              Create Live Class
+            </button>
+          
           </CardHeader>
-
 
           <CardContent>
 
