@@ -18,30 +18,34 @@ const AdminLiveClasses = () => {
   // FETCH COURSES
   // -------------------------
    useEffect(() => {
-    const fetchCourses = async () => {
-      try {
-        const res = await coursesAPI.getAll();
-  
-        console.log("COURSES RESPONSE:", res.data);
-  
-        const normalizedCourses = (Array.isArray(res.data) ? res.data : []).map(
-          (course) => ({
+      const fetchCourses = async () => {
+        try {
+          const res = await coursesAPI.getAll();
+    
+          console.log("COURSES RESPONSE:", res.data);
+    
+          if (!Array.isArray(res.data)) {
+            console.error("Expected courses array but received:", res.data);
+            setCourses([]);
+            return;
+          }
+    
+          const normalizedCourses = res.data.map((course) => ({
             ...course,
             id: String(course.id || course._id || course.course_id),
-          })
-        );
-  
-        console.log("NORMALIZED COURSES:", normalizedCourses);
-  
-        setCourses(normalizedCourses);
-      } catch (err) {
-        console.error("FAILED TO LOAD COURSES:", err);
-        alert("Failed to load courses");
-      }
-    };
-  
-    fetchCourses();
-  }, []);
+          }));
+    
+          console.log("NORMALIZED COURSES:", normalizedCourses);
+    
+          setCourses(normalizedCourses);
+        } catch (err) {
+          console.error("FAILED TO LOAD COURSES:", err);
+          alert("Failed to load courses");
+        }
+      };
+    
+      fetchCourses();
+    }, []);
   
   // -------------------------
   // HANDLE INPUT CHANGE  (works for every field, including the select)
