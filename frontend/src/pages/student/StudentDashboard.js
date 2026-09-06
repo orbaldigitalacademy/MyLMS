@@ -49,72 +49,7 @@ const StudentDashboard = () => {
    * FETCH DASHBOARD DATA
    * ---------------------------------------------------------
    */
-   useEffect(() => {
-    if (!token) return;
-  
-    const fetchData = async () => {
-      try {
-        const [enrollRes, paymentRes] = await Promise.all([
-          enrollmentsAPI.getMy(),
-          paymentsAPI.getMy(),
-        ]);
-  
-        const enrollmentData = enrollRes.data || [];
-        const paymentData = paymentRes.data || [];
-  
-        setEnrollments(enrollmentData);
-        setPayments(paymentData);
-  
-        const courseIds = enrollmentData.map(
-          (e) => e.course_id
-        );
-  
-        if (courseIds.length > 0) {
-          try {
-            const liveRes = await Promise.all(
-              courseIds.map((id) =>
-                liveClassAPI.getByCourse(id)
-              )
-            );
-  
-            const allClasses = liveRes.flatMap(
-              (r) => r?.data || []
-            );
-  
-            setClasses(allClasses);
-          } catch (error) {
-            console.error(
-              "Failed to fetch live classes:",
-              error
-            );
-  
-            setClasses([]);
-          }
-  
-          await fetchCourseAssessments(
-            enrollmentData.filter(
-              (e) => e.payment_status === "approved"
-            )
-          );
-        } else {
-          setClasses([]);
-          setCourseAssessments({});
-        }
-      } catch (error) {
-        console.error(
-          "Failed to fetch dashboard data:",
-          error.response?.data || error.message
-        );
-  
-        toast.error("Failed to load dashboard");
-      } finally {
-        setLoading(false);
-      }
-    };
-  
-    fetchData();
-  }, [token, fetchCourseAssessments]);
-  /*
+   /*
    * ---------------------------------------------------------
    * FETCH COURSE ASSESSMENTS
    * ---------------------------------------------------------
@@ -179,7 +114,74 @@ const StudentDashboard = () => {
       setCourseAssessments(assessmentMap);
       setLoadingAssessments(false);
     }, [token]);
-  /*
+  
+    useEffect(() => {
+        if (!token) return;
+      
+        const fetchData = async () => {
+          try {
+            const [enrollRes, paymentRes] = await Promise.all([
+              enrollmentsAPI.getMy(),
+              paymentsAPI.getMy(),
+            ]);
+      
+            const enrollmentData = enrollRes.data || [];
+            const paymentData = paymentRes.data || [];
+      
+            setEnrollments(enrollmentData);
+            setPayments(paymentData);
+      
+            const courseIds = enrollmentData.map(
+              (e) => e.course_id
+            );
+      
+            if (courseIds.length > 0) {
+              try {
+                const liveRes = await Promise.all(
+                  courseIds.map((id) =>
+                    liveClassAPI.getByCourse(id)
+                  )
+                );
+      
+                const allClasses = liveRes.flatMap(
+                  (r) => r?.data || []
+                );
+      
+                setClasses(allClasses);
+              } catch (error) {
+                console.error(
+                  "Failed to fetch live classes:",
+                  error
+                );
+      
+                setClasses([]);
+              }
+      
+              await fetchCourseAssessments(
+                enrollmentData.filter(
+                  (e) => e.payment_status === "approved"
+                )
+              );
+            } else {
+              setClasses([]);
+              setCourseAssessments({});
+            }
+          } catch (error) {
+            console.error(
+              "Failed to fetch dashboard data:",
+              error.response?.data || error.message
+            );
+      
+            toast.error("Failed to load dashboard");
+          } finally {
+            setLoading(false);
+          }
+        };
+      
+        fetchData();
+      }, [token, fetchCourseAssessments]);
+      
+  /*  
    * ---------------------------------------------------------
    * STATUS HELPERS
    * ---------------------------------------------------------
