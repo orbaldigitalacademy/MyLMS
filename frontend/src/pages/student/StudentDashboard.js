@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import StudentSidebar from "../../components/StudentSidebar";
 import {
@@ -113,71 +113,72 @@ const StudentDashboard = () => {
     };
   
     fetchData();
-  }, [token]);
+  }, [token, fetchCourseAssessments]);
   /*
    * ---------------------------------------------------------
    * FETCH COURSE ASSESSMENTS
    * ---------------------------------------------------------
    */
-    const fetchCourseAssessments = async (approvedEnrollments) => {
-    setLoadingAssessments(true);
-  
-    const assessmentMap = {};
-  
-    await Promise.all(
-      approvedEnrollments.map(async (enrollment) => {
-        const courseId = enrollment.course_id;
-  
-        try {
-          const response = await axios.get(
-            `/api/quizzes/course/${courseId}`,
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            }
-          );
-  
-          const quizzes = Array.isArray(response.data)
-            ? response.data
-            : [];
-  
-          const lessonQuizzes = quizzes.filter(
-            (quiz) => quiz.quiz_type === "lesson"
-          );
-  
-          const finalTests = quizzes.filter(
-            (quiz) => quiz.quiz_type === "final"
-          );
-  
-          assessmentMap[courseId] = {
-            quizzes,
-            lessonQuizzes,
-            finalTests,
-          };
-  
-          console.log(
-            `Assessments for course ${courseId}:`,
-            quizzes
-          );
-        } catch (error) {
-          console.error(
-            `Failed to fetch quizzes for course ${courseId}:`,
-            error.response?.data || error.message
-          );
-  
-          assessmentMap[courseId] = {
-            quizzes: [],
-            lessonQuizzes: [],
-            finalTests: [],
-          };
-        }
-      })
-    );
-  
-    setCourseAssessments(assessmentMap);
-    setLoadingAssessments(false);
-  };
+    const fetchCourseAssessments = useCallback(async (approvedEnrollments) => {
+      setLoadingAssessments(true);
+    
+      const assessmentMap = {};
+    
+      await Promise.all(
+        approvedEnrollments.map(async (enrollment) => {
+          const courseId = enrollment.course_id;
+    
+          try {
+            const response = await axios.get(
+              `/api/quizzes/course/${courseId}`,
+              {
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                },
+              }
+            );
+    
+            const quizzes = Array.isArray(response.data)
+              ? response.data
+              : [];
+    
+            const lessonQuizzes = quizzes.filter(
+              (quiz) => quiz.quiz_type === "lesson"
+            );
+    
+            const finalTests = quizzes.filter(
+              (quiz) => quiz.quiz_type === "final"
+            );
+    
+            assessmentMap[courseId] = {
+              quizzes,
+              lessonQuizzes,
+              finalTests,
+            };
+    
+            console.log(
+              `Assessments for course ${courseId}:`,
+              quizzes
+            );
+          } catch (error) {
+            console.error(
+              `Failed to fetch quizzes for course ${courseId}:`,
+              error.response?.status,
+              error.response?.data || error.message
+            );
+    
+            assessmentMap[courseId] = {
+              quizzes: [],
+              lessonQuizzes: [],
+              finalTests: [],
+            };
+          }
+        })
+      );
+    
+      setCourseAssessments(assessmentMap);
+      setLoadingAssessments(false);
+    }, [token]);
   /*
    * ---------------------------------------------------------
    * STATUS HELPERS
