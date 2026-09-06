@@ -136,7 +136,7 @@ const StudentDashboard = () => {
            * GET /api/courses/{course_id}/quizzes
            */
           const response = await axios.get(
-            `/api/courses/${courseId}/quizzes`
+            `/api/quizzes/course/${courseId}`
           );
 
           const quizzes = response.data || [];
@@ -146,9 +146,7 @@ const StudentDashboard = () => {
           );
 
           const finalTests = quizzes.filter(
-            (quiz) =>
-              quiz.quiz_type === "final" ||
-              quiz.quiz_type === "test"
+            (quiz) => quiz.quiz_type === "final"
           );
 
           assessmentMap[courseId] = {
