@@ -31,7 +31,7 @@ import { useAuth } from "../../context/AuthContext";
 import { toast } from "sonner";
 
 const StudentDashboard = () => {
-  const { user } = useAuth();
+  const { user, token } = useAuth();
   const navigate = useNavigate();
 
   const [enrollments, setEnrollments] = useState([]);
@@ -49,123 +49,123 @@ const StudentDashboard = () => {
    * FETCH DASHBOARD DATA
    * ---------------------------------------------------------
    */
-  useEffect(() => {
+   useEffect(() => {
+    if (!token) return;
+  
     const fetchData = async () => {
       try {
         const [enrollRes, paymentRes] = await Promise.all([
           enrollmentsAPI.getMy(),
           paymentsAPI.getMy(),
         ]);
-
+  
         const enrollmentData = enrollRes.data || [];
         const paymentData = paymentRes.data || [];
-
+  
         setEnrollments(enrollmentData);
         setPayments(paymentData);
-
-        /*
-         * Fetch live classes for enrolled courses
-         */
-        const courseIds = enrollmentData.map((e) => e.course_id);
-
+  
+        const courseIds = enrollmentData.map(
+          (e) => e.course_id
+        );
+  
         if (courseIds.length > 0) {
           try {
             const liveRes = await Promise.all(
-              courseIds.map((id) => liveClassAPI.getByCourse(id))
+              courseIds.map((id) =>
+                liveClassAPI.getByCourse(id)
+              )
             );
-
+  
             const allClasses = liveRes.flatMap(
               (r) => r?.data || []
             );
-
+  
             setClasses(allClasses);
           } catch (error) {
             console.error(
               "Failed to fetch live classes:",
               error
             );
+  
             setClasses([]);
           }
-        } else {
-          setClasses([]);
-        }
-
-        /*
-         * Fetch quizzes/assessments for enrolled courses
-         */
-        if (courseIds.length > 0) {
+  
           await fetchCourseAssessments(
             enrollmentData.filter(
               (e) => e.payment_status === "approved"
             )
           );
+        } else {
+          setClasses([]);
+          setCourseAssessments({});
         }
       } catch (error) {
         console.error(
           "Failed to fetch dashboard data:",
-          error
+          error.response?.data || error.message
         );
+  
         toast.error("Failed to load dashboard");
       } finally {
         setLoading(false);
       }
     };
-
+  
     fetchData();
-  }, []);
-
+  }, [token]);
   /*
    * ---------------------------------------------------------
    * FETCH COURSE ASSESSMENTS
    * ---------------------------------------------------------
    */
-  const fetchCourseAssessments = async (approvedEnrollments) => {
+    const fetchCourseAssessments = async (approvedEnrollments) => {
     setLoadingAssessments(true);
-
+  
     const assessmentMap = {};
-
+  
     await Promise.all(
       approvedEnrollments.map(async (enrollment) => {
         const courseId = enrollment.course_id;
-
+  
         try {
-          /*
-           * Get quizzes belonging to the course.
-           *
-           * Expected endpoint:
-           * GET /api/courses/{course_id}/quizzes
-           */
           const response = await axios.get(
-            `/api/quizzes/course/${courseId}`
+            `/api/quizzes/course/${courseId}`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
           );
-
-          const quizzes = response.data || [];
-
+  
+          const quizzes = Array.isArray(response.data)
+            ? response.data
+            : [];
+  
           const lessonQuizzes = quizzes.filter(
             (quiz) => quiz.quiz_type === "lesson"
           );
-
+  
           const finalTests = quizzes.filter(
             (quiz) => quiz.quiz_type === "final"
           );
-
+  
           assessmentMap[courseId] = {
             quizzes,
             lessonQuizzes,
             finalTests,
           };
+  
+          console.log(
+            `Assessments for course ${courseId}:`,
+            quizzes
+          );
         } catch (error) {
-          /*
-           * If the course doesn't have quizzes or the endpoint
-           * doesn't return anything, don't break the dashboard.
-           */
-          if (error.response?.status !== 404) {
-            console.error(
-              `Failed to fetch quizzes for course ${courseId}:`,
-              error
-            );
-          }
-
+          console.error(
+            `Failed to fetch quizzes for course ${courseId}:`,
+            error.response?.data || error.message
+          );
+  
           assessmentMap[courseId] = {
             quizzes: [],
             lessonQuizzes: [],
@@ -174,11 +174,10 @@ const StudentDashboard = () => {
         }
       })
     );
-
+  
     setCourseAssessments(assessmentMap);
     setLoadingAssessments(false);
   };
-
   /*
    * ---------------------------------------------------------
    * STATUS HELPERS
