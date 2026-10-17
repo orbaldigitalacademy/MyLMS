@@ -81,7 +81,17 @@ const LoginPage = () => {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="password">Password</Label>
+              
+                  <Link
+                    to="/forgot-password"
+                    className="text-sm text-primary font-medium hover:underline"
+                  >
+                    Forgot Password?
+                  </Link>
+                </div>
+              
                 <div className="relative">
                   <Input
                     id="password"
@@ -92,15 +102,21 @@ const LoginPage = () => {
                     required
                     data-testid="login-password-input"
                   />
+              
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                   >
-                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    {showPassword ? (
+                      <EyeOff className="w-4 h-4" />
+                    ) : (
+                      <Eye className="w-4 h-4" />
+                    )}
                   </button>
                 </div>
               </div>
+                      
               <Button 
                 type="submit" 
                 className="w-full rounded-full" 
