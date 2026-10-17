@@ -98,10 +98,11 @@ function AppRoutes() {
       <Route path="/" element={<HomePage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/admin/create-user" element={<CreateUser />} />
       <Route path="/profile" element={<ProfilePage />} />
       <Route path="/verify-email" element={<VerifyEmailPage />}/>
-
       <Route path="/courses" element={<CoursesPage />} />
       <Route path="/courses/:id" element={<CourseDetailPage />} />
       <Route path="/about" element={<AboutPage />} />
