@@ -16,6 +16,8 @@ import PaymentPage from './pages/PaymentPage';
 import TestimonialPage from "./pages/TestimonialPage";
 import ProfilePage from "./pages/ProfilePage";
 import VerifyEmailPage from "./pages/VerifyEmailPage";
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
 
 // Student Pages
 import StudentDashboard from './pages/student/StudentDashboard';
