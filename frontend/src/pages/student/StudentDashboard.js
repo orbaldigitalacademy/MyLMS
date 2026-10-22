@@ -114,7 +114,7 @@ const StudentDashboard = () => {
       } finally {
         setLoadingAssessments(false);
       }
-    }, [token]);
+    }, []);
           
   
     useEffect(() => {
