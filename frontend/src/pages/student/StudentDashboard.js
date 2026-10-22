@@ -25,7 +25,7 @@ import {
   Lock,
   AlertCircle,
 } from "lucide-react";
-import { enrollmentsAPI, paymentsAPI, liveClassAPI } from "../../services/api";
+import { enrollmentsAPI, paymentsAPI, liveClassAPI, quizzesAPI } from "../../services/api";
 import axios from "axios";
 import { useAuth } from "../../context/AuthContext";
 import { toast } from "sonner";
@@ -65,14 +65,7 @@ const StudentDashboard = () => {
             const courseId = enrollment.course_id;
     
             try {
-              const response = await axios.get(
-                `/api/quizzes/course/${courseId}`,
-                {
-                  headers: {
-                    Authorization: `Bearer ${token}`,
-                  },
-                }
-              );
+              const response = await quizzesAPI.getByCourse(courseId);
     
               const quizzes = Array.isArray(response.data)
                 ? response.data
