@@ -59,61 +59,72 @@ const StudentDashboard = () => {
     
       const assessmentMap = {};
     
-      await Promise.all(
-        approvedEnrollments.map(async (enrollment) => {
-          const courseId = enrollment.course_id;
+      try {
+        await Promise.all(
+          approvedEnrollments.map(async (enrollment) => {
+            const courseId = enrollment.course_id;
     
-          try {
-            const response = await axios.get(
-              `/api/quizzes/course/${courseId}`,
-              {
-                headers: {
-                  Authorization: `Bearer ${token}`,
-                },
-              }
-            );
+            try {
+              const response = await axios.get(
+                `/api/quizzes/course/${courseId}`,
+                {
+                  headers: {
+                    Authorization: `Bearer ${token}`,
+                  },
+                }
+              );
     
-            const quizzes = Array.isArray(response.data)
-              ? response.data
-              : [];
+              const quizzes = Array.isArray(response.data)
+                ? response.data
+                : [];
     
-            const lessonQuizzes = quizzes.filter(
-              (quiz) => quiz.quiz_type === "lesson"
-            );
+              assessmentMap[courseId] = {
+                quizzes,
+                lessonQuizzes: quizzes.filter(
+                  (quiz) => quiz.quiz_type === "lesson"
+                ),
+                finalTests: quizzes.filter(
+                  (quiz) => quiz.quiz_type === "final"
+                ),
+                error: null,
+              };
     
-            const finalTests = quizzes.filter(
-              (quiz) => quiz.quiz_type === "final"
-            );
+              console.log(
+                `Successfully loaded ${quizzes.length} assessments for course ${courseId}`,
+                quizzes
+              );
+            } catch (error) {
+              console.error(
+                `Assessment API failed for course ${courseId}`,
+                {
+                  status: error.response?.status,
+                  data: error.response?.data,
+                  message: error.message,
+                  url: error.config?.url,
+                }
+              );
     
-            assessmentMap[courseId] = {
-              quizzes,
-              lessonQuizzes,
-              finalTests,
-            };
+              assessmentMap[courseId] = {
+                quizzes: [],
+                lessonQuizzes: [],
+                finalTests: [],
+                error:
+                  error.response?.data?.detail ||
+                  error.message ||
+                  "Unable to load assessments",
+              };
+            }
+          })
+        );
     
-            console.log(
-              `Assessments for course ${courseId}:`,
-              quizzes
-            );
-          } catch (error) {
-            console.error(
-              `Failed to fetch quizzes for course ${courseId}:`,
-              error.response?.status,
-              error.response?.data || error.message
-            );
-    
-            assessmentMap[courseId] = {
-              quizzes: [],
-              lessonQuizzes: [],
-              finalTests: [],
-            };
-          }
-        })
-      );
-    
-      setCourseAssessments(assessmentMap);
-      setLoadingAssessments(false);
+        setCourseAssessments(assessmentMap);
+      } finally {
+        setLoadingAssessments(false);
+      }
     }, [token]);
+          setCourseAssessments(assessmentMap);
+          setLoadingAssessments(false);
+        }, [token]);
   
     useEffect(() => {
         if (!token) return;
