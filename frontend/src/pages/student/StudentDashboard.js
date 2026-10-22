@@ -115,9 +115,7 @@ const StudentDashboard = () => {
         setLoadingAssessments(false);
       }
     }, [token]);
-          setCourseAssessments(assessmentMap);
-          setLoadingAssessments(false);
-        }, [token]);
+          
   
     useEffect(() => {
         if (!token) return;
