@@ -281,6 +281,9 @@ export const liveClassAPI = {
 // Quiz API
 // ==========================
 export const quizzesAPI = {
+  getByCourse: (courseId) =>
+  api.get(`/quizzes/course/${courseId}`),
+  
   getByLesson: (lessonId) =>
     api.get(`/quizzes/lesson/${lessonId}`),
 
