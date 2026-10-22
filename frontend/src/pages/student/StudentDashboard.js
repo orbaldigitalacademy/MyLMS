@@ -667,14 +667,13 @@ const StudentDashboard = () => {
 
                                   <p className="text-sm text-muted-foreground mt-1">
 
-                                    {assessmentData.quizzes.length > 0
+                                    {assessmentData.error
+                                      ? `Unable to load assessments: ${assessmentData.error}`
+                                      : assessmentData.quizzes.length > 0
                                       ? `${assessmentData.quizzes.length} assessment${
-                                          assessmentData.quizzes.length > 1
-                                            ? "s"
-                                            : ""
-                                        } available`
-                                      : "No assessment available yet"}
-
+                                          assessmentData.quizzes.length > 1 ? "s" : ""
+                                        } published`
+                                      : "No assessment has been published for this course yet"}
                                   </p>
 
                                 </div>
