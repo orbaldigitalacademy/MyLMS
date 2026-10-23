@@ -163,6 +163,10 @@ export const enrollmentsAPI = {
     
   getCertificateEligibility: (courseId) =>
     api.get(`/enrollments/certificate-eligibility/${courseId}`)
+  downloadCertificate: (courseId) =>
+    api.get(`/enrollments/certificate/${courseId}`, {
+      responseType: "blob",
+  }),
 };
 
 // ==========================
