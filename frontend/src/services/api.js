@@ -160,14 +160,16 @@ export const enrollmentsAPI = {
 
   updateProgress: (data) =>
     api.post("/enrollments/progress", data),
-    
+
   getCertificateEligibility: (courseId) =>
-    api.get(`/enrollments/certificate-eligibility/${courseId}`)
+    api.get(`/enrollments/certificate-eligibility/${courseId}`),
+
   downloadCertificate: (courseId) =>
     api.get(`/enrollments/certificate/${courseId}`, {
       responseType: "blob",
-  }),
+    }),
 };
+
 
 // ==========================
 // CONTACT API
