@@ -39,6 +39,7 @@ const StudentDashboard = () => {
   const [classes, setClasses] = useState([]);
 
   const [courseAssessments, setCourseAssessments] = useState({});
+  const [certificateEligibility, setCertificateEligibility] = useState({});
   const [loadingAssessments, setLoadingAssessments] = useState(false);
 
   const [loading, setLoading] = useState(true);
