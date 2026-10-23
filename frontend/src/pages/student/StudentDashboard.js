@@ -117,6 +117,37 @@ const StudentDashboard = () => {
       }
     }, []);
           
+    const fetchCertificateEligibility = useCallback(
+      async (approvedEnrollments) => {
+        const eligibilityMap = {};
+    
+        await Promise.all(
+          approvedEnrollments.map(async (enrollment) => {
+            const courseId = enrollment.course_id;
+    
+            try {
+              const response =
+                await enrollmentsAPI.getCertificateEligibility(courseId);
+    
+              eligibilityMap[courseId] = response.data;
+            } catch (error) {
+              console.error(
+                `Failed to check certificate eligibility for ${courseId}:`,
+                error.response?.data || error.message
+              );
+    
+              eligibilityMap[courseId] = {
+                certificate_eligible: false,
+                final_assessment_passed: false,
+              };
+            }
+          })
+        );
+    
+        setCertificateEligibility(eligibilityMap);
+      },
+      []
+    );
   
     useEffect(() => {
         if (!token) return;
@@ -160,11 +191,14 @@ const StudentDashboard = () => {
                 setClasses([]);
               }
       
-              await fetchCourseAssessments(
-                enrollmentData.filter(
-                  (e) => e.payment_status === "approved"
-                )
+             const approved = enrollmentData.filter(
+                (e) => e.payment_status === "approved"
               );
+              
+              await Promise.all([
+                fetchCourseAssessments(approved),
+                fetchCertificateEligibility(approved),
+              ]);
             } else {
               setClasses([]);
               setCourseAssessments({});
@@ -182,7 +216,7 @@ const StudentDashboard = () => {
         };
       
         fetchData();
-      }, [token, fetchCourseAssessments]);
+      }, [token, fetchCourseAssessments, fetchCertificateEligibility]);
       
   /*  
    * ---------------------------------------------------------
