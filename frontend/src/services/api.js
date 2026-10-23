@@ -159,7 +159,10 @@ export const enrollmentsAPI = {
     api.get(`/enrollments/check-access/${courseId}`),
 
   updateProgress: (data) =>
-  api.post("/enrollments/progress", data)
+    api.post("/enrollments/progress", data),
+    
+  getCertificateEligibility: (courseId) =>
+    api.get(`/enrollments/certificate-eligibility/${courseId}`)
 };
 
 // ==========================
