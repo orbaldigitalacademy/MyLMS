@@ -357,15 +357,39 @@ const StudentDashboard = () => {
    * CERTIFICATE
    * ---------------------------------------------------------
    */
-  const handleCertificate = (courseId) => {
-    /*
-     * Certificate endpoint already exists in your
-     * enrollments router.
-     */
-    window.open(
-      `/api/enrollments/certificate/${courseId}`,
-      "_blank"
-    );
+  const handleCertificate = async (courseId) => {
+    try {
+      const response =
+        await enrollmentsAPI.downloadCertificate(courseId);
+  
+      const blob = new Blob(
+        [response.data],
+        { type: "application/pdf" }
+      );
+  
+      const url = window.URL.createObjectURL(blob);
+  
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "Orbal_Digital_Academy_Certificate.pdf";
+  
+      document.body.appendChild(link);
+      link.click();
+  
+      link.remove();
+      window.URL.revokeObjectURL(url);
+  
+      toast.success("Certificate downloaded successfully");
+    } catch (error) {
+      console.error(
+        "Certificate download failed:",
+        error
+      );
+  
+      toast.error(
+        "Unable to download certificate. Ensure you have passed the Final Assessment."
+      );
+    }
   };
 
   /*
