@@ -20,7 +20,7 @@ export default function CertificateVerificationPage() {
 
       try {
         const response = await api.get(
-          `/certificates/verify/${encodeURIComponent(certificateId)}`
+          `/enrollments/certificates/verify/${encodeURIComponent(certificateId)}`
         );
 
         if (!active) return;
