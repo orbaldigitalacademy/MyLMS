@@ -18,6 +18,7 @@ import ProfilePage from "./pages/ProfilePage";
 import VerifyEmailPage from "./pages/VerifyEmailPage";
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
+import CertificateVerificationPage from "./pages/CertificateVerificationPage";
 
 // Student Pages
 import StudentDashboard from './pages/student/StudentDashboard';
@@ -108,7 +109,7 @@ function AppRoutes() {
       <Route path="/about" element={<AboutPage />} />
       <Route path="/contact" element={<ContactPage />} />
       <Route path="/testimonials" element={<TestimonialPage />} />
-      
+      <Route path="/verify/:certificateId" element={<CertificateVerificationPage />} />
       {/* Payment Route - requires auth */}
       <Route path="/payment/:courseId" element={<ProtectedRoute><PaymentPage /></ProtectedRoute> } />
 
