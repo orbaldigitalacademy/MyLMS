@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { BadgeCheck, ShieldX, Loader2 } from "lucide-react";
-import api from "@/lib/api";
+import api from "../services/api";
 
 export default function CertificateVerificationPage() {
   const { certificateId } = useParams();
