@@ -219,6 +219,7 @@ export const uploadAPI = {
 // ==========================
 // ADMIN API
 // ==========================
+
 export const adminAPI = {
   getStats: () =>
     api.get("/admin/stats"),
@@ -246,30 +247,20 @@ export const adminAPI = {
 
   enrollUser: (data) =>
     api.post("/admin/enroll", data),
-};
 
-export const profileAPI = {
-  getMe: () => api.get("/profile/me"),
+  // Get all course enrollments for a student
+  getStudentEnrollments: (studentId) =>
+    api.get(`/admin/students/${studentId}/enrollments`),
 
-  updateMe: (data) =>
-    api.put("/profile/me", null, {
-      params: data,
-    }),
-
-  uploadAvatar: (formData) =>
-    api.post("/profile/avatar", formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    }),
+  // Update the enrollment date of an existing enrollment
+  updateEnrollmentDate: (enrollmentId, data) =>
+    api.put(`/admin/enrollments/${enrollmentId}/date`, data),
 };
 
 // ==========================
 // LIVE CLASS API
 // ==========================
-// ==========================
-// LIVE CLASS API
-// ==========================
+
 export const liveClassAPI = {
   // Admin / instructor
   create: (data) => api.post("/live-classes", data),
@@ -286,6 +277,7 @@ export const liveClassAPI = {
   join: (classId) => api.post(`/live-classes/${classId}/join`),
   leave: (classId) => api.post(`/live-classes/${classId}/leave`),
 };
+
 // ==========================
 // Quiz API
 // ==========================
