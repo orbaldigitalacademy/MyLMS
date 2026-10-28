@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import AdminSidebar from '../../components/AdminSidebar';
 import { Card, CardContent } from '../../components/ui/card';
-import { adminAPI } from '../../services/api';
-import { Users, BookOpen, Mail, Trash2, Ban, CheckCircle } from 'lucide-react';
-import { coursesAPI } from '../../services/api';
-import EnrollmentDateEditor from "@/components/EnrollmentDateEditor";
+import { adminAPI, coursesAPI } from '../../services/api';
+import { Users, BookOpen, Mail, Trash2, Ban, CheckCircle, CalendarDays } from 'lucide-react';
 
 
 const AdminStudents = () => {
@@ -17,6 +15,10 @@ const AdminStudents = () => {
   const [selectedCourse, setSelectedCourse] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [search, setSearch] = useState("");
+  const [selectedEnrollmentStudent, setSelectedEnrollmentStudent] = useState(null);
+  const [studentEnrollments, setStudentEnrollments] = useState([]);
+  const [enrollmentsLoading, setEnrollmentsLoading] = useState(false);
+  const [savingEnrollmentId, setSavingEnrollmentId] = useState(null);
 
   // 🔄 Fetch students
   const fetchStudents = async () => {
@@ -37,6 +39,7 @@ const AdminStudents = () => {
   }, []);
 
   const formatDate = (date) =>
+    !date ? "—" :
     new Date(date).toLocaleDateString('en-NG', {
       year: 'numeric',
       month: 'short',
@@ -58,6 +61,7 @@ const AdminStudents = () => {
   };
   const openAssignModal = (user) => {
     setSelectedUser(user);
+    setSelectedCourse("");
     setShowModal(true);
   };
   
@@ -70,11 +74,12 @@ const AdminStudents = () => {
         course_id: selectedCourse,
       });
 
-      alert("Course assigned successfully");
+      setMessage({ type: "success", text: "Course assigned successfully" });
+      await fetchStudents();
       setShowModal(false);
       setSelectedCourse("");
     } catch (err) {
-      alert(err.response?.data?.detail || "Failed to assign");
+      setMessage({ type: "error", text: err.response?.data?.detail || "Failed to assign" });
     }
   };
 
@@ -134,6 +139,42 @@ const AdminStudents = () => {
     .includes(search.toLowerCase())
   );
 
+  const openEnrollmentModal = async (student) => {
+    setSelectedEnrollmentStudent(student);
+    setStudentEnrollments([]);
+    setEnrollmentsLoading(true);
+  
+    try {
+      const response = await adminAPI.getStudentEnrollments(student.id);
+  
+      setStudentEnrollments(response.data);
+    } catch (error) {
+      console.error("Failed to load enrollments:", error);
+      setMessage({ type: "error", text: "Unable to load student enrollments." });
+    } finally {
+      setEnrollmentsLoading(false);
+    }
+  };
+
+  const saveEnrollmentDate = async (enrollment) => {
+    try {
+      setSavingEnrollmentId(enrollment.id);
+  
+      await adminAPI.updateEnrollmentDate(enrollment.id, {
+        enrollment_date: enrollment.enrollment_date.slice(0, 10),
+      });
+  
+      setMessage({ type: "success", text: "Enrollment date updated successfully." });
+    } catch (error) {
+      setMessage({
+        type: "error",
+        text: error.response?.data?.detail || "Failed to update enrollment date.",
+      });
+    } finally {
+      setSavingEnrollmentId(null);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <AdminSidebar />
@@ -173,13 +214,13 @@ const AdminStudents = () => {
           <CardContent className="p-0">
             {loading ? (
               <div className="p-8 text-center">Loading students...</div>
-            ) : students.length > 0 ? (
+            ) : filteredStudents.length > 0 ? (
               <div className="divide-y">
                 
                 {filteredStudents.map(student => (
                   <div
                     key={student.id}
-                    className="flex items-center justify-between p-4 hover:bg-muted/30"
+                    className="flex flex-wrap items-center justify-between gap-4 p-4 hover:bg-muted/30"
                   >
                     {/* LEFT */}
                     <div className="flex items-center gap-4">
@@ -192,7 +233,7 @@ const AdminStudents = () => {
                           {student.full_name}
                         </h3>
 
-                        <div className="flex gap-4 text-sm text-muted-foreground">
+                        <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
                           <span className="flex items-center gap-1">
                             <Mail className="w-3 h-3" />
                             {student.email}
@@ -200,7 +241,7 @@ const AdminStudents = () => {
 
                           <span className="flex items-center gap-1">
                             <BookOpen className="w-3 h-3" />
-                            {student.enrollment_count} courses
+                            {student.enrollment_count ?? 0} courses
                           </span>
                         </div>
 
@@ -213,13 +254,13 @@ const AdminStudents = () => {
                     </div>
 
                     {/* RIGHT */}
-                    <div className="flex items-center gap-4">
+                    <div className="flex flex-wrap items-center gap-4">
                       <div className="text-sm text-muted-foreground text-right">
                         <p>Joined</p>
                         <p>{formatDate(student.created_at)}</p>
                       </div>
 
-                      <div className="flex gap-2">
+                      <div className="flex flex-wrap gap-2">
 
                         {/* BLOCK / UNBLOCK */}
                         <button
@@ -261,6 +302,14 @@ const AdminStudents = () => {
                          Assign Course
                         </button>
 
+                        <button
+                          onClick={() => openEnrollmentModal(student)}
+                          className="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1 rounded flex items-center gap-1"
+                        >
+                          <CalendarDays className="w-4 h-4" />
+                          Manage Enrollments
+                        </button>
+
                       </div>
                     </div>
                   </div>
@@ -278,12 +327,11 @@ const AdminStudents = () => {
             )}
           </CardContent>
         </Card>
-        
             
 
         {showModal && (
-          <div className="fixed inset-0 bg-black/50 flex items-center justify-center">
-            <div className="bg-white p-6 rounded-lg w-96">
+          <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
+            <div className="bg-white p-6 rounded-lg w-full max-w-md">
 
               <h2 className="text-xl font-bold mb-4">
                 Assign Course to {selectedUser?.full_name}
@@ -322,9 +370,94 @@ const AdminStudents = () => {
           </div>
         )}
 
+        {selectedEnrollmentStudent && (
+          <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
+            <div className="bg-white rounded-xl shadow-xl w-full max-w-2xl max-h-[85vh] overflow-y-auto p-6">
+        
+              <div className="flex items-center justify-between mb-5">
+                <div>
+                  <h2 className="text-xl font-bold">
+                    Manage Enrollments
+                  </h2>
+                  <p className="text-sm text-gray-500">
+                    {selectedEnrollmentStudent.full_name}
+                  </p>
+                </div>
+        
+                <button
+                  onClick={() => setSelectedEnrollmentStudent(null)}
+                  className="text-gray-500 hover:text-gray-900"
+                >
+                  Close
+                </button>
+              </div>
+        
+              {enrollmentsLoading ? (
+                <p>Loading enrollments...</p>
+              ) : studentEnrollments.length === 0 ? (
+                <p className="text-gray-500">
+                  This student has no course enrollments.
+                </p>
+              ) : (
+                <div className="space-y-4">
+                  {studentEnrollments.map((enrollment) => (
+                    <div
+                      key={enrollment.id}
+                      className="border rounded-lg p-4 space-y-3"
+                    >
+                      <h3 className="font-semibold">
+                        {enrollment.course_title}
+                      </h3>
+        
+                      <div>
+                        <label className="block text-sm font-medium mb-1">
+                          Enrollment Date
+                        </label>
+        
+                        <input
+                          type="date"
+                          value={
+                            enrollment.enrollment_date
+                              ? enrollment.enrollment_date.slice(0, 10)
+                              : ""
+                          }
+                          onChange={(e) => {
+                            setStudentEnrollments((prev) =>
+                              prev.map((item) =>
+                                item.id === enrollment.id
+                                  ? {
+                                      ...item,
+                                      enrollment_date: e.target.value,
+                                    }
+                                  : item
+                              )
+                            );
+                          }}
+                          className="border rounded-md px-3 py-2 w-full"
+                        />
+                      </div>
+        
+                      <button
+                        onClick={() => saveEnrollmentDate(enrollment)}
+                        disabled={
+                          savingEnrollmentId === enrollment.id ||
+                          !enrollment.enrollment_date
+                        }
+                        className="bg-blue-900 hover:bg-blue-800 text-white px-4 py-2 rounded-md disabled:opacity-50"
+                      >
+                        {savingEnrollmentId === enrollment.id
+                          ? "Saving..."
+                          : "Save Enrollment Date"}
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
       </main>
     </div>
   );
 };
-
 export default AdminStudents;
