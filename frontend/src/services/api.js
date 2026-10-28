@@ -258,6 +258,21 @@ export const adminAPI = {
     api.put(`/admin/enrollments/${enrollmentId}/date`, data),
 };
 
+export const profileAPI = {
+  getMe: () => api.get("/profile/me"),
+
+  updateMe: (data) =>
+    api.put("/profile/me", null, {
+      params: data,
+    }),
+
+  uploadAvatar: (formData) =>
+    api.post("/profile/avatar", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    }),
+};
 
 // ==========================
 // LIVE CLASS API
