@@ -31,8 +31,8 @@ import CoursePlayer from './pages/student/CoursePlayer';
 import LiveClassRoomPage from "./pages/student/LiveClassRoomPage";
 import StudentLiveClasses from "./pages/student/LiveClassRoomPage";
 import QuizPage from "./pages/student/QuizPage";
+import AlumniProtectedRoute from "./components/AlumniProtectedRoute";
 import AlumniDashboard from "./pages/student/AlumniDashboard";
-
 
 // Admin Pages
 import AdminDashboard from './pages/admin/AdminDashboard';
@@ -127,7 +127,10 @@ function AppRoutes() {
       <Route path="/student/live-classes" element={<StudentLiveClasses />} />
       <Route path="/live-class/:classId" element={<LiveClassRoomPage />} />
       <Route path="/dashboard/quiz/:quizId" element={<QuizPage />} />
-
+        
+      <Route element={<AlumniProtectedRoute />}>
+        <Route path="/alumni/dashboard" element={<AlumniDashboard />}/>
+      </Route>
 
       {/* Admin Routes */}
       <Route path="/admin" element={<ProtectedRoute adminOnly><AdminDashboard /></ProtectedRoute>} />
