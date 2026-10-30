@@ -13,42 +13,66 @@ const LoginPage = () => {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+
   const { login } = useAuth();
+
   const navigate = useNavigate();
   const location = useLocation();
 
-  const from = location.state?.from || '/dashboard';
+  // Destination requested before login
+  const from =
+    typeof location.state?.from === 'string' &&
+    location.state.from.startsWith('/') &&
+    !location.state.from.startsWith('//')
+      ? location.state.from
+      : '/dashboard';
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
 
     try {
+      // Authenticate user
       const user = await login(email, password);
-      toast.success(`Welcome back, ${user.name}!`);
-      
-      // Redirect based on role
+
+      toast.success(
+        `Welcome back, ${user.name || user.full_name || 'Student'}!`
+      );
+
+      // 1. Administrators go to Admin Dashboard
       if (user.role === 'admin') {
-        navigate('/admin');
-      } else {
-        navigate(from);
+        navigate('/admin', { replace: true });
+        return;
       }
+
+      // 2. Alumni returning from their welcome email
+      if (from === '/alumni/dashboard') {
+        navigate('/alumni/dashboard', { replace: true });
+        return;
+      }
+
+      // 3. Other authenticated students
+      navigate(from, { replace: true });
+
     } catch (error) {
       const data = error.response?.data;
 
       let message = 'Invalid email or password';
 
       if (Array.isArray(data?.detail)) {
-        message = data.detail[0].msg;
+        message = data.detail[0]?.msg || message;
       } else if (typeof data?.detail === 'string') {
         message = data.detail;
       }
 
       toast.error(message);
+
     } finally {
       setLoading(false);
     }
   };
+
+  // Keep your existing LoginPage JSX below
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center px-4 py-12">
