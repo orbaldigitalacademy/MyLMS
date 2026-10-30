@@ -1590,7 +1590,7 @@ const CourseDetailPage = () => {
 
       {/* WHATSAPP FLOATING BUTTON */}
       <a
-        href="https://wa.me/2348127319882"
+        href="https://wa.me/2348035807517"
         target="_blank"
         rel="noopener noreferrer"
         aria-label="Chat with Admin on WhatsApp"
