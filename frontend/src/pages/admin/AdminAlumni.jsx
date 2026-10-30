@@ -1,5 +1,5 @@
 import React,{useEffect,useState} from "react";
-import { alumniApi } from "../services/alumniApi";
+import { alumniApi } from "../../services/alumniApi";
 export default function AdminAlumni(){
  const [items,setItems]=useState([]),[loading,setLoading]=useState(true),[error,setError]=useState(""),[message,setMessage]=useState("");
  const refresh=()=>alumniApi.adminList().then(d=>setItems(d.items||[])).catch(e=>setError(e.message)).finally(()=>setLoading(false));
