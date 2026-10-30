@@ -55,7 +55,7 @@ export default function AlumniProtectedRoute() {
   }
 
   if (!localStorage.getItem("token")) {
-    return <Navigate to="/login" replace />;
+    return ( <Navigate to="/login" state={{ from: "/alumni/dashboard" }} replace />);
   }
 
   if (!authorized) {
