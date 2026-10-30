@@ -19,6 +19,9 @@ import VerifyEmailPage from "./pages/VerifyEmailPage";
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
 import CertificateVerificationPage from "./pages/CertificateVerificationPage";
+import AlumniPage from "./pages/AlumniPage";
+import AlumniProfileForm from "../../components/AlumniProfileForm";
+
 
 // Student Pages
 import StudentDashboard from './pages/student/StudentDashboard';
@@ -28,6 +31,7 @@ import CoursePlayer from './pages/student/CoursePlayer';
 import LiveClassRoomPage from "./pages/student/LiveClassRoomPage";
 import StudentLiveClasses from "./pages/student/LiveClassRoomPage";
 import QuizPage from "./pages/student/QuizPage";
+import AlumniDashboard from "./pages/student/AlumniDashboard";
 
 
 // Admin Pages
@@ -43,6 +47,7 @@ import AdminAnalytics from './pages/admin/AdminAnalytics';
 import CreateUser from "./pages/admin/CreateUser";
 import AdminQuiz from './pages/admin/AdminQuiz';
 import AdminLiveClasses from './pages/admin/AdminLiveClasses';
+import AdminAlumni from "./pages/admin/AdminAlumni";
 
 
 // Protected Route Component
