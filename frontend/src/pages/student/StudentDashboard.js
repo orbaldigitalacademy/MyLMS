@@ -7,6 +7,9 @@ import {
   CardHeader,
   CardTitle,
 } from "../../components/ui/card";
+
+import { alumniApi } from "../../services/alumniApi";
+
 import { Button } from "../../components/ui/button";
 import { Badge } from "../../components/ui/badge";
 import {
@@ -44,6 +47,7 @@ const StudentDashboard = () => {
 
   const [loading, setLoading] = useState(true);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [isAlumni, setIsAlumni] = useState(false);
 
   /*
    * ---------------------------------------------------------
@@ -217,7 +221,31 @@ const StudentDashboard = () => {
       
         fetchData();
       }, [token, fetchCourseAssessments, fetchCertificateEligibility]);
-      
+
+  useEffect(() => {
+    let active = true;
+  
+    const checkAlumniStatus = async () => {
+      try {
+        const profile = await alumniApi.me();
+  
+        if (active) {
+          setIsAlumni(profile?.is_verified === true);
+        }
+      } catch (error) {
+        // Students without alumni profiles should not see the link.
+        if (active) {
+          setIsAlumni(false);
+        }
+      }
+    };
+  
+    checkAlumniStatus();
+  
+    return () => {
+      active = false;
+    };
+  }, []);
   /*  
    * ---------------------------------------------------------
    * STATUS HELPERS
@@ -504,6 +532,42 @@ const StudentDashboard = () => {
           </p>
 
         </div>
+
+
+        {/* ALUMNI DASHBOARD ACCESS */}
+        {isAlumni && (
+          <div className="mb-6 rounded-2xl bg-gradient-to-r from-blue-950 to-blue-800 p-6 text-white shadow-lg">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        
+              <div className="flex items-start gap-4">
+                <div className="rounded-xl bg-white/15 p-3">
+                  <GraduationCap className="h-8 w-8 text-blue-100" />
+                </div>
+        
+                <div>
+                  <h2 className="text-xl font-bold">
+                    Welcome to the ODA Alumni Network
+                  </h2>
+        
+                  <p className="mt-2 max-w-xl text-sm text-blue-100">
+                    Congratulations on becoming a verified Orbal Digital
+                    Academy alumnus! Access your professional profile,
+                    portfolio, certificates, and alumni community.
+                  </p>
+                </div>
+              </div>
+        
+              <Link
+                to="/alumni/dashboard"
+                className="inline-flex shrink-0 items-center justify-center gap-2 rounded-lg bg-white px-5 py-3 font-semibold text-blue-950 transition hover:bg-blue-100"
+              >
+                Alumni Dashboard
+                <ArrowRight className="h-5 w-5" />
+              </Link>
+        
+            </div>
+          </div>
+        )}
 
         {/* ===================================================
             STATS
