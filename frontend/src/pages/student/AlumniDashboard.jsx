@@ -1,6 +1,6 @@
 import React,{useEffect,useState} from "react";
 import AlumniProfileForm from "../../components/AlumniProfileForm";
-import alumniApi from "../../services/alumniApi";
+import { alumniApi } from "../../services/alumniApi";
 export default function AlumniDashboard(){
  const [profile,setProfile]=useState(null),[error,setError]=useState(""),[loading,setLoading]=useState(true),[saving,setSaving]=useState(false),[notice,setNotice]=useState("");
  useEffect(()=>{alumniApi.me().then(setProfile).catch(e=>setError(e.message)).finally(()=>setLoading(false));},[]);
