@@ -20,7 +20,7 @@ import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
 import CertificateVerificationPage from "./pages/CertificateVerificationPage";
 import AlumniPage from "./pages/AlumniPage";
-import AlumniProfileForm from "../../components/AlumniProfileForm";
+import AlumniProfileForm from "../components/AlumniProfileForm";
 
 
 // Student Pages
