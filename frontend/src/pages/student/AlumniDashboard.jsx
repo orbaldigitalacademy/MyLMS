@@ -6,6 +6,7 @@ import {
   UserRound,
   Award,
   BriefcaseBusiness,
+  Bell,
   Users,
   CalendarDays,
   Menu,
@@ -19,6 +20,7 @@ import {
 
 import AlumniProfileForm from "../../components/AlumniProfileForm";
 import { alumniApi } from "../../services/alumniApi";
+import AlumniContentFeed from './AlumniContentFeed';
 
 const NAV_ITEMS = [
   { id: "overview", label: "Overview", icon: LayoutDashboard },
@@ -28,6 +30,9 @@ const NAV_ITEMS = [
   { id: "directory", label: "Alumni Directory", icon: Users },
   { id: "careers", label: "Career Opportunities", icon: BriefcaseBusiness },
   { id: "events", label: "Events & Networking", icon: CalendarDays },
+  {activeTab === 'careers' && <AlumniContentFeed kind='opportunities' />}
+  {activeTab === 'events' && <AlumniContentFeed kind='events' />}
+  {activeTab === 'announcements' && <AlumniContentFeed kind='announcements' />}
 ];
 
 export default function AlumniDashboard() {
@@ -367,20 +372,19 @@ export default function AlumniDashboard() {
             </Section>
           )}
 
-          {/* CAREERS */}
+          {/* CAREER OPPORTUNITIES */}
           {activeTab === "careers" && (
-            <ComingSoon
-              title="Career Opportunities"
-              description="Job opportunities, internships, freelance projects and career resources will appear here when the careers module is launched."
-            />
+            <AlumniContentFeed kind="opportunities" />
           )}
-
-          {/* EVENTS */}
+          
+          {/* ALUMNI EVENTS */}
           {activeTab === "events" && (
-            <ComingSoon
-              title="Events & Networking"
-              description="Alumni webinars, networking sessions, mentorship events and professional development activities will appear here."
-            />
+            <AlumniContentFeed kind="events" />
+          )}
+          
+          {/* ALUMNI ANNOUNCEMENTS */}
+          {activeTab === "announcements" && (
+            <AlumniContentFeed kind="announcements" />
           )}
         </main>
       </div>
