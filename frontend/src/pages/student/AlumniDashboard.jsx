@@ -21,6 +21,7 @@ import {
 import AlumniProfileForm from "../../components/AlumniProfileForm";
 import { alumniApi } from "../../services/alumniApi";
 import AlumniContentFeed from './AlumniContentFeed';
+import AlumniNetworking from "./AlumniNetworking";
 
 const NAV_ITEMS = [
   { id: "overview", label: "Overview", icon: LayoutDashboard },
@@ -30,6 +31,7 @@ const NAV_ITEMS = [
   { id: "directory", label: "Alumni Directory", icon: Users },
   { id: "careers", label: "Career Opportunities", icon: BriefcaseBusiness },
   { id: "events", label: "Events & Networking", icon: CalendarDays },
+  { id: "networking", label: "Networking & Mentorship", icon: Users },
 ];
 
 export default function AlumniDashboard() {
@@ -383,6 +385,11 @@ export default function AlumniDashboard() {
           {activeTab === "announcements" && (
             <AlumniContentFeed kind="announcements" />
           )}
+          
+          {activeTab === "networking" && (
+            <AlumniNetworking />
+          )}
+          
         </main>
       </div>
     </div>
