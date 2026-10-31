@@ -26,6 +26,7 @@ import {
   TrendingUp,
   Clock,
   CheckCircle,
+  GraduationCap,
   XCircle,
   Star,
   Video,
