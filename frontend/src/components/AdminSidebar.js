@@ -23,13 +23,13 @@ const AdminSidebar = () => {
     { to: '/admin/courses', icon: BookOpen, label: 'Courses' },
     { to: '/admin/payments', icon: CreditCard, label: 'Payments' },
     { to: '/admin/students', icon: Users, label: 'Students' },
+    { to: '/admin/alumni/manage', icon: GraduationCap, label: 'Alumni Management' },
     { to: '/admin/messages', icon: MessageSquare, label: 'Messages' },
     { to: '/admin/settings', icon: Settings, label: 'Settings' },
     { to: '/admin/testimonials', icon: FileVideo, label: 'Testimonials' },
-    { to: '/admin/analytics', icon: TrendingUp, label: "Analytics"},
-    { to: '/admin/create-user', icon: FileVideo, label: "Create User"},
+    { to: '/admin/analytics', icon: TrendingUp, label: 'Analytics' },
+    { to: '/admin/create-user', icon: FileVideo, label: 'Create User' },
   ];
-
   const isActive = (path, exact = false) => {
     if (exact) return location.pathname === path;
     return location.pathname.startsWith(path);
@@ -51,7 +51,7 @@ const AdminSidebar = () => {
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 p-4 space-y-1">
+      <nav className="flex-1 min-h-0 overflow-y-auto p-4 space-y-1">
         {links.map((link) => {
           const Icon = link.icon;
           const active = isActive(link.to, link.exact);
