@@ -30,9 +30,6 @@ const NAV_ITEMS = [
   { id: "directory", label: "Alumni Directory", icon: Users },
   { id: "careers", label: "Career Opportunities", icon: BriefcaseBusiness },
   { id: "events", label: "Events & Networking", icon: CalendarDays },
-  {activeTab === 'careers' && <AlumniContentFeed kind='opportunities' />}
-  {activeTab === 'events' && <AlumniContentFeed kind='events' />}
-  {activeTab === 'announcements' && <AlumniContentFeed kind='announcements' />}
 ];
 
 export default function AlumniDashboard() {
