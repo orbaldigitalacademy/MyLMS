@@ -357,12 +357,11 @@ export default function AlumniDashboard() {
           {activeTab === "directory" && (
             <Section title="Alumni Directory">
               <p className="mb-5 text-slate-600">
-                Connect with fellow Orbal Digital Academy graduates
-                who have chosen to appear in the public directory.
+                Connect with fellow Orbal Digital Academy graduates for networking, partnership and more.
               </p>
 
               <Link
-                to="/alumni/directry"
+                to="/alumni/directory"
                 className="inline-flex items-center gap-2 rounded-lg bg-blue-950 px-5 py-3 text-white hover:bg-blue-900"
               >
                 <Users className="h-5 w-5" />
