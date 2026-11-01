@@ -171,7 +171,7 @@ export default function AlumniDashboard() {
           <div className="mb-6 border-b border-slate-100 pb-5">
             <p className="font-semibold text-slate-900">{fullName}</p>
             <p className="mt-1 text-xs text-green-700">
-              Verified ODA Alumnus
+              Verified Orbal Alumnus
             </p>
           </div>
 
@@ -222,7 +222,7 @@ export default function AlumniDashboard() {
             <div className="space-y-6">
               <div className="rounded-2xl bg-blue-950 p-7 text-white">
                 <p className="text-sm text-blue-200">
-                  Welcome to the ODA Alumni Network
+                  Welcome to the Orbal Alumni Network
                 </p>
                 <h2 className="mt-2 text-3xl font-bold">
                   Welcome back, {fullName}!
@@ -362,7 +362,7 @@ export default function AlumniDashboard() {
               </p>
 
               <Link
-                to="/alumni"
+                to="/alumni/directry"
                 className="inline-flex items-center gap-2 rounded-lg bg-blue-950 px-5 py-3 text-white hover:bg-blue-900"
               >
                 <Users className="h-5 w-5" />
