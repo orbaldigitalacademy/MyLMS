@@ -21,6 +21,7 @@ import ResetPassword from './pages/ResetPassword';
 import CertificateVerificationPage from "./pages/CertificateVerificationPage";
 import AlumniPage from "./pages/AlumniPage";
 import AlumniProfileForm from "./components/AlumniProfileForm";
+import AlumniDirectoryPage from "./pages/AlumniDirectoryPage";
 
 
 
