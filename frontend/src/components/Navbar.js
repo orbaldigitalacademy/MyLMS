@@ -22,6 +22,7 @@ const Navbar = () => {
     { to: '/about', label: 'About' },
     { to: '/contact', label: 'Contact' },
     { to: '/testimonials', label: 'Testimonials' },
+    { to: '/alumni/directory', label: 'Alumni Directory'},
   ];
 
   const isActive = (path) => location.pathname === path;
