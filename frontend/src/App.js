@@ -118,6 +118,8 @@ function AppRoutes() {
       <Route path="/contact" element={<ContactPage />} />
       <Route path="/testimonials" element={<TestimonialPage />} />
       <Route path="/verify/:certificateId" element={<CertificateVerificationPage />} />
+      <Route path="/alumni/directory" element={<AlumniDirectoryPage />}/>
+
       {/* Payment Route - requires auth */}
       <Route path="/payment/:courseId" element={<ProtectedRoute><PaymentPage /></ProtectedRoute> } />
 
