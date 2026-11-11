@@ -35,6 +35,7 @@ import {
   GraduationCap,
   Edit,
   BarChart3,
+  Upload,
 } from 'lucide-react';
 
 // Simple id generator for questions
@@ -72,6 +73,7 @@ const AdminQuiz = () => {
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [importingQuizId, setImportingQuizId] = useState(null);
 
   // Lessons for the currently selected course in the form
   const [formLessons, setFormLessons] = useState([]);
@@ -299,6 +301,51 @@ const AdminQuiz = () => {
       toast.error(err.response?.data?.detail || 'Failed to create quiz');
     } finally {
       setSubmitting(false);
+    }
+  };
+
+  // -------- Bulk question import (JSON) --------
+  const handleImportQuestions = async (event, quiz) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    try {
+      const raw = await file.text();
+      const parsed = JSON.parse(raw);
+      if (!Array.isArray(parsed) || parsed.length === 0) {
+        throw new Error('Select a JSON file containing a nonempty array of questions.');
+      }
+      if (parsed.length > 500) {
+        throw new Error('A single import can contain at most 500 questions.');
+      }
+      for (const [index, q] of parsed.entries()) {
+        if (
+          !q || typeof q.id !== 'string' || !q.id.trim() ||
+          typeof q.question !== 'string' || !q.question.trim() ||
+          q.question_type !== 'mcq' ||
+          !Array.isArray(q.options) || q.options.length !== 4 ||
+          q.options.some((option) => typeof option !== 'string' || !option.trim()) ||
+          !q.options.includes(q.correct_answer)
+        ) {
+          throw new Error(`Question ${index + 1} must have an id, text, 4 options, and correct_answer matching an option.`);
+        }
+      }
+
+      if (!window.confirm(
+        `Add ${parsed.length} questions to "${quiz.title}"? ` +
+        'Questions cannot be imported after students have made attempts.'
+      )) return;
+
+      setImportingQuizId(quiz.id);
+      const response = await quizzesAPI.importQuestions(quiz.id, parsed);
+      toast.success(`${response.data.imported} questions imported successfully`);
+      await fetchData();
+    } catch (error) {
+      const detail = error.response?.data?.detail;
+      toast.error(typeof detail === 'string' ? detail : error.message || 'Question import failed');
+    } finally {
+      setImportingQuizId(null);
+      event.target.value = '';
     }
   };
 
@@ -817,6 +864,24 @@ const AdminQuiz = () => {
                           onCheckedChange={() => togglePublish(quiz)}
                           data-testid={`toggle-publish-${quiz.id}`}
                         />
+                        <label
+                          title="Import JSON questions"
+                          className={`inline-flex h-9 w-9 items-center justify-center rounded-md hover:bg-muted ${importingQuizId ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}
+                          data-testid={`import-questions-${quiz.id}`}
+                        >
+                          {importingQuizId === quiz.id ? (
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                          ) : (
+                            <Upload className="w-4 h-4" />
+                          )}
+                          <input
+                            type="file"
+                            accept=".json,application/json"
+                            className="hidden"
+                            disabled={importingQuizId !== null}
+                            onChange={(event) => handleImportQuestions(event, quiz)}
+                          />
+                        </label>
                         <Button
                           variant="ghost"
                           size="icon"
