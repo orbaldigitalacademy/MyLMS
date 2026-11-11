@@ -312,7 +312,10 @@ export const quizzesAPI = {
     api.post(`/quizzes/${quizId}/submit`, {
       answers
     }),
-
+  
+  importQuestions: (quizId, questions) =>
+    api.post(`/quizzes/${quizId}/import-questions`, questions),
+  
   getMyAttempts: (quizId) =>
     api.get(`/quizzes/${quizId}/attempts`),
 
