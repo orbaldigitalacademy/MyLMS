@@ -36,6 +36,7 @@ import {
   Edit,
   BarChart3,
   Upload,
+  Settings2,
 } from 'lucide-react';
 
 // Simple id generator for questions
@@ -74,6 +75,16 @@ const AdminQuiz = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [importingQuizId, setImportingQuizId] = useState(null);
+  const [examSettingsOpen, setExamSettingsOpen] = useState(false);
+  const [examSettingsQuiz, setExamSettingsQuiz] = useState(null);
+  const [savingExamSettings, setSavingExamSettings] = useState(false);
+  const [loadingExamSettings, setLoadingExamSettings] = useState(false);
+  const [examSettings, setExamSettings] = useState({
+    questions_per_attempt: 0,
+    randomize_questions: true,
+    shuffle_options: true,
+    exclude_previous_questions: true,
+  });
 
   // Lessons for the currently selected course in the form
   const [formLessons, setFormLessons] = useState([]);
@@ -346,6 +357,51 @@ const AdminQuiz = () => {
     } finally {
       setImportingQuizId(null);
       event.target.value = '';
+    }
+  };
+
+  // -------- Random examination configuration --------
+  const openExamSettings = async (quiz) => {
+    setExamSettingsQuiz(quiz);
+    setExamSettingsOpen(true);
+    setLoadingExamSettings(true);
+    try {
+      const response = await quizzesAPI.getExamSettings(quiz.id);
+      setExamSettings(response.data);
+    } catch (error) {
+      toast.error(error.response?.data?.detail || 'Cannot load examination settings');
+      setExamSettingsOpen(false);
+    } finally {
+      setLoadingExamSettings(false);
+    }
+  };
+
+  const saveExamSettings = async (event) => {
+    event.preventDefault();
+    if (!examSettingsQuiz) return;
+    const bankSize = examSettingsQuiz.questions?.length || 0;
+    const count = Number(examSettings.questions_per_attempt);
+    if (!Number.isInteger(count) || count < 1 || count > bankSize) {
+      toast.error(`Choose between 1 and ${bankSize} questions per attempt`);
+      return;
+    }
+    if (examSettings.exclude_previous_questions &&
+        count * examSettingsQuiz.max_attempts > bankSize) {
+      toast.error(`At least ${count * examSettingsQuiz.max_attempts} questions are needed for non-repeating attempts`);
+      return;
+    }
+    setSavingExamSettings(true);
+    try {
+      await quizzesAPI.saveExamSettings(examSettingsQuiz.id, {
+        ...examSettings,
+        questions_per_attempt: count,
+      });
+      toast.success('Random examination settings saved');
+      setExamSettingsOpen(false);
+    } catch (error) {
+      toast.error(error.response?.data?.detail || 'Cannot save examination settings');
+    } finally {
+      setSavingExamSettings(false);
     }
   };
 
@@ -885,6 +941,15 @@ const AdminQuiz = () => {
                         <Button
                           variant="ghost"
                           size="icon"
+                          title="Random exam settings"
+                          onClick={() => openExamSettings(quiz)}
+                          data-testid={`random-settings-${quiz.id}`}
+                        >
+                          <Settings2 className="w-4 h-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
                           onClick={() => openInsights(quiz)}
                           data-testid={`insights-quiz-${quiz.id}`}
                         >
@@ -929,6 +994,60 @@ const AdminQuiz = () => {
             )}
           </CardContent>
         </Card>
+
+        {/* Random examination settings dialog */}
+        <Dialog open={examSettingsOpen} onOpenChange={setExamSettingsOpen}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle>Random Examination Settings</DialogTitle>
+            </DialogHeader>
+            {loadingExamSettings ? (
+              <div className="py-8 flex justify-center"><Loader2 className="animate-spin" /></div>
+            ) : (
+              <form onSubmit={saveExamSettings} className="space-y-5 pt-3">
+                <p className="text-sm text-muted-foreground">
+                  {examSettingsQuiz?.title} — Question bank: {examSettingsQuiz?.questions?.length || 0}
+                </p>
+                <div className="space-y-2">
+                  <Label htmlFor="questions_per_attempt">Questions each student must answer</Label>
+                  <Input
+                    id="questions_per_attempt" type="number" min="1"
+                    max={examSettingsQuiz?.questions?.length || 1}
+                    required
+                    value={examSettings.questions_per_attempt || ''}
+                    onChange={(e) => setExamSettings((prev) => ({
+                      ...prev, questions_per_attempt: Number(e.target.value)
+                    }))}
+                  />
+                </div>
+                {[
+                  ['randomize_questions', 'Randomly select and order questions'],
+                  ['shuffle_options', 'Shuffle multiple-choice answer options'],
+                  ['exclude_previous_questions', 'Do not repeat questions on later attempts'],
+                ].map(([key, label]) => (
+                  <div key={key} className="flex items-center justify-between gap-3">
+                    <Label htmlFor={key}>{label}</Label>
+                    <Switch
+                      id={key}
+                      checked={Boolean(examSettings[key])}
+                      onCheckedChange={(checked) => setExamSettings((prev) => ({...prev, [key]: checked}))}
+                    />
+                  </div>
+                ))}
+                <p className="text-xs text-muted-foreground">
+                  For zero repeats, bank size must be at least questions per attempt × maximum attempts.
+                  Settings cannot be changed after an examination session starts.
+                </p>
+                <div className="flex justify-end gap-2">
+                  <Button type="button" variant="outline" onClick={() => setExamSettingsOpen(false)}>Cancel</Button>
+                  <Button type="submit" disabled={savingExamSettings || !examSettingsQuiz?.questions?.length}>
+                    {savingExamSettings ? 'Saving...' : 'Save Settings'}
+                  </Button>
+                </div>
+              </form>
+            )}
+          </DialogContent>
+        </Dialog>
 
         {/* Edit quiz (metadata) dialog */}
         <Dialog
