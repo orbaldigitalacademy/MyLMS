@@ -1,5 +1,6 @@
 import axios from "axios";
 
+
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
 if (!API_URL) {
@@ -313,9 +314,6 @@ export const quizzesAPI = {
       answers
     }),
   
-  importQuestions: (quizId, questions) =>
-    api.post(`/quizzes/${quizId}/import-questions`, questions),
-  
   getMyAttempts: (quizId) =>
     api.get(`/quizzes/${quizId}/attempts`),
 
@@ -333,7 +331,14 @@ export const quizzesAPI = {
     api.delete(`/quizzes/${quizId}`),
 
   getAllAttempts: (quizId) =>
-    api.get(`/quizzes/${quizId}/attempts/all`)
+    api.get(`/quizzes/${quizId}/attempts/all`),
+  importQuestions: (quizId, questions) =>
+    api.post(`/quizzes/${quizId}/import-questions`, questions),
+  getExamSettings: (quizId) =>
+    api.get(`/quizzes/admin/${quizId}/exam-settings`),
+  saveExamSettings: (quizId, settings) =>
+    api.put(`/quizzes/admin/${quizId}/exam-settings`, settings),
+
 };
 
 export default api;
