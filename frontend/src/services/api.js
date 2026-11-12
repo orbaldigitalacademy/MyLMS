@@ -338,6 +338,8 @@ export const quizzesAPI = {
     api.get(`/quizzes/admin/${quizId}/exam-settings`),
   saveExamSettings: (quizId, settings) =>
     api.put(`/quizzes/admin/${quizId}/exam-settings`, settings),
+  saveAnswer: (quizId, data) =>
+    api.put(`/quizzes/${quizId}/answers`, data),
 
 };
 
