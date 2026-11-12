@@ -84,6 +84,9 @@ const AdminQuiz = () => {
     randomize_questions: true,
     shuffle_options: true,
     exclude_previous_questions: true,
+    duration_minutes: 120,
+    subject_counts: {},
+    subject_available: {},
   });
 
   // Lessons for the currently selected course in the form
@@ -390,11 +393,32 @@ const AdminQuiz = () => {
       toast.error(`At least ${count * examSettingsQuiz.max_attempts} questions are needed for non-repeating attempts`);
       return;
     }
+    const allocations = examSettings.subject_counts || {};
+    if (Object.values(allocations).some((n) => !Number.isInteger(Number(n)) || Number(n) < 0)) {
+      toast.error('All subject counts must be nonnegative whole numbers');
+      return;
+    }
+    const allocated = Object.values(allocations).reduce((sum, n) => sum + Number(n), 0);
+    if (allocated > 0 && allocated !== count) {
+      toast.error(`Subject allocations must total ${count}, currently ${allocated}`);
+      return;
+    }
+    for (const [subject, value] of Object.entries(allocations)) {
+      const required = Number(value) * (examSettings.exclude_previous_questions ? examSettingsQuiz.max_attempts : 1);
+      if (required > (examSettings.subject_available?.[subject] || 0)) {
+        toast.error(`Not enough ${subject} questions for the selected attempts`);
+        return;
+      }
+    }
     setSavingExamSettings(true);
     try {
       await quizzesAPI.saveExamSettings(examSettingsQuiz.id, {
-        ...examSettings,
         questions_per_attempt: count,
+        randomize_questions: examSettings.randomize_questions,
+        shuffle_options: examSettings.shuffle_options,
+        exclude_previous_questions: examSettings.exclude_previous_questions,
+        duration_minutes: Number(examSettings.duration_minutes),
+        subject_counts: allocated > 0 ? Object.fromEntries(Object.entries(allocations).map(([k,v]) => [k, Number(v)])) : {},
       });
       toast.success('Random examination settings saved');
       setExamSettingsOpen(false);
@@ -997,7 +1021,7 @@ const AdminQuiz = () => {
 
         {/* Random examination settings dialog */}
         <Dialog open={examSettingsOpen} onOpenChange={setExamSettingsOpen}>
-          <DialogContent className="max-w-md">
+          <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Random Examination Settings</DialogTitle>
             </DialogHeader>
@@ -1019,6 +1043,28 @@ const AdminQuiz = () => {
                       ...prev, questions_per_attempt: Number(e.target.value)
                     }))}
                   />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="duration_minutes">Examination duration (minutes)</Label>
+                  <Input id="duration_minutes" type="number" min="1" max="480" required
+                    value={examSettings.duration_minutes ?? 120}
+                    onChange={(e) => setExamSettings((prev) => ({...prev, duration_minutes: Number(e.target.value)}))}
+                  />
+                  <p className="text-xs text-muted-foreground">Timer starts when a student opens the exam. The server enforces the deadline.</p>
+                </div>
+                <div className="space-y-2">
+                  <Label>Subject allocation (leave all zero for unrestricted random sampling)</Label>
+                  {['Excel','Power BI','Tableau','SQL','Python','SPSS'].map((subject) => (
+                    <div key={subject} className="flex items-center gap-2">
+                      <span className="text-sm w-24">{subject}</span>
+                      <Input type="number" min="0" className="w-24" value={examSettings.subject_counts?.[subject] ?? 0}
+                        onChange={(e) => setExamSettings((prev) => ({
+                          ...prev, subject_counts: {...(prev.subject_counts || {}), [subject]: Number(e.target.value)}
+                        }))} />
+                      <span className="text-xs text-muted-foreground">{examSettings.subject_available?.[subject] ?? 0} available</span>
+                    </div>
+                  ))}
+                  <p className="text-xs text-muted-foreground">Total allocated: {Object.values(examSettings.subject_counts || {}).reduce((a,b)=>a+Number(b||0),0)} / {examSettings.questions_per_attempt}</p>
                 </div>
                 {[
                   ['randomize_questions', 'Randomly select and order questions'],
