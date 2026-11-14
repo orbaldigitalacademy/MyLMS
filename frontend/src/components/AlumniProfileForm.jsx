@@ -5,7 +5,7 @@ import api from "../services/api";
 
 const fields = [
   ["name_title", "Title (Mr., Mrs., Dr., Prof., etc.)"],
-  ["professional_title", "Professional title"],
+  ["professional_title", "Professional title (e.g Data Analyst, AI Engineer etc"],
   ["city", "City"],
   ["country", "Country"],
   ["phone_number", "Phone number (with country code)"],
