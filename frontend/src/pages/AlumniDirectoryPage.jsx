@@ -128,20 +128,34 @@ export default function AlumniDirectoryPage() {
                 key={person.user_id}
                 className="rounded-xl border bg-white p-6 shadow-sm"
               >
-                <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-blue-100 text-xl font-bold text-blue-950">
-                  {(person.full_name || "A")
-                    .charAt(0)
-                    .toUpperCase()}
+                 {/* ALUMNI PROFILE PICTURE */}
+                <div className="mb-4">
+                  {person.profile_image_url ? (
+                    <img
+                      src={person.profile_image_url}
+                      alt={`${person.full_name || "Alumnus"} profile`}
+                      className="h-20 w-20 rounded-full border-4 border-blue-100 object-cover"
+                      loading="lazy"
+                      onError={(e) => {
+                        e.currentTarget.style.display = "none";
+                      }}
+                    />
+                  ) : (
+                    <div className="flex h-20 w-20 items-center justify-center rounded-full bg-blue-100 text-2xl font-bold text-blue-950">
+                      {(person.full_name || "A").charAt(0).toUpperCase()}
+                    </div>
+                  )}
                 </div>
-
-                <h2 className="text-xl font-semibold text-slate-900">
-                  {person.full_name}
+                
+                {/* ALUMNI NAME */}
+                <h2 className="text-xl font-bold text-slate-900">
+                  {person.full_name || "ODA Alumnus"}
                 </h2>
-
+                
+                {/* PROFESSIONAL TITLE */}
                 <p className="mt-1 text-sm font-medium text-blue-800">
-                  {person.professional_title || "ODA Alumnus"}
+                  {person.professional_title || "Orbal Digital Academy Graduate"}
                 </p>
-
                 {person.bio && (
                   <p className="mt-3 text-sm text-slate-600">
                     {person.bio}
