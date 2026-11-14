@@ -4,7 +4,11 @@ import { Camera, Loader2, UserRound } from "lucide-react";
 import api from "../services/api";
 
 const fields = [
+  ["name_title", "Title (Mr., Mrs., Dr., Prof., etc.)"],
   ["professional_title", "Professional title"],
+  ["city", "City"],
+  ["country", "Country"],
+  ["phone_number", "Phone number (with country code)"],
   ["bio", "About me"],
   ["linkedin_url", "LinkedIn URL"],
   ["github_url", "GitHub URL"],
@@ -19,6 +23,11 @@ const initialData = (profile) => ({
   portfolio_url: profile?.portfolio_url || "",
   skills: (profile?.skills || []).join(", "),
   is_public: profile?.is_public ?? true,
+  name_title: profile?.name_title || "",
+  city: profile?.city || "",
+  country: profile?.country || "",
+  phone_number: profile?.phone_number || "",
+  show_phone_publicly: !!profile?.show_phone_publicly,
 });
 
 export default function AlumniProfileForm({
