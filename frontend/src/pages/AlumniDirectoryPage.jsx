@@ -1,7 +1,7 @@
 
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Search, Users, Linkedin, Github, Globe } from "lucide-react";
+import { Search, Users, Linkedin, Github, Globe, MapPin, Phone} from "lucide-react";
 import api from "../services/api";
 
 export default function AlumniDirectoryPage() {
@@ -128,39 +128,67 @@ export default function AlumniDirectoryPage() {
                 key={person.user_id}
                 className="rounded-xl border bg-white p-6 shadow-sm"
               >
-                 {/* ALUMNI PROFILE PICTURE */}
-                <div className="mb-4">
-                  {person.profile_image_url ? (
-                    <img
-                      src={person.profile_image_url}
-                      alt={`${person.full_name || "Alumnus"} profile`}
-                      className="h-20 w-20 rounded-full border-4 border-blue-100 object-cover"
-                      loading="lazy"
-                      onError={(e) => {
-                        e.currentTarget.style.display = "none";
-                      }}
-                    />
-                  ) : (
-                    <div className="flex h-20 w-20 items-center justify-center rounded-full bg-blue-100 text-2xl font-bold text-blue-950">
-                      {(person.full_name || "A").charAt(0).toUpperCase()}
-                    </div>
-                  )}
+                 
+                {/* ALUMNI HEADER */}
+                <div className="flex items-start gap-4">
+                  {/* PROFILE PICTURE */}
+                  <div className="h-24 w-24 flex-shrink-0 overflow-hidden rounded-xl border-2 border-blue-100 bg-blue-50">
+                    {person.profile_image_url ? (
+                      <img
+                        src={person.profile_image_url}
+                        alt={`${person.full_name || "Alumnus"} profile`}
+                        className="h-full w-full object-cover"
+                        loading="lazy"
+                      />
+                    ) : (
+                      <div className="flex h-full w-full items-center justify-center text-3xl font-bold text-blue-950">
+                        {(person.full_name || "A")
+                          .charAt(0)
+                          .toUpperCase()}
+                      </div>
+                    )}
+                  </div>
+                
+                  {/* ALUMNI DETAILS */}
+                  <div className="min-w-0 flex-1">
+                    {/* TITLE AND NAME ON SAME LINE */}
+                    <h2 className="text-lg font-bold text-slate-900">
+                      {[
+                        person.name_title,
+                        person.full_name,
+                      ]
+                        .filter(Boolean)
+                        .join(" ") || "ODA Alumnus"}
+                    </h2>
+                
+                    {/* PROFESSIONAL TITLE */}
+                    {person.professional_title && (
+                      <p className="mt-1 text-sm font-medium text-blue-800">
+                        {person.professional_title}
+                      </p>
+                    )}
+                
+                    {/* CITY AND COUNTRY */}
+                    {(person.city || person.country) && (
+                      <div className="mt-2 flex items-start gap-2 text-sm text-slate-600">
+                        <MapPin className="mt-0.5 h-4 w-4 flex-shrink-0" />
+                        <span>
+                          {[person.city, person.country]
+                            .filter(Boolean)
+                            .join(", ")}
+                        </span>
+                      </div>
+                    )}
+                
+                    {/* PHONE NUMBER */}
+                    {person.phone_number && (
+                      <div className="mt-2 flex items-start gap-2 text-sm text-slate-600">
+                        <Phone className="mt-0.5 h-4 w-4 flex-shrink-0" />
+                        <span>{person.phone_number}</span>
+                      </div>
+                    )}
+                  </div>
                 </div>
-                
-                {/* ALUMNI NAME */}
-                <h2 className="text-xl font-bold text-slate-900">
-                  {person.full_name || "ODA Alumnus"}
-                </h2>
-                
-                {/* PROFESSIONAL TITLE */}
-                <p className="mt-1 text-sm font-medium text-blue-800">
-                  {person.professional_title || "Orbal Digital Academy Graduate"}
-                </p>
-                {person.bio && (
-                  <p className="mt-3 text-sm text-slate-600">
-                    {person.bio}
-                  </p>
-                )}
 
                 {person.skills?.length > 0 && (
                   <div className="mt-4 flex flex-wrap gap-2">
